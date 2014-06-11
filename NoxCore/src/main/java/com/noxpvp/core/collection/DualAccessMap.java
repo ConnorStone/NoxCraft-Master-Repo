@@ -50,6 +50,26 @@ public class DualAccessMap<K, V> implements Map<K, V> {
 		return values.contains(value);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DualAccessMap that = (DualAccessMap) o;
+
+		if (!keys.equals(that.keys)) return false;
+		if (!values.equals(that.values)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = keys.hashCode();
+		result = 31 * result + values.hashCode();
+		return result;
+	}
+
 	/**
 	 * Internally uses and returns {@link DualAccessMap#getByKey(Object)}
 	 * <br><hr><br>
