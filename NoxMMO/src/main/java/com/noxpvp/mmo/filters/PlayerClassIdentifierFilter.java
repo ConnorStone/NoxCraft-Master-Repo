@@ -34,7 +34,7 @@ import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 
-public class PlayerClassFilter implements Filter<Player> {
+public class PlayerClassIdentifierFilter implements Filter<Player> {
 
 	private List<String> classIds;
 
@@ -46,7 +46,7 @@ public class PlayerClassFilter implements Filter<Player> {
 	 * @param invert inverse value to set to.
 	 * @return self instance for chaining.
 	 */
-	public PlayerClassFilter invertFilter(boolean invert) {
+	public PlayerClassIdentifierFilter invertFilter(boolean invert) {
 		inverse = invert;
 		return this;
 	}
@@ -55,7 +55,7 @@ public class PlayerClassFilter implements Filter<Player> {
 		return inverse;
 	}
 
-	public PlayerClassFilter(String... ids) {
+	public PlayerClassIdentifierFilter(String... ids) {
 		classIds = new ArrayList<String>();
 		for (String id : ids) {
 			if (PlayerClassUtil.hasClass(id))

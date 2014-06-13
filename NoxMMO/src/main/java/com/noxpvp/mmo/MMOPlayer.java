@@ -296,6 +296,6 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 			node.set(TARGET_NODE + ".uuid", getTarget().getUniqueId().toString());
 		}
 
-		//FIXME: Save classes
+		node.set(PLAYER_CLASSES_NODE, PlayerClassUtil.getAllChangedPlayerClasses(this));
 	}
 }

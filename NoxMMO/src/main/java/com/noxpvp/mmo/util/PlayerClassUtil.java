@@ -17,10 +17,7 @@ import com.noxpvp.mmo.locale.MMOLocale;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerClassUtil {
 
@@ -30,7 +27,6 @@ public class PlayerClassUtil {
 
 	private static PlayerClassConstructUtil constructUtil;
 
-//	private static Map<String, PlayerClass> classCache; //FIXME: Double memory possible due to the below comment.
 
 	public static void init() {
 		constructUtil = new PlayerClassConstructUtil();
@@ -49,7 +45,8 @@ public class PlayerClassUtil {
 
 	public static PlayerClass getClass(String clazz, MMOPlayer player) {
 		if (!hasClass(clazz)) return null;
-		return null; //FIXME: Implement
+
+		return constructUtil.safeConstructClass(clazz, player.getPlayer());
 	}
 
 	/**
@@ -85,12 +82,10 @@ public class PlayerClassUtil {
 	 */
 	public static List<PlayerClass> getAllPlayerClasses(MMOPlayer player) {
 		if (player == null) return null;
-		List<PlayerClass> ret = player.getClasses(); //Can be empty if they don't have any classes.
+//		List<PlayerClass> ret = player.getClasses(); //Can be empty if they don't have any classes.
 
+		return constructUtil.getAllClasses((LogicUtil.nullOrEmpty(player.getUID())?player.getName(): player.getUID()));
 
-		//FIXME: IMPLEMENT
-
-		return ret;
 	}
 
 	/**
@@ -119,8 +114,7 @@ public class PlayerClassUtil {
 	 */
 	public static List<PlayerClass> getAllowedPlayerClasses(MMOPlayer player) {
 		if (player == null) return null;
-		List<PlayerClass> ret = getAllPlayerClasses(player);
-
+		List<PlayerClass> ret = constructUtil.getAllClasses(player.getPlayer());
 		filterAllowedClasses(ret);
 
 		return ret;
@@ -131,7 +125,13 @@ public class PlayerClassUtil {
 	 * @param classes a valid modifiable list of player classes to edit.
 	 */
 	public static void filterAllowedClasses(List<PlayerClass> classes) {
-		//FIXME: Implement.
+		Iterator<PlayerClass> iterator = classes.iterator();
+		while (iterator.hasNext()) {
+//			PlayerClass c = iterator.next();
+			if (!/*c.canUseClass()*/iterator.next().canUseClass())
+				iterator.remove();
+		}
+
 	}
 
 	/**
@@ -139,7 +139,13 @@ public class PlayerClassUtil {
 	 * @param classes a valid modifiable list of player classes to edit.
 	 */
 	public static void filterChangedClasses(List<PlayerClass> classes) {
-		//FIXME: Implement.
+		Iterator<PlayerClass> iterator = classes.iterator();
+
+		while (iterator.hasNext()) {
+//			PlayerClass next = iterator.next();
+			if (/*next*/iterator.next().getTotalExp() <= 1)
+				iterator.remove();
+		}
 	}
 
 	/**
@@ -306,6 +312,18 @@ public class PlayerClassUtil {
 		}
 
 		@Deprecated
+		private List<PlayerClass> getAllClasses(String playerIdentifier) {
+			List<PlayerClass> ret = new ArrayList<PlayerClass>();
+			for (Class c : getPClasses()) {
+				PlayerClass p = safeConstructClass(c, playerIdentifier);
+				if (p != null)
+					ret.add(p);
+			}
+
+			return ret;
+		}
+
+		@Deprecated
 		private List<PlayerClass> getAllClasses(Player player) {
 			List<PlayerClass> ret = new ArrayList<PlayerClass>();
 			for (Class c : getPClasses()) {
@@ -370,9 +388,8 @@ public class PlayerClassUtil {
 			MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(playerIdentifier);
 			Map<String, PlayerClass> classes = player.getClassMap();
 			if (classID != null) {
-				String match = playerIdentifier + "|" + classID;
 				if (classes.containsKey(classID))
-					return classes.get(match);
+					return classes.get(classID);
 			}
 
 			SafeConstructor sc = new SafeConstructor(c, String.class);
@@ -400,10 +417,10 @@ public class PlayerClassUtil {
 		public PlayerClass safeConstructClass(String classId, Player player) {
 			if (player == null)
 				throw new IllegalArgumentException("Player cannot be null!");
-			return safeConstructClass(classId, player.getName());
+			return safeConstructClass(classId, player.getUniqueId().toString());
 		}
 
-		public PlayerClass safeConstructClass(String classId, String playerName) {
+		public PlayerClass safeConstructClass(String classId, String playerIdentifier) {
 			if (!pClasses.containsKeyLower(classId))
 				return null;
 
@@ -411,7 +428,7 @@ public class PlayerClassUtil {
 			if (c == null)
 				return null;
 
-			return safeConstructClass(c, playerName);
+			return safeConstructClass(c, playerIdentifier);
 		}
 
 		private void addDefaults() {
