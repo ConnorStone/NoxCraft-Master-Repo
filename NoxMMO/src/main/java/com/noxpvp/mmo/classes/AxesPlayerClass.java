@@ -53,12 +53,12 @@ public class AxesPlayerClass extends PlayerClass {
 		super(uniqueID, className, player);
 	}
 
-	public AxesPlayerClass(String playerName, Player player) {
-		super(uniqueID, className, playerName, player);
+	public AxesPlayerClass(String playerIdentifier, Player player) {
+		super(uniqueID, className, playerIdentifier, player);
 	}
 
-	public AxesPlayerClass(String playerName) {
-		super(uniqueID, className, playerName);
+	public AxesPlayerClass(String playerIdentifier) {
+		super(uniqueID, className, playerIdentifier);
 	}
 
 	public String getDescription() {
