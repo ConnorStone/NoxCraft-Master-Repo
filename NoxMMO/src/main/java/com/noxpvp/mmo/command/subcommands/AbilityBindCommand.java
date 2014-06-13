@@ -24,7 +24,6 @@
 package com.noxpvp.mmo.command.subcommands;
 
 import com.bergerkiller.bukkit.common.Task;
-import com.bergerkiller.bukkit.common.permissions.IPermissionDefault;
 import com.dsh105.holoapi.util.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
@@ -39,7 +38,6 @@ import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
 import com.noxpvp.mmo.abilities.SilentAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

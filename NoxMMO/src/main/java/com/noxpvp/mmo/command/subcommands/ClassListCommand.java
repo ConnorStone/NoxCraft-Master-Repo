@@ -26,6 +26,7 @@ package com.noxpvp.mmo.command.subcommands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -37,7 +38,6 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassListCommand extends BaseCommand {
 
@@ -62,7 +62,7 @@ public class ClassListCommand extends BaseCommand {
 		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin(), true);
 		Player p = context.getPlayer();
 		
-		for (PlayerClass clazz : PlayerClassUtil.getAvailableClasses(p)) {
+		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
 			mb.yellow("Primary classes").gold(": ");
 			
 			List<String> names = new ArrayList<String>();
@@ -73,7 +73,7 @@ public class ClassListCommand extends BaseCommand {
 		}
 		
 		mb.newLine().newLine();
-		for (PlayerClass clazz : PlayerClassUtil.getAvailableClasses(p)) {
+		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
 			mb.yellow("Secondary classes").gold(": ");
 			
 			List<String> names = new ArrayList<String>();

@@ -30,7 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import com.google.common.collect.MapMaker;
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -56,8 +59,6 @@ import com.noxpvp.mmo.classes.internal.DummyClass;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.gui.HealthBar;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuItemRepresentable {
 
@@ -65,16 +66,19 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 	private static final String PRIMARY_CLASS_NODE = "current.primary-class";
 	private static final String PRIMARY_PLAYERCLASS_NODE = PRIMARY_CLASS_NODE + ".class";
 	private static final String PRIMARY_TIER_NODE = PRIMARY_CLASS_NODE + ".tier";
+
 	private static final String SECONDARY_CLASS_NODE = "current.secondary-class";
 	private static final String SECONDARY_PLAYERCLASS_NODE = PRIMARY_CLASS_NODE + ".class";
 	private static final String SECONDARY_TIER_NODE = PRIMARY_CLASS_NODE + ".tier";
 	private static final String TARGET_NODE = "current.target";
 
 	private static final String ABILITY_CYCLERS_NODE = "cyclers";
-	private List<IPlayerClass> classes;
+	private static final String PLAYER_CLASSES_NODE = "class-data";
 	private IPlayerClass primaryClass = DummyClass.PRIMARY, secondaryClass = DummyClass.SECONDARY;
 	private LivingEntity target;
 	private ItemStack identifiableItem;
+
+	private Map<String, PlayerClass> classes = new MapMaker().weakValues().concurrencyLevel(4).makeMap();
 
 	public MMOPlayer(OfflinePlayer player) {
 		super(player);
@@ -127,6 +131,17 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 		return Collections.unmodifiableMap(ret);
 	}
 
+	/**
+	 * Retrieves a modifiable map that persists in the player object containing all class data.
+	 * @return
+	 */
+	public Map<String, PlayerClass> getClassMap() {
+		return classes;
+	}
+
+	public List<PlayerClass> getClasses() {
+		return new ArrayList<PlayerClass>(getClassMap().values());
+	}
 
 	/*
 	 * This will return a usable list object.
@@ -159,10 +174,9 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 	}
 
 	public void setClass(String c) {
-		if (!PlayerClassUtil.hasClassId(c) && PlayerClassUtil.hasClassName(c))
-			c = PlayerClassUtil.getIdByClassName(c);
+		if (!PlayerClassUtil.hasClass(c))
 
-		setClass(PlayerClassUtil.safeConstructClass(c, getName()));
+		setClass(PlayerClassUtil.getClass(c, this));
 	}
 
 	public void setClass(IPlayerClass c) {
@@ -170,16 +184,16 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 			setPrimaryClass(c);
 		else
 			setSecondaryClass(c);
+
+		superSave();
 	}
 
 	public void setPrimaryClass(String c) {
 		if (LogicUtil.nullOrEmpty(c))
 			setClass(DummyClass.PRIMARY);
-		if (!PlayerClassUtil.hasClassId(c) && PlayerClassUtil.hasClassName(c))
-			c = PlayerClassUtil.getIdByClassName(c);
 
 		PlayerClass clazz;
-		if ((clazz = PlayerClassUtil.safeConstructClass(c, getName())) != null)
+		if ((clazz = PlayerClassUtil.getClass(c, this)) != null)
 			setClass(clazz);
 
 		return;
@@ -188,11 +202,9 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 	public void setSecondaryClass(String c) {
 		if (LogicUtil.nullOrEmpty(c))
 			setClass(DummyClass.SECONDARY);
-		if (!PlayerClassUtil.hasClassId(c) && PlayerClassUtil.hasClassName(c))
-			c = PlayerClassUtil.getIdByClassName(c);
 
 		PlayerClass clazz;
-		if ((clazz = PlayerClassUtil.safeConstructClass(c, getName())) != null)
+		if ((clazz = PlayerClassUtil.getClass(c, this)) != null)
 			setClass(clazz);
 
 		return;
@@ -228,6 +240,7 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 		ConfigurationNode node = getPersistantData();
 		setPrimaryClass(node.get(PRIMARY_CLASS_NODE, ""));
 		getPrimaryClass().setCurrentTier(node.get(PRIMARY_TIER_NODE, Integer.class, 1));
+
 		setSecondaryClass(node.get(SECONDARY_CLASS_NODE, ""));
 		getSecondaryClass().setCurrentTier(node.get(SECONDARY_TIER_NODE, Integer.class, 1));
 		
@@ -250,6 +263,10 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 
 		node.set(SECONDARY_PLAYERCLASS_NODE, getSecondaryClass().getUniqueID());
 		node.set(SECONDARY_TIER_NODE, getSecondaryClass().getCurrentTierLevel());
+
+		List<PlayerClass> classes = node.getList(PLAYER_CLASSES_NODE, PlayerClass.class, new ArrayList<PlayerClass>());
+		for (PlayerClass c : classes)
+			this.classes.put(c.getUniqueID(), c);
 	}
 
 	/**
@@ -278,5 +295,7 @@ public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuI
 			node.set(TARGET_NODE + ".world", getTarget().getWorld().getName());
 			node.set(TARGET_NODE + ".uuid", getTarget().getUniqueId().toString());
 		}
+
+		//FIXME: Save classes
 	}
 }

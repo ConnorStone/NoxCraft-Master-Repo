@@ -55,11 +55,11 @@ public class ClassInfoCommand extends BaseCommand {
 
 		String className = context.getArgument(0).toLowerCase();
 
-		if (!PlayerClassUtil.hasClassNameIgnoreCase(className))
+		if (!PlayerClassUtil.hasClass(className))
 			return new CommandResult(this, false);
 
 		PlayerClass clazz = null;
-		for (PlayerClass c : PlayerClassUtil.getAvailableClasses(context.getPlayer()))
+		for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context.getPlayer()))
 			if (c.getName().equalsIgnoreCase(className)) {
 				clazz = c;
 				break;

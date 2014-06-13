@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,7 +45,6 @@ import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassChooseMenu extends CoreBox {
 
@@ -57,7 +57,8 @@ public class ClassChooseMenu extends CoreBox {
 		super(p, MMOLocale.GUI_MENU_NAME_COLOR.get() + MENU_NAME, size, backButton);
 
 		Inventory box = getBox();
-		List<PlayerClass> availableClasses = PlayerClassUtil.getAvailableClasses(p);
+
+		List<PlayerClass> availableClasses = PlayerClassUtil.getAllPlayerClasses(p); //TODO: Correct if supposed to display all classes and render if they are locked. See above todo item for more info.
 
 		ItemStack primarySign = new ItemStack(Material.SIGN);
 		ItemStack secondarySign = new ItemStack(Material.SIGN);

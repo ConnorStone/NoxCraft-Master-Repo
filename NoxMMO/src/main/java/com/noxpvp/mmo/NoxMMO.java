@@ -25,6 +25,7 @@ package com.noxpvp.mmo;
 
 import java.util.logging.Level;
 
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -38,7 +39,6 @@ import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.*;
-import com.noxpvp.core.utils.PrismUtil;
 import com.noxpvp.core.utils.StaticCleaner;
 import com.noxpvp.mmo.abilities.entity.*;
 import com.noxpvp.mmo.abilities.player.*;
@@ -53,7 +53,6 @@ import com.noxpvp.mmo.command.MMOCommand;
 import com.noxpvp.mmo.listeners.*;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.prism.MMOPrismUtil;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 
 public class NoxMMO extends NoxPlugin {

@@ -26,13 +26,13 @@ package com.noxpvp.mmo.filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.filtering.Filter;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class PlayerClassFilter implements Filter<Player> {
 
@@ -40,13 +40,26 @@ public class PlayerClassFilter implements Filter<Player> {
 
 	private boolean inverse = false;
 
+	/**
+	 * Sets the internal inversion value for the output of isFiltered
+	 *
+	 * @param invert inverse value to set to.
+	 * @return self instance for chaining.
+	 */
+	public PlayerClassFilter invertFilter(boolean invert) {
+		inverse = invert;
+		return this;
+	}
+
+	public boolean isInverse() {
+		return inverse;
+	}
+
 	public PlayerClassFilter(String... ids) {
 		classIds = new ArrayList<String>();
 		for (String id : ids) {
-			if (PlayerClassUtil.hasClassId(id))
+			if (PlayerClassUtil.hasClass(id))
 				classIds.add(id);
-			else if (PlayerClassUtil.hasClassName(id))
-				classIds.add(PlayerClassUtil.getIdByClassName(id));
 		}
 	}
 
@@ -56,9 +69,9 @@ public class PlayerClassFilter implements Filter<Player> {
 		IPlayerClass mainClass = mPlayer.getPrimaryClass();
 		IPlayerClass subClass = mPlayer.getSecondaryClass();
 
-		if (classIds.contains(mainClass.getUniqueID()))
+		if (classIds.contains(mainClass.getUniqueID()) || classIds.contains(mainClass.getName()))
 			return !inverse;
-		if (classIds.contains(subClass.getUniqueID()))
+		if (classIds.contains(subClass.getUniqueID()) || classIds.contains(subClass.getName()))
 			return !inverse;
 
 		return inverse;
