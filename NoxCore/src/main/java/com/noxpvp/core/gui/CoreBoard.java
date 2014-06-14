@@ -32,23 +32,26 @@ import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.gui.MessageUtil;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class CoreBoard {
 	private static final int BOARD_MAX_ENTRIES = 15;
 	private static final int BOARD_OBJ_NAME_LENGTH_MAX = 28;
 	private static final int BOARD_SCORE_NAME_MAX_LENGTH = 16;
 	
-	private Player p;
-	private CorePlayerManager pm;
+	private UUID player;
 	private Map<String, BaseBoardEntry> entries;
 	private List<Integer> takenSlots;
 	private Map<String, BoardScroller> scrollers;
@@ -80,12 +83,11 @@ public class CoreBoard {
 
 		this.ob = sb.getObjective(Display.SIDEBAR);
 		this.ob.setDisplayName(SpaceOut(objName, BOARD_OBJ_NAME_LENGTH_MAX));
-		this.p = p;
+		this.player = p.getUniqueId();
 
 		this.scrollers = new HashMap<String, BoardScroller>();
 		this.timers = new HashMap<String, BoardTimer>();
 		this.entries = new HashMap<String, BaseBoardEntry>();
-		this.pm = CorePlayerManager.getInstance();
 
 		this.takenSlots = new ArrayList<Integer>();
 
@@ -220,6 +222,10 @@ public class CoreBoard {
 		if (autoShow)
 			show();
 		return this;
+	}
+	
+	public Player getPlayer() {
+		return Bukkit.getPlayer(player);
 	}
 
 	/**
@@ -548,7 +554,8 @@ public class CoreBoard {
 		}
 
 		public void run() {
-			if (entry == null || !entries.containsValue(entry) || p == null || !p.isOnline()) {
+			Player p;
+			if (entry == null || !entries.containsValue(entry) || (p = getPlayer()) == null || !p.isOnline()) {
 				safeCancel();
 				return;
 			}
@@ -600,6 +607,7 @@ public class CoreBoard {
 				return;
 			}
 
+			Player p = getPlayer();
 			if ((System.currentTimeMillis() / 1000) > (timeStamp - 1) || p == null || !p.isValid() || !p.isOnline()) {
 				if (p.isOnline()) {
 					entry.remove();
