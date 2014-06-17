@@ -41,7 +41,7 @@ import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.CoreBar;
 import com.noxpvp.core.gui.CoreBoard;
 import com.noxpvp.core.gui.CoreBox;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 
 public abstract class BaseNoxPlayerAdapter extends ProxyBase<OldNoxPlayer> implements NoxPlayerAdapter {
 

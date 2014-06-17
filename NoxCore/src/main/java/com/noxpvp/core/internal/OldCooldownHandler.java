@@ -39,7 +39,7 @@ import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.NoxPlayerAdapter;
 import com.noxpvp.core.events.CooldownExpireEvent;
 import com.noxpvp.core.gui.CoolDown;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 
 public class OldCooldownHandler extends BukkitRunnable {
 	private Map<String, List<CoolDown>> cds;

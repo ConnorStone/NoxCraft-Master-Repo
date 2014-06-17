@@ -47,7 +47,7 @@ import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.utils.EntityUtil;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.OldPersistant;
 import com.noxpvp.core.annotation.Temporary;
 import com.noxpvp.core.data.BaseNoxPlayerAdapter;
 import com.noxpvp.core.data.NoxPlayerAdapter;
@@ -60,7 +60,7 @@ import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 
-public class MMOPlayer extends BaseNoxPlayerAdapter implements Persistant, MenuItemRepresentable {
+public class MMOPlayer extends BaseNoxPlayerAdapter implements OldPersistant, MenuItemRepresentable {
 
 	/** Not recommended for use **/
 	private static final String PRIMARY_CLASS_NODE = "current.primary-class";

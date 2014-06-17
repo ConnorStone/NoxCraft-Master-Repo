@@ -27,7 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.mmo.MasterListener;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
@@ -54,7 +54,7 @@ public interface IPlayerAbility extends IEntityAbility {
 	 *
 	 * @return NoxPlayer object.
 	 */
-	public NoxPlayer getNoxPlayer();
+	public OldNoxPlayer getNoxPlayer();
 
 	/**
 	 * Retrieves the master listener to register and unregister handlers for this ability.

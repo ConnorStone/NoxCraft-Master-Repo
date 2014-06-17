@@ -33,8 +33,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.manager.BasePlayerManager;
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.manager.old.BasePlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
 
 public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME: Javadocs
@@ -69,7 +69,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 	 */
 	public void clear() {
 
-		com.noxpvp.core.manager.CorePlayerManager pm = com.noxpvp.core.manager.CorePlayerManager.getInstance();
+		com.noxpvp.core.manager.old.CorePlayerManager pm = com.noxpvp.core.manager.old.CorePlayerManager.getInstance();
 		List<String> names = pm.getAllPlayerNames();
 
 		for (HomesPlayer player : getPlayerMap().values()) {
@@ -83,7 +83,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 		names.removeAll(new ArrayList<String>(getPlayerMap().keySet()));
 		for (String name : names) {
 			boolean notMem = !pm.isLoaded(name);
-			NoxPlayer np = pm.getPlayer(name);
+			OldNoxPlayer np = pm.getPlayer(name);
 			np.getPersistantData().remove("homes");
 			np.save();
 
@@ -93,7 +93,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 	}
 
 	@Override
-	protected HomesPlayer craftNew(NoxPlayer noxPlayer) {
+	protected HomesPlayer craftNew(OldNoxPlayer noxPlayer) {
 		return new HomesPlayer(noxPlayer);
 	}
 
@@ -148,7 +148,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 			getPlayer(player);
 	}
 
-	public void loadPlayer(NoxPlayer player) {
+	public void loadPlayer(OldNoxPlayer player) {
 		getPlayer(player).load();
 	}
 

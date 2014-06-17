@@ -71,7 +71,7 @@ import com.noxpvp.core.listeners.ServerPingListener;
 import com.noxpvp.core.listeners.VoteListener;
 import com.noxpvp.core.locales.CoreLocale;
 import com.noxpvp.core.locales.GlobalLocale;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
 import com.noxpvp.core.reloader.Reloader;
@@ -103,6 +103,9 @@ public class NoxCore extends NoxPlugin {
 	private Prism prism = null;
 	private OldCooldownHandler oldCDH;
 	private Command noxCommand;
+
+	//FIXME: Switch to new Cooldown Handler
+	//FIXME: Switch to new CorePlayerManager
 
 	public static NoxCore getInstance() {
 		return instance;

@@ -29,7 +29,6 @@ import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
 import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard.Display;
 import com.google.common.collect.Lists;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.gui.MessageUtil;
 

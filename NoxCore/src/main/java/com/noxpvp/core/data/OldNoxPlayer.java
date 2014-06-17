@@ -56,7 +56,7 @@ import com.noxpvp.core.gui.CoreBar;
 import com.noxpvp.core.gui.CoreBoard;
 import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.UUIDUtil;
 

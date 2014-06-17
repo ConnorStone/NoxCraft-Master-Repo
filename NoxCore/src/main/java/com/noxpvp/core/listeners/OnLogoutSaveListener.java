@@ -28,7 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 
 public class OnLogoutSaveListener extends NoxListener<NoxCore> {
 

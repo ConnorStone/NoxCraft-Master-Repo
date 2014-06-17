@@ -21,7 +21,7 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.old_manager;
+package com.noxpvp.core.manager.old;
 
 import com.noxpvp.core.OldPersistant;
 import org.bukkit.OfflinePlayer;

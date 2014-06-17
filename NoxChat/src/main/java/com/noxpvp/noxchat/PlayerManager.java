@@ -28,8 +28,8 @@ import java.util.Map;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.manager.BasePlayerManager;
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.manager.old.BasePlayerManager;
 
 public class PlayerManager extends BasePlayerManager<ChatPlayer> {
 	private static PlayerManager instance;
@@ -62,12 +62,12 @@ public class PlayerManager extends BasePlayerManager<ChatPlayer> {
 		return NoxChat.getInstance();
 	}
 
-	public void loadPlayer(NoxPlayer player) {
+	public void loadPlayer(OldNoxPlayer player) {
 		getPlayer(player.getName());
 	}
 
 	@Override
-	protected ChatPlayer craftNew(NoxPlayer player) {
+	protected ChatPlayer craftNew(OldNoxPlayer player) {
 		return new ChatPlayer(player);
 	}
 

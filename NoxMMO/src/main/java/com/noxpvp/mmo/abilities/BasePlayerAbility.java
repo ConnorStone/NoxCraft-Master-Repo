@@ -32,9 +32,9 @@ import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.VaultAdapter;
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.internal.IHeated;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
@@ -73,7 +73,7 @@ public abstract class BasePlayerAbility extends BaseEntityAbility implements IPl
 		return (Player) getEntity();
 	}
 
-	public NoxPlayer getNoxPlayer() {
+	public OldNoxPlayer getNoxPlayer() {
 		if (isValid())
 			return CorePlayerManager.getInstance().getPlayer(getPlayer());
 		return null;
@@ -111,7 +111,7 @@ public abstract class BasePlayerAbility extends BaseEntityAbility implements IPl
 	 * @return true if allowed or false if not OR if could not retrieve NoxPlayer object.
 	 */
 	public boolean hasPermission() {
-		NoxPlayer p = getNoxPlayer();
+		OldNoxPlayer p = getNoxPlayer();
 		if (p == null)
 			return false;
 

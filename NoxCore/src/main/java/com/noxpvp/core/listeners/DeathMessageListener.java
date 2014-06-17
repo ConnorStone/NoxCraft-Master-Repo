@@ -36,7 +36,7 @@ import org.bukkit.inventory.ItemStack;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.locales.GlobalLocale;
-import com.noxpvp.core.old_manager.CorePlayerManager;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 
 public class DeathMessageListener extends NoxListener<NoxCore> {
 

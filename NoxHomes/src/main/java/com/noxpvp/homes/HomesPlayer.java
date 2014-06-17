@@ -30,13 +30,13 @@ import java.util.List;
 import org.bukkit.OfflinePlayer;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.OldPersistant;
 import com.noxpvp.core.data.BaseNoxPlayerAdapter;
 import com.noxpvp.core.data.NoxPlayerAdapter;
 import com.noxpvp.homes.tp.BaseHome;
 import com.noxpvp.homes.tp.DefaultHome;
 
-public class HomesPlayer extends BaseNoxPlayerAdapter implements Persistant {
+public class HomesPlayer extends BaseNoxPlayerAdapter implements OldPersistant {
 
 	/**
 	 * Instantiates a new homes playerRef.

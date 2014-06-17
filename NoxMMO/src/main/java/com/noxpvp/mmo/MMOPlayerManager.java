@@ -26,8 +26,8 @@ package com.noxpvp.mmo;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.manager.BasePlayerManager;
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.manager.old.BasePlayerManager;
 
 public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	private static MMOPlayerManager instance;
@@ -48,7 +48,7 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	}
 
 	@Override
-	protected MMOPlayer craftNew(NoxPlayer noxPlayer) {
+	protected MMOPlayer craftNew(OldNoxPlayer noxPlayer) {
 		return new MMOPlayer(noxPlayer);
 	}
 
