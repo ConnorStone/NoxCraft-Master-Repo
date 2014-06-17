@@ -29,7 +29,7 @@ import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
 import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard.Display;
 import com.google.common.collect.Lists;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
@@ -186,6 +186,38 @@ public class CoreBoard {
 		BoardScroller scroller = new BoardScroller(name, displayedName, scrollText, visibleLength, nameColor, scrollerColor);
 		scroller.runTaskTimer(NoxCore.getInstance(), 0, 4);
 		scrollers.put(scroller.name, scroller);
+
+		if (autoShow)
+			show();
+		return this;
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the timer to be displayed on the scoreboard
+	 * @param stamp       - A Time object representing how much time. <i>It is converted into seconds.</i>
+	 * @param nameColor     - The color of the timer name
+	 * @param scoreColor    - The color of the time counter being displayed
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addTimer(String name, String displayedName, CoolDown.Time stamp, ChatColor nameColor, ChatColor scoreColor) {
+		return addTimer(name, displayedName, stamp, nameColor, scoreColor, true);
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the timer to be displayed on the scoreboard
+	 * @param stamp       - A Time object representing how much time. <i>It is converted into seconds.</i>
+	 * @param nameColor     - The color of the timer name
+	 * @param scoreColor    - The color of the time counter being displayed
+	 * @param autoShow      - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addTimer(String name, String displayedName, CoolDown.Time stamp, ChatColor nameColor, ChatColor scoreColor, boolean autoShow) {
+
+		BoardTimer timer = new BoardTimer(name, displayedName, (int) (stamp.usesNanos() ? stamp.toStamp() / 1000000000 : stamp.toStamp() / 1000), nameColor, scoreColor);
+		timer.runTaskTimer(NoxCore.getInstance(), 0, 20);
+		timers.put(timer.name, timer);
 
 		if (autoShow)
 			show();

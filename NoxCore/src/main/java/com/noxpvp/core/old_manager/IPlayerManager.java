@@ -21,16 +21,16 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.manager;
+package com.noxpvp.core.old_manager;
 
+import com.noxpvp.core.OldPersistant;
 import org.bukkit.OfflinePlayer;
 
 import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.Persistant;
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.NoxPlayerAdapter;
 
-public interface IPlayerManager<T extends NoxPlayerAdapter> extends Persistant {
+public interface IPlayerManager<T extends NoxPlayerAdapter> extends OldPersistant {
 	public T[] getLoadedPlayers();
 
 	/**
@@ -49,11 +49,11 @@ public interface IPlayerManager<T extends NoxPlayerAdapter> extends Persistant {
 	 */
 	public T getPlayer(String name);
 
-	public T getPlayer(NoxPlayer player);
+	public T getPlayer(OldNoxPlayer player);
 
 	public NoxPlugin getPlugin();
 
-	public void savePlayer(NoxPlayer player);
+	public void savePlayer(OldNoxPlayer player);
 
 	public void savePlayer(T player);
 
@@ -69,7 +69,7 @@ public interface IPlayerManager<T extends NoxPlayerAdapter> extends Persistant {
 
 	public void unloadPlayer(OfflinePlayer player);
 
-	public void loadPlayer(NoxPlayer player);
+	public void loadPlayer(OldNoxPlayer player);
 
 	public void loadPlayer(T player);
 

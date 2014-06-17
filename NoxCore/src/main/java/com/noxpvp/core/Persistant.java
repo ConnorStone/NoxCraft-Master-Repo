@@ -1,36 +1,22 @@
-/*
- * Copyright (c) 2014. NoxPVP.com
- *
- * All rights are reserved.
- *
- * You are not permitted to
- * 	Modify
- * 	Redistribute nor distribute
- * 	Sublicense
- *
- * You are required to keep this license header intact
- *
- * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
- *
- * When using this you are required to
- * 	Display a visible link to noxpvp.com
- * 	For crediting purpose.
- *
- * For more information please refer to the license.md file in the root directory of repo.
- *
- * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
- */
-
 package com.noxpvp.core;
 
-public interface Persistant {
-	/**
-	 * Loads data for this object.
-	 */
-	public void load();
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+import java.util.UUID;
+
+public interface Persistant extends ConfigurationSerializable {
 
 	/**
-	 * Saves data for this object.
+	 * Returns a Unique persistant ID for this data.
+	 * @return UUID object
 	 */
-	public void save();
+	public UUID getPersistantID();
+
+	/**
+	 * Returns a path node for the data storage.
+	 * <p>When implementing if not implementing you must return getPerstantID().toString() it should use the UUID as the path instead!</p>
+	 *
+	 * @return String path that must never be null or empty.
+	 */
+	public String getPersistanceNode();
 }

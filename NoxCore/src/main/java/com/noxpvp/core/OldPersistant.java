@@ -21,23 +21,16 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.listeners;
+package com.noxpvp.core;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerQuitEvent;
+public interface OldPersistant {
+	/**
+	 * Loads data for this object.
+	 */
+	public void load();
 
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.old_manager.CorePlayerManager;
-
-public class OnLogoutSaveListener extends NoxListener<NoxCore> {
-
-	public OnLogoutSaveListener(NoxCore plugin) {
-		super(plugin);
-	}
-
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onLogoutEvent(PlayerQuitEvent event) {
-		CorePlayerManager.getInstance().unloadAndSavePlayer(event.getPlayer().getName());
-	}
+	/**
+	 * Saves data for this object.
+	 */
+	public void save();
 }

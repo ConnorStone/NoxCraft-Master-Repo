@@ -31,7 +31,7 @@ import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 
 /**
  * Using this interface you are required to implement a constructor with the
- * argument NoxPlayer as part of the implementation. <br />
+ * argument OldNoxPlayer as part of the implementation. <br />
  * <p/>
  * After doing so. It will allow the core to automatically give you objects of
  * desired choice.<br />
@@ -44,9 +44,9 @@ public interface NoxPlayerAdapter {
 	/**
 	 * Retrieves the player object that this adaptor uses for data.
 	 *
-	 * @return NoxPlayer instance
+	 * @return OldNoxPlayer instance
 	 */
-	public NoxPlayer getNoxPlayer();
+	public OldNoxPlayer getNoxPlayer();
 
 	/**
 	 * Retrieves the player represented by this object.

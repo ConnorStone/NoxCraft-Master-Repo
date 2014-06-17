@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.noxpvp.core.data.OldNoxPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -36,7 +37,6 @@ import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
 import com.bergerkiller.bukkit.common.scoreboards.CommonTeam;
 import com.bergerkiller.bukkit.common.scoreboards.CommonTeam.FriendlyFireType;
-import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.locales.CoreLocale;
 
 import net.milkbowl.vault.chat.Chat;
@@ -193,7 +193,7 @@ public class VaultAdapter {
 			return p.hasPermission(perm);
 		}
 
-		public static boolean hasPermission(NoxPlayer p, String string) {
+		public static boolean hasPermission(OldNoxPlayer p, String string) {
 			if (p.isOnline())
 				return hasPermission(p.getLastWorld(), p.getPlayer(), string);
 			return hasPermission(p.getLastWorldName(), p.getPlayerName(), string);

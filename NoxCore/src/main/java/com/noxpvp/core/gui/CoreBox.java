@@ -52,11 +52,11 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.effect.StaticEffects;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.listeners.NoxPLPacketListener;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.packet.PacketSounds;
 
 public abstract class CoreBox extends NoxListener<NoxCore> implements ICoreBox, MenuItemRepresentable, Cloneable {
@@ -140,7 +140,7 @@ public abstract class CoreBox extends NoxListener<NoxCore> implements ICoreBox, 
 				if ((p = getPlayer()) != null && box.getViewers().contains(p))
 					p.closeInventory();
 
-				NoxPlayer np = pm.getPlayer(p);
+				OldNoxPlayer np = pm.getPlayer(p);
 				if (np.hasCoreBox(thisBox))
 					np.deleteCoreBox();
 

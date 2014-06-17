@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.noxpvp.core.data.OldNoxPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,8 +19,7 @@ import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.VaultAdapter;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 
 public class PlayerPermManager extends CoreBox {
 	
@@ -62,7 +62,7 @@ public class PlayerPermManager extends CoreBox {
 		if (!VaultAdapter.isPermissionsLoaded())
 			return;
 			
-		NoxPlayer player = CorePlayerManager.getInstance().getPlayer(p);
+		OldNoxPlayer player = CorePlayerManager.getInstance().getPlayer(p);
 		
 		ItemStack playerHead = new ItemStack(Material.SKULL_ITEM);
 		ItemMeta meta = playerHead.getItemMeta();

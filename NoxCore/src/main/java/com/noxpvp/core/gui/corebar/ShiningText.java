@@ -28,7 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.gui.CoreBar;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.utils.gui.ShiningStringScroller;
 
 public class ShiningText extends BukkitRunnable {

@@ -35,7 +35,7 @@ import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
 import com.noxpvp.core.gui.corebar.FlashingNotification;
 //import com.noxpvp.core.gui.corebar.ScrollingText;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.utils.UUIDUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
 

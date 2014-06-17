@@ -26,8 +26,6 @@ package com.noxpvp.core.data;
 import java.util.List;
 import java.util.UUID;
 
-import com.noxpvp.core.utils.UUIDUtil;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -37,16 +35,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.bergerkiller.bukkit.common.proxies.Proxy;
 import com.bergerkiller.bukkit.common.proxies.ProxyBase;
 import com.noxpvp.core.SafeLocation;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.CoreBar;
 import com.noxpvp.core.gui.CoreBoard;
 import com.noxpvp.core.gui.CoreBox;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 
-public abstract class BaseNoxPlayerAdapter extends ProxyBase<NoxPlayer> implements NoxPlayerAdapter {
+public abstract class BaseNoxPlayerAdapter extends ProxyBase<OldNoxPlayer> implements NoxPlayerAdapter {
 
 	public BaseNoxPlayerAdapter(NoxPlayerAdapter player) {
 		this(player.getPlayerName());
@@ -60,7 +57,7 @@ public abstract class BaseNoxPlayerAdapter extends ProxyBase<NoxPlayer> implemen
 		super(getNoxPlayer(name));
 	}
 
-	private static NoxPlayer getNoxPlayer(String name) {
+	private static OldNoxPlayer getNoxPlayer(String name) {
 		return CorePlayerManager.getInstance().getPlayer(name);
 	}
 
@@ -92,7 +89,7 @@ public abstract class BaseNoxPlayerAdapter extends ProxyBase<NoxPlayer> implemen
 		getProxyBase().setFirstLoad(isFirstLoad);
 	}
 
-	public final NoxPlayer getNoxPlayer() {
+	public final OldNoxPlayer getNoxPlayer() {
 		return getProxyBase();
 	}
 

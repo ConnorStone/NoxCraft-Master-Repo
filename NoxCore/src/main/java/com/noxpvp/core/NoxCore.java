@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.internal.OldCooldownHandler;
 import me.botsko.prism.Prism;
 
 import org.bukkit.Bukkit;
@@ -57,10 +59,8 @@ import com.dsh105.holoapi.HoloAPICore;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.commands.NoxCommand;
 import com.noxpvp.core.commands.ReloadCommand;
-import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.data.NoxPlayerAdapter;
 import com.noxpvp.core.gui.CoolDown;
-import com.noxpvp.core.internal.CooldownHandler;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.listeners.ChatPingListener;
 import com.noxpvp.core.listeners.ChestBlockListener;
@@ -71,7 +71,7 @@ import com.noxpvp.core.listeners.ServerPingListener;
 import com.noxpvp.core.listeners.VoteListener;
 import com.noxpvp.core.locales.CoreLocale;
 import com.noxpvp.core.locales.GlobalLocale;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
 import com.noxpvp.core.reloader.Reloader;
@@ -101,7 +101,7 @@ public class NoxCore extends NoxPlugin {
 	private WorldGuardPlugin worldGuard = null;
 	private HoloAPICore holoAPI = null;
 	private Prism prism = null;
-	private CooldownHandler cds;
+	private OldCooldownHandler oldCDH;
 	private Command noxCommand;
 
 	public static NoxCore getInstance() {
@@ -231,7 +231,7 @@ public class NoxCore extends NoxPlugin {
 		saveConfig();
 		CorePlayerManager.getInstance().save();
 
-		cds.stop();
+		oldCDH.stop();
 		cleanup();
 	}
 
@@ -275,9 +275,9 @@ public class NoxCore extends NoxPlugin {
 
 		getMasterReloader();
 
-		Conversion.register(new BasicConverter<NoxPlayer>(NoxPlayer.class) {
+		Conversion.register(new BasicConverter<OldNoxPlayer>(OldNoxPlayer.class) {
 			@Override
-			protected NoxPlayer convertSpecial(Object object, Class<?> obType, NoxPlayer def) {
+			protected OldNoxPlayer convertSpecial(Object object, Class<?> obType, OldNoxPlayer def) {
 				if (object instanceof NoxPlayerAdapter)
 					return ((NoxPlayerAdapter) object).getNoxPlayer();
 				return def;
@@ -397,9 +397,9 @@ public class NoxCore extends NoxPlugin {
 			this.saveGlobalLocalization();
 		}
 
-		cds = new CooldownHandler();
+		oldCDH = new OldCooldownHandler();
 
-		cds.start();
+		oldCDH.start();
 
 		reloadConfig();
 	}

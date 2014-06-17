@@ -33,8 +33,8 @@ import org.bukkit.event.HandlerList;
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
@@ -96,7 +96,7 @@ public class VoteListener extends NoxListener<NoxCore> {
 		if (event.isAsynchronous() && usePlayer) {
 			CommonUtil.nextTick(new Runnable() { // TODOD: Double check. This might not be needed with multithreading.. Must test concurrency support of player handler
 				public void run() {
-					NoxPlayer player = manager.getPlayer(user);
+					OldNoxPlayer player = manager.getPlayer(user);
 
 					synchronized (player) {
 						player.incrementVote();
@@ -104,7 +104,7 @@ public class VoteListener extends NoxListener<NoxCore> {
 				}
 			});
 		} else {
-			NoxPlayer player = manager.getPlayer(vote.getUsername());
+			OldNoxPlayer player = manager.getPlayer(vote.getUsername());
 
 			synchronized (player) {
 				player.incrementVote();

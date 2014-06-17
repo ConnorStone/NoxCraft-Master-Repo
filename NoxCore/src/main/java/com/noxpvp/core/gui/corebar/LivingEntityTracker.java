@@ -36,7 +36,7 @@ import com.bergerkiller.bukkit.common.utils.MaterialUtil;
 import com.google.common.collect.Sets;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.gui.CoreBar;
-import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.old_manager.CorePlayerManager;
 import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
 
 public class LivingEntityTracker extends BukkitRunnable {

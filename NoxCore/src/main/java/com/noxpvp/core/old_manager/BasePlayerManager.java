@@ -21,7 +21,7 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.manager;
+package com.noxpvp.core.old_manager;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.NoxPlayerAdapter;
 
 public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements IPlayerManager<T> {
@@ -54,11 +54,11 @@ public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements I
 		return craftNew(adapter.getNoxPlayer());
 	}
 
-	public void loadPlayer(NoxPlayer player) {
+	public void loadPlayer(OldNoxPlayer player) {
 		getPlayer(player).load();
 	}
 
-	protected abstract T craftNew(NoxPlayer adapter);
+	protected abstract T craftNew(OldNoxPlayer adapter);
 
 	/**
 	 * Required to grab objects.
@@ -92,16 +92,16 @@ public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements I
 		return LogicUtil.toArray(uid_players.values(), typeClass);
 	}
 
-	public T getPlayer(NoxPlayer noxPlayer) {
+	public T getPlayer(OldNoxPlayer oldNoxPlayer) {
 		T player = null;
-		String name = noxPlayer.getIdentity();
+		String name = oldNoxPlayer.getIdentity();
 		if (isLoaded(name))
 			if (UUIDUtil.isUUID(name))
 				player = uid_players.get(name);
 			else
 				player = name_players.get(name);
 		else {
-			player = craftNew(noxPlayer);
+			player = craftNew(oldNoxPlayer);
 			player.load();
 			if (UUIDUtil.isUUID(name))
 				uid_players.put(name, player);
@@ -175,7 +175,7 @@ public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements I
 			savePlayer(p);
 	}
 
-	public void savePlayer(NoxPlayer player) {
+	public void savePlayer(OldNoxPlayer player) {
 		getPlayer(player).save();
 	}
 
