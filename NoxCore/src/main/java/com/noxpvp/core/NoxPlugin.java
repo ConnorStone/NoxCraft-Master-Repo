@@ -23,6 +23,7 @@
 
 package com.noxpvp.core;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -57,6 +58,14 @@ public abstract class NoxPlugin extends PluginBase {
 
 	protected StringMap<Command> commandExecs = new StringMap<Command>();
 	protected StringMap<String> commandAliases = new StringMap<String>();
+	private File noxPluginFolder;
+
+	public File getNoxPluginFolder() {
+		if (noxPluginFolder == null && getDataFolder() != null) noxPluginFolder = new File(getDataFolder().getParentFile(), "Nox");
+		if (!noxPluginFolder.mkdirs() && (!noxPluginFolder.exists() || noxPluginFolder.isFile())) log(Level.SEVERE, "Could not make the nox plugin folder!");
+
+		return noxPluginFolder;
+	}
 
 	public void addPermission(NoxPermission perm) {
 		NoxCore.getInstance().addPermission(perm);
