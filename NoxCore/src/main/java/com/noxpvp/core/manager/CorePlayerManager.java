@@ -5,7 +5,7 @@ import com.noxpvp.core.data.NoxPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class CorePlayerManager extends BaseManager<NoxPlayer>{
+public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 
 	private static CorePlayerManager instance;
 
@@ -19,28 +19,5 @@ public class CorePlayerManager extends BaseManager<NoxPlayer>{
 		return instance;
 	}
 
-	//~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods
-	//~~~~~~~~~~~~~~~~~~~~~~~
 
-	public NoxPlayer getPlayer(Player player) {
-		return get(player.getUniqueId());
-	}
-
-	public void load(Player player) {
-		load(player.getUniqueId());
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: Required Implementations
-	//~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public NoxCore getPlugin() {
-		return NoxCore.getInstance();
-	}
-
-	public void load() {
-		for (Player p : Bukkit.getOnlinePlayers())
-			load(p);
-	}
 }
