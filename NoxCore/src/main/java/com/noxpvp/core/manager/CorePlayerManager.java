@@ -1,9 +1,6 @@
 package com.noxpvp.core.manager;
 
-import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.NoxPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 
@@ -18,6 +15,4 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 			instance = new CorePlayerManager();
 		return instance;
 	}
-
-
 }

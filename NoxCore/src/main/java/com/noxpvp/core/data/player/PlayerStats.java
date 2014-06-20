@@ -1,13 +1,13 @@
 package com.noxpvp.core.data.player;
 
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.Persistent;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class PlayerStats implements Persistant {
+public abstract class PlayerStats implements Persistent {
 
 	private final UUID uuid;
 

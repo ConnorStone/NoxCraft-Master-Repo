@@ -3,7 +3,7 @@ package com.noxpvp.core.manager;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.Persistent;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public abstract class BaseManager<T extends Persistant> implements IManager<T> {
+public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instance Fields

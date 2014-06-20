@@ -2,13 +2,13 @@ package com.noxpvp.core.manager;
 
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.Persistent;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public interface IManager<T extends Persistant> {
+public interface IManager<T extends Persistent> {
 	public void log(Level lv, String msg);
 
 	public FileConfiguration getConfig(String name);

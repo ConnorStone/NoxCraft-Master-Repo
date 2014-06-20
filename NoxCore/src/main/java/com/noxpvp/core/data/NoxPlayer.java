@@ -2,7 +2,7 @@ package com.noxpvp.core.data;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.Persistant;
+import com.noxpvp.core.Persistent;
 import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.CoreBoard;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class NoxPlayer implements Persistant {
+public class NoxPlayer implements Persistent {
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
