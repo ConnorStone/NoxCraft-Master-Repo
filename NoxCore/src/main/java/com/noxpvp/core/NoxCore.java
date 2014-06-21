@@ -31,11 +31,13 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 
+import com.bergerkiller.bukkit.common.bases.mutable.LocationAbstract;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.internal.OldCooldownHandler;
 import me.botsko.prism.Prism;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -287,6 +289,14 @@ public class NoxCore extends NoxPlugin {
 			}
 		});
 
+		Conversion.register(new BasicConverter<SafeLocation>(SafeLocation.class) {
+			protected SafeLocation convertSpecial(Object o, Class<?> aClass, SafeLocation def) {
+				if (o instanceof Location) return new SafeLocation((Location) o);
+				else if (o instanceof LocationAbstract) return new SafeLocation(((LocationAbstract)o).toLocation());
+				else if (o instanceof SafeLocation) return (SafeLocation) o;
+				else return def;
+			}
+		});
 
 		chatPingListener = new ChatPingListener();
 		voteListener = new VoteListener();
