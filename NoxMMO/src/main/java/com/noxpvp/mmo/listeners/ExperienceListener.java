@@ -50,7 +50,7 @@ import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.bergerkiller.bukkit.common.utils.MathUtil;
 import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
@@ -223,7 +223,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 		Player attacker = (Player) (last.getDamager() instanceof Player ? last.getDamager() : null);
 		if (attacker == null) return;
 
-		MMOPlayer mmoPlayer = pm.getPlayer(attacker);
+		OldMMOPlayer mmoPlayer = pm.getPlayer(attacker);
 		if (mmoPlayer == null) return;
 
 		double multiplier = cachedMultipliers.get(killed.getType().name());
@@ -236,7 +236,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 	public void onBreak(BlockBreakEvent event) {
 		Player breaker = event.getPlayer();
 
-		MMOPlayer player = pm.getPlayer(breaker);
+		OldMMOPlayer player = pm.getPlayer(breaker);
 		if (player == null) return;
 
 		double xpMulti = cachedMultipliers.get(event.getBlock().getType().name());
@@ -255,7 +255,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 
 		Player smelter = event.getPlayer();
 
-		MMOPlayer player = pm.getPlayer(smelter);
+		OldMMOPlayer player = pm.getPlayer(smelter);
 
 		if (player == null) return;
 		double xpMulti = cachedMultipliers.get(event.getItemType().name());
@@ -276,7 +276,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 		if (!(tamer instanceof Player) || (player = (Player) tamer) == null)
 			return;
 
-		MMOPlayer mmoPlayer;
+		OldMMOPlayer mmoPlayer;
 		if ((mmoPlayer = pm.getPlayer(player)) == null) return;
 
 		double xpMulti = cachedMultipliers.get(event.getEntityType().name());

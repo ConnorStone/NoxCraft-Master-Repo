@@ -23,9 +23,8 @@
 
 package com.noxpvp.core.events;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.event.HandlerList;
-
-import com.noxpvp.core.data.NoxPlayerAdapter;
 
 @Deprecated
 public class PlayerDataSaveEvent extends NoxPlayerDataEvent {
@@ -33,7 +32,7 @@ public class PlayerDataSaveEvent extends NoxPlayerDataEvent {
 	private static final HandlerList handlers = new HandlerList();
 
 	@Deprecated
-	public PlayerDataSaveEvent(NoxPlayerAdapter player, boolean honorCore) {
+	public PlayerDataSaveEvent(OldNoxPlayerAdapter player, boolean honorCore) {
 		super(player, honorCore);
 	}
 

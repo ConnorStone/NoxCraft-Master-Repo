@@ -36,7 +36,7 @@ import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.google.common.collect.MapMaker;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.OldNoxPlayer;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.events.CooldownExpireEvent;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.manager.old.CorePlayerManager;
@@ -50,7 +50,7 @@ public class OldCooldownHandler extends BukkitRunnable {
 		core = NoxCore.getInstance();
 	}
 
-	public synchronized void loadPlayer(NoxPlayerAdapter adapter) {
+	public synchronized void loadPlayer(OldNoxPlayerAdapter adapter) {
 		OldNoxPlayer player = adapter.getNoxPlayer();
 
 		cds.put(player.getName(), player.getCoolDowns());

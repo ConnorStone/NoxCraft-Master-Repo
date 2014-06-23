@@ -29,11 +29,11 @@ import java.util.Map;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.manager.old.BasePlayerManager;
 
-public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
+public class MMOPlayerManager extends BasePlayerManager<OldMMOPlayer> {
 	private static MMOPlayerManager instance;
 
 	private MMOPlayerManager() {
-		super(MMOPlayer.class);
+		super(OldMMOPlayer.class);
 	}
 
 	public static MMOPlayerManager getInstance() {
@@ -48,13 +48,13 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	}
 
 	@Override
-	protected MMOPlayer craftNew(OldNoxPlayer noxPlayer) {
-		return new MMOPlayer(noxPlayer);
+	protected OldMMOPlayer craftNew(OldNoxPlayer noxPlayer) {
+		return new OldMMOPlayer(noxPlayer);
 	}
 
 	@Override
-	protected Map<String, MMOPlayer> craftNewStorage() {
-		return new HashMap<String, MMOPlayer>();
+	protected Map<String, OldMMOPlayer> craftNewStorage() {
+		return new HashMap<String, OldMMOPlayer>();
 	}
 
 }

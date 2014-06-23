@@ -30,7 +30,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
@@ -67,7 +67,7 @@ public class CriticalHitPlayerAbility extends BasePlayerAbility implements IPass
 		if (!itemName.contains("SWORD") && !itemName.contains("AXE"))
 			return new AbilityResult(this, false);
 
-		MMOPlayer player = pm.getPlayer(getPlayer());
+		OldMMOPlayer player = pm.getPlayer(getPlayer());
 
 		if (player == null)
 			return new AbilityResult(this, false);

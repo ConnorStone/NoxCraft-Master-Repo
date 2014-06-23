@@ -16,8 +16,8 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~
 
-	public void load(Player player) {
-		load(player.getUniqueId());
+	public T load(Player player) {
+		return load(player.getUniqueId());
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,6 +36,14 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	public T getPlayer(Player player) {
 		return get(player.getUniqueId());
 	}
+
+	//~~~~~~~~~~~~~~~~~~
+	//Instanced: Helpers
+	//~~~~~~~~~~~~~~~~~~
+
+	public T loadPlayer(Player player) { return load(player); }
+
+	public T loadPlayer(UUID playerUUID) { return load(playerUUID); }
 
 	//~~~~~~~~~~~~~~~~~~~~~~~
 	//Static Methods

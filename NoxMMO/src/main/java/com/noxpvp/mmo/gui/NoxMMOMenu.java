@@ -33,7 +33,7 @@ import org.bukkit.util.Vector;
 import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.locale.MMOLocale;
 
@@ -50,7 +50,7 @@ public class NoxMMOMenu extends CoreBox {
 		super(p, MMOLocale.GUI_MENU_NAME_COLOR.get() + MENU_NAME, size, backButton);	
 		
 		Inventory box = getBox();
-		MMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(p);
+		OldMMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(p);
 		
 		//Set up items
 		CoreBoxRegion links = new CoreBoxRegion(this, new Vector(0, 0, 3), 0, 3);

@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +42,6 @@ import org.bukkit.util.Vector;
 import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.locale.MMOLocale;
@@ -93,7 +93,7 @@ public class ClassChooseMenu extends CoreBox {
 
 						return true;
 					} else {
-						MMOPlayer mmoPlayer;
+						OldMMOPlayer mmoPlayer;
 						if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(getPlayer())) != null) {
 							mmoPlayer.setSecondaryClass(getPlayerClass());
 							hide();

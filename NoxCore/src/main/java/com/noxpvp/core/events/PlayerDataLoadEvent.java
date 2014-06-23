@@ -23,9 +23,8 @@
 
 package com.noxpvp.core.events;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.event.HandlerList;
-
-import com.noxpvp.core.data.NoxPlayerAdapter;
 
 @Deprecated
 public class PlayerDataLoadEvent extends NoxPlayerDataEvent {
@@ -33,12 +32,12 @@ public class PlayerDataLoadEvent extends NoxPlayerDataEvent {
 	private boolean isOverwriting;
 
 	@Deprecated
-	public PlayerDataLoadEvent(NoxPlayerAdapter player, boolean honorCore) {
+	public PlayerDataLoadEvent(OldNoxPlayerAdapter player, boolean honorCore) {
 		this(player, honorCore, true);
 	}
 
 	@Deprecated
-	public PlayerDataLoadEvent(NoxPlayerAdapter player, boolean honorCore, boolean shouldOverwrite) {
+	public PlayerDataLoadEvent(OldNoxPlayerAdapter player, boolean honorCore, boolean shouldOverwrite) {
 		super(player, honorCore);
 		this.isOverwriting = shouldOverwrite;
 	}

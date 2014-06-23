@@ -23,12 +23,12 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDamageEvent;
 
-import com.noxpvp.core.data.NoxPlayerAdapter;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
@@ -84,7 +84,7 @@ public class SuperBreakerPlayerAbility extends BasePlayerAbility {
 		};
 	}
 
-	public SuperBreakerPlayerAbility(NoxPlayerAdapter adapt) {
+	public SuperBreakerPlayerAbility(OldNoxPlayerAdapter adapt) {
 		this(adapt.getNoxPlayer().getPlayer());
 	}
 

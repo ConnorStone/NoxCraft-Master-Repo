@@ -1,17 +1,44 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.data;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.Persistent;
+import com.noxpvp.core.data.player.CorePlayerStats;
 import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.CoreBoard;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class NoxPlayer implements Persistent {
+public class NoxPlayer implements PluginPlayer, Persistent {
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
@@ -22,8 +49,7 @@ public class NoxPlayer implements Persistent {
 	private List<CoolDown> cds;
 	private ConfigurationNode temp_data;
 	private CoreBoard coreBoard;
-	private NoxCore core;
-	private PlayerStats stats;
+	private CorePlayerStats stats;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -67,6 +93,33 @@ public class NoxPlayer implements Persistent {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods.
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public NoxCore getPlugin() { return NoxCore.getInstance(); }
+
+	public UUID getPlayerUUID() { return getPersistantID(); }
+
+
+	public CorePlayerStats getStats() {
+		return stats;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <hr/>
+	 * <p>If the player is not online. It will return the last known username of the player.</p>
+	 *
+	 * @return current player name or last known one. If known was ever known it will return null.
+	 */
+	public String getPlayerName() {
+		String name = null;
+		if (isOnline()) name = ((Player)getOfflinePlayer()).getName();
+		List<String> names = getStats().getUsedIGNs();
+		if (name == null && names.size() > 0) name = names.get(0);
+
+		return name;
+	}
+
+	public boolean isOnline() { return Bukkit.getOfflinePlayer(getPlayerUUID()).isOnline(); }
 
 	public CoreBoard getCoreBoard() {
 		return coreBoard;
@@ -127,11 +180,11 @@ public class NoxPlayer implements Persistent {
 		if (cd != null && coreTimer) {
 			ChatColor cdNameColor, cdCDColor;
 			try {
-				cdNameColor = ChatColor.valueOf(core.getCoreConfig().get(
+				cdNameColor = ChatColor.valueOf(getPlugin().getCoreConfig().get(
 						"gui.coreboard.cooldowns.name-color",
 						String.class,
 						"&e"));
-				cdCDColor = ChatColor.valueOf(core.getCoreConfig().get(
+				cdCDColor = ChatColor.valueOf(getPlugin().getCoreConfig().get(
 						"gui.coreboard.cooldowns.time-color",
 						String.class,
 						"&a"));
@@ -187,6 +240,14 @@ public class NoxPlayer implements Persistent {
 		cd_cache.remove(name);
 	}
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced: Helpers
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public OfflinePlayer getOfflinePlayer() {
+		return Bukkit.getOfflinePlayer(getPlayerUUID());
+	}
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Serialization
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,5 +265,4 @@ public class NoxPlayer implements Persistent {
 	public static NoxPlayer valueOf(Map<String, Object> data) {
 		return new NoxPlayer(UUID.fromString((String) data.get("uuid")));
 	}
-
 }

@@ -24,7 +24,7 @@
 package com.noxpvp.core;
 
 import com.bergerkiller.bukkit.common.proxies.Proxy;
-import com.noxpvp.core.data.BaseNoxPlayerAdapter;
+import com.noxpvp.core.data.OldBaseNoxPlayerAdapter;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -72,7 +72,7 @@ public class ProxyTests {
 
 	@Test
 	public void checkNoxPlayerAdapter() throws Exception {
-		assertTrue(checkClass(BaseNoxPlayerAdapter.class));
+		assertTrue(checkClass(OldBaseNoxPlayerAdapter.class));
 	}
 
 }

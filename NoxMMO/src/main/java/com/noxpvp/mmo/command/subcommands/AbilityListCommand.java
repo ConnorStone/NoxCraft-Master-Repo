@@ -23,13 +23,13 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
+import com.noxpvp.mmo.OldMMOPlayer;
 import org.bukkit.ChatColor;
 
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.utils.NoxMessageBuilder;
-import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.Ability;
@@ -54,7 +54,7 @@ public class AbilityListCommand extends BaseCommand {
 	public CommandResult execute(CommandContext context)
 			throws NoPermissionException {
 
-		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin()).commandHeader("Ability List", true);
 
 		for (Ability ability : player.getAllAbilities()) {

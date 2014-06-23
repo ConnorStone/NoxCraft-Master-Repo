@@ -23,21 +23,20 @@
 
 package com.noxpvp.core.events;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import com.noxpvp.core.data.NoxPlayerAdapter;
 
 @Deprecated
 public class NoxPlayerDataEvent extends Event {
 	@Deprecated
 	private static final HandlerList handlers = new HandlerList();
-	private final NoxPlayerAdapter player;
+	private final OldNoxPlayerAdapter player;
 	private boolean shouldHonorCore;
 
 	@Deprecated
-	public NoxPlayerDataEvent(NoxPlayerAdapter player, boolean honorCore) {
+	public NoxPlayerDataEvent(OldNoxPlayerAdapter player, boolean honorCore) {
 		this.player = player;
 		this.shouldHonorCore = honorCore;
 	}
@@ -58,7 +57,7 @@ public class NoxPlayerDataEvent extends Event {
 	}
 
 	@Deprecated
-	public NoxPlayerAdapter getPlayer() {
+	public OldNoxPlayerAdapter getPlayer() {
 		return player;
 	}
 

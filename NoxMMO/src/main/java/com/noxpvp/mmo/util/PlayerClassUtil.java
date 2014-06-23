@@ -4,11 +4,9 @@ import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.reflection.SafeConstructor;
 import com.bergerkiller.bukkit.common.reflection.SafeField;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.google.common.collect.MapMaker;
-import com.noxpvp.core.collection.DualAccessMap;
 import com.noxpvp.core.collection.DualAccessStringMap;
 import com.noxpvp.core.utils.UUIDUtil;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.AxesPlayerClass;
@@ -43,7 +41,7 @@ public class PlayerClassUtil {
 		return getClass(clazz, MMOPlayerManager.getInstance().getPlayer(player));
 	}
 
-	public static PlayerClass getClass(String clazz, MMOPlayer player) {
+	public static PlayerClass getClass(String clazz, OldMMOPlayer player) {
 		if (!hasClass(clazz)) return null;
 
 		return constructUtil.safeConstructClass(clazz, player.getPlayer());
@@ -63,7 +61,7 @@ public class PlayerClassUtil {
 	 *
 	 * This will include any classes they do not have access to but have data stored in them.
 	 *
-	 * @see #getAllPlayerClasses(MMOPlayer)
+	 * @see #getAllPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
 	 *
 	 * @param player
 	 * @return List of classes
@@ -77,10 +75,10 @@ public class PlayerClassUtil {
 	 *
 	 * This will include any classes they do not have access to but have data stored in them.
 	 *
-	 * @param player MMOPlayer object.
+	 * @param player OldMMOPlayer object.
 	 * @return List of classes or null if (player == null)
 	 */
-	public static List<PlayerClass> getAllPlayerClasses(MMOPlayer player) {
+	public static List<PlayerClass> getAllPlayerClasses(OldMMOPlayer player) {
 		if (player == null) return null;
 //		List<PlayerClass> ret = player.getClasses(); //Can be empty if they don't have any classes.
 
@@ -93,7 +91,7 @@ public class PlayerClassUtil {
 	 *
 	 * This will not include any classes they cannot access. Even if data is present for it.
 	 *
-	 * @see #getAllowedPlayerClasses(com.noxpvp.mmo.MMOPlayer)
+	 * @see #getAllowedPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
 	 *
 	 * @param player the player to grab the classes from.
 	 * @return List of classes or null if (player == null)
@@ -112,7 +110,7 @@ public class PlayerClassUtil {
 	 * @param player the player to grab the classes from.
 	 * @return List of classes or null if (player == null)
 	 */
-	public static List<PlayerClass> getAllowedPlayerClasses(MMOPlayer player) {
+	public static List<PlayerClass> getAllowedPlayerClasses(OldMMOPlayer player) {
 		if (player == null) return null;
 		List<PlayerClass> ret = constructUtil.getAllClasses(player.getPlayer());
 		filterAllowedClasses(ret);
@@ -151,7 +149,7 @@ public class PlayerClassUtil {
 	/**
 	 * Retrieves all classes that may be saved to data.
 	 *
-	 * @see #getAllChangedPlayerClasses(com.noxpvp.mmo.MMOPlayer)
+	 * @see #getAllChangedPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
 	 *
 	 * @param player player to grab classes from
 	 * @return List of player class objects.
@@ -168,7 +166,7 @@ public class PlayerClassUtil {
 	 * @param player player to grab classes from
 	 * @return List of player class objects.
 	 */
-	public static List<PlayerClass> getAllChangedPlayerClasses(MMOPlayer player) {
+	public static List<PlayerClass> getAllChangedPlayerClasses(OldMMOPlayer player) {
 		List<PlayerClass> ret = getAllPlayerClasses(player);
 
 		filterChangedClasses(ret);
@@ -385,7 +383,7 @@ public class PlayerClassUtil {
 
 		private PlayerClass safeConstructClass(Class c, String playerIdentifier) {
 			String classID = getClassIDbyClass(c);
-			MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(playerIdentifier);
+			OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(playerIdentifier);
 			Map<String, PlayerClass> classes = player.getClassMap();
 			if (classID != null) {
 				if (classes.containsKey(classID))

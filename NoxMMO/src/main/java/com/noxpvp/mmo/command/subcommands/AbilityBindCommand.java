@@ -31,7 +31,7 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.gui.QuestionBox;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.AbilityCycler;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.Ability;
@@ -56,7 +56,7 @@ public class AbilityBindCommand extends BaseCommand {
 
 	@Override
 	public CommandResult execute(CommandContext context) throws NoPermissionException {
-		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 
 		final Player player = context.getPlayer();
 		final ItemStack currentItem = player.getItemInHand();

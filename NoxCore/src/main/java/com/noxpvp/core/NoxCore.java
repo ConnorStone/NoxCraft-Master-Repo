@@ -61,7 +61,7 @@ import com.dsh105.holoapi.HoloAPICore;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.commands.NoxCommand;
 import com.noxpvp.core.commands.ReloadCommand;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.listeners.ChatPingListener;
@@ -283,8 +283,8 @@ public class NoxCore extends NoxPlugin {
 		Conversion.register(new BasicConverter<OldNoxPlayer>(OldNoxPlayer.class) {
 			@Override
 			protected OldNoxPlayer convertSpecial(Object object, Class<?> obType, OldNoxPlayer def) {
-				if (object instanceof NoxPlayerAdapter)
-					return ((NoxPlayerAdapter) object).getNoxPlayer();
+				if (object instanceof OldNoxPlayerAdapter)
+					return ((OldNoxPlayerAdapter) object).getNoxPlayer();
 				return def;
 			}
 		});

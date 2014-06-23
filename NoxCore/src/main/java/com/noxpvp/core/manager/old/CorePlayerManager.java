@@ -41,7 +41,7 @@ import org.bukkit.util.FileUtil;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.utils.UUIDUtil;
 
 public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implements OldPersistant {
@@ -102,7 +102,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	}
 
 	@Override
-	protected OldNoxPlayer craftNew(NoxPlayerAdapter adapter) {
+	protected OldNoxPlayer craftNew(OldNoxPlayerAdapter adapter) {
 		return adapter.getNoxPlayer();
 	}
 

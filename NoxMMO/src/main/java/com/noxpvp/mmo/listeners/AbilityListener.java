@@ -23,15 +23,14 @@
 
 package com.noxpvp.mmo.listeners;
 
+import com.noxpvp.mmo.OldMMOPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.core.utils.PrismUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
@@ -87,7 +86,7 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 			return;
 		
 		Player p = event.getPlayer();
-		MMOPlayer mp = pm.getPlayer(p);
+		OldMMOPlayer mp = pm.getPlayer(p);
 		BaseEntityAbility ab = event.getAbility();
 		AbilityResult result = event.getResult();
 		
@@ -130,7 +129,7 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerTargetedAbilityExecuted(PlayerTargetedAbilityExecutedEvent event) {
 		Player p = event.getPlayer();
-		MMOPlayer mp = pm.getPlayer(p);
+		OldMMOPlayer mp = pm.getPlayer(p);
 		BaseTargetedPlayerAbility ab = event.getAbility();
 		AbilityResult result = event.getResult();
 		

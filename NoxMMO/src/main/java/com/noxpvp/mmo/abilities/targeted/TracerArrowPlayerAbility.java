@@ -34,7 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
@@ -56,7 +56,7 @@ public class TracerArrowPlayerAbility extends BaseTargetedPlayerAbility implemen
 	 * @return boolean If the execution ran successfully
 	 */
 	public static boolean eventExecute(Player player, final Arrow arrow) {
-		MMOPlayer mmoP = MMOPlayerManager.getInstance().getPlayer(player);
+		OldMMOPlayer mmoP = MMOPlayerManager.getInstance().getPlayer(player);
 		String name = player.getName();
 
 		if (abilityCue.containsKey(name))

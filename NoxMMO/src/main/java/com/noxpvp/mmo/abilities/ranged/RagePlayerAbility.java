@@ -35,7 +35,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.noxpvp.core.effect.StaticEffects;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
@@ -108,7 +108,7 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 					StaticEffects.SkullBreak((LivingEntity) it);
 					
 					if (it instanceof Player) {
-						MMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(getPlayer());
+						OldMMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(getPlayer());
 						MessageUtil.sendLocale((Player) it, MMOLocale.ABIL_HIT_ATTACKER_DAMAGED,
 								mp.getFullName(), getDisplayName(), String.format("%.2f", newDamage));
 						

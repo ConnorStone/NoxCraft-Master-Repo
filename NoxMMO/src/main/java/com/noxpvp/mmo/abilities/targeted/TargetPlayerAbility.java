@@ -34,7 +34,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.noxpvp.core.data.Vector3D;
 import com.noxpvp.core.gui.corebar.LivingEntityTracker;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
@@ -90,7 +90,7 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 				this.target_ref = new SoftReference<LivingEntity>((LivingEntity) it);
 
 				MMOPlayerManager pm = MMOPlayerManager.getInstance();
-				MMOPlayer mmoPlayer = pm.getPlayer(p), mmoIt = it instanceof Player ? pm.getPlayer((Player) it) : null;
+				OldMMOPlayer mmoPlayer = pm.getPlayer(p), mmoIt = it instanceof Player ? pm.getPlayer((Player) it) : null;
 
 				if (mmoPlayer == null)
 					return new AbilityResult(this, false);

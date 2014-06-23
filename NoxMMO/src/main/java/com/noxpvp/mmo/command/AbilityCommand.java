@@ -31,7 +31,7 @@ import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.commands.SafeNullPointerException;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.Ability;
@@ -69,7 +69,7 @@ public class AbilityCommand extends BaseCommand {
 
 		String abilityName = StringUtil.join(" ", context.getArguments());
 
-		MMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		OldMMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 
 		if (mPlayer == null)
 			return new CommandResult(this, true, new MessageBuilder().red("mPlayer object is null!").lines());

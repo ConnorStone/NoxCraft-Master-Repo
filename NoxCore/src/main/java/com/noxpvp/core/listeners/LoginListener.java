@@ -35,7 +35,7 @@ import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
 import com.noxpvp.core.gui.corebar.FlashingNotification;
 //import com.noxpvp.core.gui.corebar.ScrollingText;
-import com.noxpvp.core.manager.old.CorePlayerManager;
+import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.UUIDUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
@@ -59,8 +59,7 @@ public class LoginListener extends NoxListener<NoxCore> {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onLogin(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
-		UUIDUtil.getInstance().ensurePlayerUUIDsByName(UUIDUtil.toList(p.getName()));
-		CorePlayerManager.getInstance().getPlayer(p);
+//		CorePlayerManager.getInstance().getPlayer(p);
 
 		VaultAdapter.GroupUtils.reloadGroupTag(p);
 		new FlashingNotification(p, ChatColor.stripColor(loginMessage), 300);
@@ -73,14 +72,14 @@ public class LoginListener extends NoxListener<NoxCore> {
 			CommonUtil.nextTick(new Runnable() {
 				public void run() {
 					CorePlayerManager pm = CorePlayerManager.getInstance();
-					if (pm.isLoaded(event.getUsername()))
-						pm.loadPlayer(event.getUsername());
+					if (pm.isLoaded(event.getUUID()))
+						pm.loadPlayer(event.getUUID());
 				}
 			});
 		} else {
 			CorePlayerManager pm = CorePlayerManager.getInstance();
-			if (pm.isLoaded(event.getUsername()))
-				pm.loadPlayer(event.getUsername());
+			if (pm.isLoaded(event.getUUID()))
+				pm.loadPlayer(event.getUUID());
 		}
 	}
 

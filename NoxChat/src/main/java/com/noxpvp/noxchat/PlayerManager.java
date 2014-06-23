@@ -31,12 +31,12 @@ import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.manager.old.BasePlayerManager;
 
-public class PlayerManager extends BasePlayerManager<ChatPlayer> {
+public class PlayerManager extends BasePlayerManager<OldChatPlayer> {
 	private static PlayerManager instance;
 	private static ModuleLogger log;
 
 	private PlayerManager() {
-		super(ChatPlayer.class);
+		super(OldChatPlayer.class);
 	}
 
 	public static PlayerManager getInstance() {
@@ -49,13 +49,13 @@ public class PlayerManager extends BasePlayerManager<ChatPlayer> {
 	}
 
 	@Override
-	protected ChatPlayer craftNew(String name) {
-		return new ChatPlayer(name);
+	protected OldChatPlayer craftNew(String name) {
+		return new OldChatPlayer(name);
 	}
 
 	@Override
-	protected Map<String, ChatPlayer> craftNewStorage() {
-		return new HashMap<String, ChatPlayer>();
+	protected Map<String, OldChatPlayer> craftNewStorage() {
+		return new HashMap<String, OldChatPlayer>();
 	}
 
 	public NoxPlugin getPlugin() {
@@ -67,8 +67,8 @@ public class PlayerManager extends BasePlayerManager<ChatPlayer> {
 	}
 
 	@Override
-	protected ChatPlayer craftNew(OldNoxPlayer player) {
-		return new ChatPlayer(player);
+	protected OldChatPlayer craftNew(OldNoxPlayer player) {
+		return new OldChatPlayer(player);
 	}
 
 }

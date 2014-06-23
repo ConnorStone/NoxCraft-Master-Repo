@@ -25,25 +25,25 @@ package com.noxpvp.noxchat;
 
 import java.util.List;
 
+import com.noxpvp.core.data.OldBaseNoxPlayerAdapter;
 import org.bukkit.OfflinePlayer;
 
-import com.noxpvp.core.data.BaseNoxPlayerAdapter;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
-public class ChatPlayer extends BaseNoxPlayerAdapter implements Targetable {
+public class OldChatPlayer extends OldBaseNoxPlayerAdapter implements Targetable {
 
 	private Targetable target;
 	private List<String> mutes;
 
-	public ChatPlayer(NoxPlayerAdapter player) {
+	public OldChatPlayer(OldNoxPlayerAdapter player) {
 		super(player);
 	}
 
-	public ChatPlayer(OfflinePlayer player) {
+	public OldChatPlayer(OfflinePlayer player) {
 		super(player);
 	}
-	public ChatPlayer(String name) {
+	public OldChatPlayer(String name) {
 		super(name);
 	}
 
@@ -84,7 +84,7 @@ public class ChatPlayer extends BaseNoxPlayerAdapter implements Targetable {
 	}
 
 	public boolean isMuted(Targetable target) {
-		if (!(target instanceof ChatPlayer))
+		if (!(target instanceof OldChatPlayer))
 			return false;
 
 		return mutes.contains(target.getName());

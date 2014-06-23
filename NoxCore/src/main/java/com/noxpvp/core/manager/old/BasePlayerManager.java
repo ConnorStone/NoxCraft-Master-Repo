@@ -25,6 +25,7 @@ package com.noxpvp.core.manager.old;
 
 import java.util.Map;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.utils.UUIDUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -33,9 +34,8 @@ import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.data.OldNoxPlayer;
-import com.noxpvp.core.data.NoxPlayerAdapter;
 
-public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements IPlayerManager<T> {
+public abstract class BasePlayerManager<T extends OldNoxPlayerAdapter> implements IPlayerManager<T> {
 	private Map<String, T> uid_players;
 	private Map<String, T> name_players;
 
@@ -50,7 +50,7 @@ public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements I
 		CorePlayerManager.addManager(this);
 	}
 
-	protected T craftNew(NoxPlayerAdapter adapter) {
+	protected T craftNew(OldNoxPlayerAdapter adapter) {
 		return craftNew(adapter.getNoxPlayer());
 	}
 
@@ -111,7 +111,7 @@ public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements I
 		return player;
 	}
 
-	public T getPlayer(NoxPlayerAdapter adapt) { //TODO: remove duplicate code ID(gp1)
+	public T getPlayer(OldNoxPlayerAdapter adapt) { //TODO: remove duplicate code ID(gp1)
 		return getPlayer(adapt.getNoxPlayer());
 	}
 

@@ -21,15 +21,28 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.events;
+package com.noxpvp.core.data;
 
-import com.noxpvp.core.data.OldNoxPlayerAdapter;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.Persistent;
+import org.bukkit.OfflinePlayer;
 
-@Deprecated
-public class PlayerDataUnloadEvent extends NoxPlayerDataEvent {
+import java.util.UUID;
 
-	@Deprecated
-	public PlayerDataUnloadEvent(OldNoxPlayerAdapter player, boolean honorCore) {
-		super(player, honorCore);
-	}
+public interface PluginPlayer <T extends NoxPlugin> {
+	public T getPlugin();
+
+	public boolean isOnline();
+
+	public UUID getPlayerUUID();
+
+	/**
+	 * Retrieves the player's name.
+	 * <p>By Definition this should be returning the current player name. However this is not promised.</p>
+	 * @return String Player's Name.
+	 */
+	public String getPlayerName();
+
+	public OfflinePlayer getOfflinePlayer();
+
 }

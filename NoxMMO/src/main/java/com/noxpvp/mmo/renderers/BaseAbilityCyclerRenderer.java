@@ -25,7 +25,6 @@ package com.noxpvp.mmo.renderers;
 
 import com.noxpvp.core.runners.RenderRunner;
 import com.noxpvp.mmo.AbilityCycler;
-import com.noxpvp.mmo.MMOPlayer;
 
 public abstract class BaseAbilityCyclerRenderer extends RenderRunner {
 

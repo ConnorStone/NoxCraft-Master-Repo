@@ -36,7 +36,7 @@ import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.internal.IHeated;
 import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.events.PlayerAbilityPreExecuteEvent;
@@ -89,7 +89,7 @@ public abstract class BasePlayerAbility extends BaseEntityAbility implements IPl
 		if (player == null || !player.isOnline() || !hasPermission())
 			return false;
 		
-		MMOPlayer p;
+		OldMMOPlayer p;
 		if (this instanceof IHeated && (p = pm.getPlayer(player)).isCooldownActive(getName())) {
 			if (!(this instanceof SilentAbility))
 				MessageUtil.sendLocale(player, MMOLocale.ABIL_ON_COOLDOWN, getName(), p.getReadableRemainingCDTime(getName()));

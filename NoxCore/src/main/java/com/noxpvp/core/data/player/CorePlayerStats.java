@@ -17,6 +17,7 @@ public class CorePlayerStats extends PlayerStats {
 
 	private static final String IPS_KEY = "logged-ips";
 	private static final String LAST_DEATH_KEY = "last-death";
+	private static final String USED_IGN_KEY = "used-igns";
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
@@ -24,6 +25,7 @@ public class CorePlayerStats extends PlayerStats {
 
 	private DeathEntry lastDeath;
 	private List<String> loggedIps = new ArrayList<String>();
+	private List<String> usedIGNs = new ArrayList<String>();
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -34,6 +36,7 @@ public class CorePlayerStats extends PlayerStats {
 
 		if (data.containsKey(IPS_KEY)) loggedIps = (List<String>) Conversion.toList.convertSpecial(data.get(IPS_KEY), String.class, new ArrayList<String>());
 		if (data.containsKey(LAST_DEATH_KEY)) lastDeath = (DeathEntry) data.get(LAST_DEATH_KEY);
+		if (data.containsKey(USED_IGN_KEY)) usedIGNs = (List<String>) Conversion.toList.convertSpecial(data.get(USED_IGN_KEY), String.class, new ArrayList<String>());
 	}
 
 	public CorePlayerStats(Player player) {
@@ -44,8 +47,18 @@ public class CorePlayerStats extends PlayerStats {
 		super(uuid);
 	}
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods:
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	public List<String> getUsedIPs() {
 		return Collections.unmodifiableList(loggedIps);
+	}
+
+	public List<String> getUsedIGNs() { return Collections.unmodifiableList(usedIGNs); }
+
+	public DeathEntry getLastDeath() {
+		return lastDeath;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,6 +71,7 @@ public class CorePlayerStats extends PlayerStats {
 
 		data.put(IPS_KEY, getUsedIPs());
 		data.put(LAST_DEATH_KEY, getLastDeath());
+		data.put(USED_IGN_KEY, getUsedIGNs());
 
 		return data;
 	}
@@ -66,7 +80,4 @@ public class CorePlayerStats extends PlayerStats {
 		return "Core";
 	}
 
-	public DeathEntry getLastDeath() {
-		return lastDeath;
-	}
 }

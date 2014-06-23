@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
@@ -107,7 +107,7 @@ public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 			if (pl == p)
 				continue;
 
-			MMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(pl);
+			OldMMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(pl);
 			dLoc = mmop.getLastDeathLocation();
 
 			if (dLoc == null || dLoc.distance(pLoc) > getRange()) continue;

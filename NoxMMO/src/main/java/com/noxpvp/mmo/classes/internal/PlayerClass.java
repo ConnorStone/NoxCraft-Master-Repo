@@ -56,7 +56,7 @@ import com.noxpvp.core.annotation.Temporary;
 import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.Ability;
@@ -403,7 +403,7 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 		return identifyingItem.clone();
 	}
 
-	public final MMOPlayer getMMOPlayer() {
+	public final OldMMOPlayer getMMOPlayer() {
 		Player p = getPlayer();
 		if (p != null) return MMOPlayerManager.getInstance().getPlayer(p);
 		return MMOPlayerManager.getInstance().getPlayer(getPlayerIdentifier());
@@ -484,7 +484,7 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 	public void setCurrentTier(int tierLevel) {
 		cTierLevel = tierLevel;
 
-		MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(getPlayer());
+		OldMMOPlayer p = MMOPlayerManager.getInstance().getPlayer(getPlayer());
 		if (p.getPrimaryClass() == this)
 			p.getPlayer().setMaxHealth(getTier().getMaxHealth());
 

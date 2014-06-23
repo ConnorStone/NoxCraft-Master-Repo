@@ -26,11 +26,11 @@ package com.noxpvp.mmo.filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.filtering.Filter;
-import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 
@@ -64,7 +64,7 @@ public class PlayerClassIdentifierFilter implements Filter<Player> {
 	}
 
 	public boolean isFiltered(Player player) {
-		MMOPlayer mPlayer = getMMOPlayer(player);
+		OldMMOPlayer mPlayer = getMMOPlayer(player);
 
 		IPlayerClass mainClass = mPlayer.getPrimaryClass();
 		IPlayerClass subClass = mPlayer.getSecondaryClass();
@@ -77,7 +77,7 @@ public class PlayerClassIdentifierFilter implements Filter<Player> {
 		return inverse;
 	}
 
-	private static MMOPlayer getMMOPlayer(Player player) {
+	private static OldMMOPlayer getMMOPlayer(Player player) {
 		return MMOPlayerManager.getInstance().getPlayer(player);
 	}
 }

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
+import com.noxpvp.core.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
@@ -47,9 +48,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.bergerkiller.bukkit.common.AsyncTask;
 import com.google.common.collect.MapMaker;
-import com.noxpvp.core.data.BaseNoxPlayerAdapter;
-import com.noxpvp.core.data.Cycler;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.util.InventoryActionCombo;
@@ -60,18 +59,18 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 	public static final String TEMP_PCTK = "ability-cycler.active-count";
 	private static AsyncTask cleaner;
 	private static long cleaner_delay = 5000;
-	private static ConcurrentMap<MMOPlayer, List<Reference<OldAbilityCycler>>> d;
+	private static ConcurrentMap<OldMMOPlayer, List<Reference<OldAbilityCycler>>> d;
 	private static NoxListener<NoxMMO> iHeld, iMove, login;
 
 	protected final String player_name;
 
 	private ItemStack cycleItem;
 
-	private Reference<MMOPlayer> player;
+	private Reference<OldMMOPlayer> player;
 
-	public OldAbilityCycler(NoxPlayerAdapter adapter, Collection<Ability> data) {
+	public OldAbilityCycler(OldNoxPlayerAdapter adapter, Collection<Ability> data) {
 		super(data);
-		this.player = new SoftReference<MMOPlayer>(fetchMMOPlayer(adapter));
+		this.player = new SoftReference<OldMMOPlayer>(fetchMMOPlayer(adapter));
 		this.player_name = ((getMMOPlayer() != null) ? getMMOPlayer().getPlayerName() : null);
 		if (this.player_name == null)
 			throw new IllegalArgumentException("The player adapter is invalid and does not have a name. OR is non existant.");
@@ -79,9 +78,9 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 		register(this);
 	}
 
-	public OldAbilityCycler(NoxPlayerAdapter adapter, int size) {
+	public OldAbilityCycler(OldNoxPlayerAdapter adapter, int size) {
 		super(size);
-		this.player = new SoftReference<MMOPlayer>(fetchMMOPlayer(adapter));
+		this.player = new SoftReference<OldMMOPlayer>(fetchMMOPlayer(adapter));
 		this.player_name = ((getMMOPlayer() != null) ? getMMOPlayer().getPlayerName() : null);
 		if (this.player_name == null)
 			throw new IllegalArgumentException("The player adapter is invalid and does not have a name. OR is non existant.");
@@ -90,7 +89,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 	}
 
 	public static void register(OldAbilityCycler cycler) {
-		MMOPlayer p = cycler.getMMOPlayer();
+		OldMMOPlayer p = cycler.getMMOPlayer();
 		Reference<OldAbilityCycler> c = new WeakReference<OldAbilityCycler>(cycler);
 		if (p != null) {
 			if (d.containsKey(p) && d.get(p) != null) {
@@ -102,7 +101,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 		}
 	}
 
-	public static OldAbilityCycler getCycler(MMOPlayer p, ItemStack stack) {
+	public static OldAbilityCycler getCycler(OldMMOPlayer p, ItemStack stack) {
 		if (d.containsKey(p))
 			if (!d.get(p).isEmpty())
 				for (Iterator<Reference<OldAbilityCycler>> iterator = d.get(p).iterator(); iterator.hasNext(); ) {
@@ -179,8 +178,8 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 					first = false;
 				}
 
-				List<MMOPlayer> r = new ArrayList<MMOPlayer>();
-				for (MMOPlayer k : d.keySet())
+				List<OldMMOPlayer> r = new ArrayList<OldMMOPlayer>();
+				for (OldMMOPlayer k : d.keySet())
 					if (d.get(k).isEmpty())
 						r.add(k);
 					else {
@@ -213,7 +212,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 			@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 			public void onItemheld(PlayerItemHeldEvent event) {
 				Player p = event.getPlayer();
-				MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
+				OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
 
 
 				if (!d.containsKey(player))
@@ -269,7 +268,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 				if (!event.getInventory().getHolder().equals(p) && (event.getInventory().getHolder() instanceof Player))
 					p = (Player) event.getInventory().getHolder(); //Fixes things like openInventory plugin. If this is occuring. Not 100% sure.
 
-				MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
+				OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
 
 				ItemStack cursor = event.getCursor();
 				ItemStack clicked = event.getCurrentItem();
@@ -308,19 +307,19 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 		};
 	}
 
-	public static int getActiveCyclers(BaseNoxPlayerAdapter player) {
+	public static int getActiveCyclers(OldBaseNoxPlayerAdapter player) {
 		return player.getTempData().get(TEMP_PCTK, 0);
 	}
 
-	private static void addActiveCycler(BaseNoxPlayerAdapter player) {
+	private static void addActiveCycler(OldBaseNoxPlayerAdapter player) {
 		setActiveCyclers(player, getActiveCyclers(player) + 1);
 	}
 
-	private static void subActiveCycler(BaseNoxPlayerAdapter player) {
+	private static void subActiveCycler(OldBaseNoxPlayerAdapter player) {
 		setActiveCyclers(player, getActiveCyclers(player) - 1);
 	}
 
-	private static void setActiveCyclers(BaseNoxPlayerAdapter player, int active) {
+	private static void setActiveCyclers(OldBaseNoxPlayerAdapter player, int active) {
 		player.getTempData().set(TEMP_PCTK, active);
 	}
 
@@ -375,7 +374,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 		return current().getDisplayName();
 	}
 
-	public MMOPlayer getMMOPlayer() {
+	public OldMMOPlayer getMMOPlayer() {
 		return (player == null) ? null : player.get();
 	}
 
@@ -406,7 +405,7 @@ public class OldAbilityCycler extends Cycler<Ability> implements ConfigurationSe
 		return c.isSimilar(getCycleItem());
 	}
 
-	private MMOPlayer fetchMMOPlayer(NoxPlayerAdapter adapter) {
+	private OldMMOPlayer fetchMMOPlayer(OldNoxPlayerAdapter adapter) {
 		return MMOPlayerManager.getInstance().getPlayer(adapter);
 	}
 

@@ -32,7 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.OldMMOPlayer;
 import com.noxpvp.mmo.MMOPlayerManager;
 
 public class Party implements IParty {
@@ -52,7 +52,7 @@ public class Party implements IParty {
 	public Party(Player owner, @Nullable String name, @Nullable String pass) {
 		this.owner = owner.getName();
 
-		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(owner);
+		OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(owner);
 
 		partyData = player.getPersistantData().getNode("party");
 

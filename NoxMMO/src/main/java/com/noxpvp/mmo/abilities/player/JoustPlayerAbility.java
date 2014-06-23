@@ -49,7 +49,7 @@ public class JoustPlayerAbility extends BasePlayerAbility implements PVPAbility 
 
 		throw new NotImplementedException();
 
-//		MMOPlayer mmoP;
+//		OldMMOPlayer mmoP;
 //		PlayerClass clazz = (mmoP = PlayerManager.getInstance().getPlayer(getPlayer())) != null? mmoP.getPrimaryClass() : null;
 //		
 //		if (clazz == null) return false;

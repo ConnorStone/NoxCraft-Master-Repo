@@ -152,6 +152,10 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 			return load(arg);
 	}
 
+	public boolean isLoaded(UUID id) {
+		return loadedCache.containsKey(id);
+	}
+
 	public boolean isLoaded(T object) {
 		return loadedCache.containsValue(object);
 	}

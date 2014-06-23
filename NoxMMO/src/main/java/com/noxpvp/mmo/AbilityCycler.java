@@ -57,7 +57,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	static ConcurrentMap<String, List<AbilityCycler>> cyclers = null;
 	private static NoxListener<NoxMMO> iHeld = null, iInteract;
 	private ItemStack cycleItem;
-	private Reference<MMOPlayer> player = null;
+	private Reference<OldMMOPlayer> player = null;
 	private BaseAbilityCyclerRenderer renderer;
 	private int lastSlot = 0;
 
@@ -74,17 +74,17 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		this(data, MMOPlayerManager.getInstance().getPlayer(player), cycleItem);
 	}
 
-	public AbilityCycler(int size, MMOPlayer player, ItemStack cycleItem) {
+	public AbilityCycler(int size, OldMMOPlayer player, ItemStack cycleItem) {
 		super(size);
-		this.player = new SoftReference<MMOPlayer>(player);
+		this.player = new SoftReference<OldMMOPlayer>(player);
 		this.cycleItem = cycleItem;
 
 		register(this);
 	}
 
-	public AbilityCycler(Collection<Ability> data, MMOPlayer player, ItemStack cycleItem) {
+	public AbilityCycler(Collection<Ability> data, OldMMOPlayer player, ItemStack cycleItem) {
 		super(data);
-		this.player = new SoftReference<MMOPlayer>(player);
+		this.player = new SoftReference<OldMMOPlayer>(player);
 		this.cycleItem = cycleItem;
 		
 		register(this);
@@ -93,7 +93,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	public static void register(AbilityCycler cycler) {
 		Validate.notNull(cycler.getMMOPlayer());
 
-		MMOPlayer p = cycler.getMMOPlayer();
+		OldMMOPlayer p = cycler.getMMOPlayer();
 
 		final String identity = UUIDUtil.compressUUID(p.getUUID());
 		if (cyclers == null) cyclers = new MapMaker().concurrencyLevel(4).makeMap();
@@ -130,13 +130,13 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	}
 
 	public boolean isPlayerMatch(Object ob) {
-		if (!(ob instanceof OfflinePlayer || UUIDUtil.isUUID(ob) || ob instanceof MMOPlayer))
+		if (!(ob instanceof OfflinePlayer || UUIDUtil.isUUID(ob) || ob instanceof OldMMOPlayer))
 			return false;
 
 		if (UUIDUtil.isUUID(ob) && getMMOPlayer() != null)
 			return getMMOPlayer().getUUID().equals(UUIDUtil.toUUID(ob));
 
-		if (getMMOPlayer() != null && ob instanceof  MMOPlayer)
+		if (getMMOPlayer() != null && ob instanceof OldMMOPlayer)
 			return getMMOPlayer().equals(ob);
 
 		return false;
@@ -186,7 +186,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 				if (!player.isSneaking())
 					return;
 
-				final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+				final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 				if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
 
@@ -224,7 +224,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 					final Player player = event.getPlayer();
 					final String identity = UUIDUtil.compressUUID(player.getUniqueId());
 
-					final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+					final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 					if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
 
@@ -294,7 +294,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		if (id == null || cycleItem == null || LogicUtil.nullOrEmpty(abilityNames))
 			return null;
 
-		MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+		OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 		List<Ability> abilities = new ArrayList<Ability>();
 
@@ -322,7 +322,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		return ret;
 	}
 
-	public MMOPlayer getMMOPlayer() {
+	public OldMMOPlayer getMMOPlayer() {
 		if (player != null) return player.get();
 		return null;
 	}

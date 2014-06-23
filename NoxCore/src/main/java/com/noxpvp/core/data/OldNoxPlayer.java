@@ -60,7 +60,7 @@ import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.UUIDUtil;
 
-public class OldNoxPlayer implements OldPersistant, NoxPlayerAdapter {
+public class OldNoxPlayer implements OldPersistant, OldNoxPlayerAdapter {
 
 	private final PermissionHandler permHandler;
 	private WeakHashMap<String, CoolDown> cd_cache;

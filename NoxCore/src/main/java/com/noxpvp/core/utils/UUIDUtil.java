@@ -151,12 +151,12 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	private void mapID(String username, UUID id) {
-		if ((name2UUID.containsKey(username) || name2UUID.get(username) == ZERO_UUID) && !name2UUID.get(username).equals(id)) {
+		if ((!name2UUID.containsKey(username) || name2UUID.get(username).equals(ZERO_UUID)) && !name2UUID.get(username).equals(id)) {
 			CommonUtil.callEvent(new NoxUUIDLostEvent(username, name2UUID.get(username)));
 			name2UUID.remove(username);
 		}
 
-		if (!name2UUID.containsKey(username) || name2UUID.get(username) == ZERO_UUID) {
+		if (!name2UUID.containsKey(username) || name2UUID.get(username).equals(ZERO_UUID)) {
 			name2UUID.put(username, id);
 			CommonUtil.callEvent(new NoxUUIDFoundEvent(username, id));
 		}
@@ -242,6 +242,10 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	 */
 	public UUID tryGetID(Player player) {
 		String name = player.getName();
+		UUID puid = player.getUniqueId();
+		if (puid != null && name2UUID.containsKey(name) && !name2UUID.get(name).equals(puid))
+			mapID(name, puid);
+
 		if (name2UUID.containsKey(name)) {
 			UUID id = name2UUID.get(name);
 			return (id == ZERO_UUID) ? null : id;
@@ -249,7 +253,7 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 			if (Bukkit.isPrimaryThread()) {
 				UUID id = player.getUniqueId();
 				if (id != null) {
-					name2UUID.put(name, id);
+					mapID(name, id);
 					return id;
 				}
 			}
@@ -261,7 +265,14 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event) {
-		ensurePlayerUUIDByName(event.getPlayer().getName());
+		final Player p = event.getPlayer();
+		if (p.getUniqueId() != null) {
+			UUID uuid = tryGetID(p);
+			if (uuid != null && !uuid.equals(ZERO_UUID))
+				mapID(p.getName(), uuid);
+		}
+		else ensurePlayerUUIDsByName(toList(p.getName()));
+
 	}
 
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.MONITOR)
