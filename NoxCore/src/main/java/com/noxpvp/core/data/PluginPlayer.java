@@ -24,7 +24,6 @@
 package com.noxpvp.core.data;
 
 import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.Persistent;
 import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
