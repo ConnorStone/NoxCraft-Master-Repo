@@ -16,8 +16,24 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~
 
+	public void save(Player player) {
+		super.save(player.getUniqueId());
+	}
+
+	@Override
+	public void save(UUID id) {
+		if (Bukkit.getOfflinePlayer(id).isOnline()) save(Bukkit.getPlayer(id));
+		else super.save(id);
+	}
+
 	public T load(Player player) {
-		return load(player.getUniqueId());
+		return super.load(player.getUniqueId());
+	}
+
+	@Override
+	public T load(UUID playerID) {
+		if (Bukkit.getOfflinePlayer(playerID).isOnline()) return load(Bukkit.getPlayer(playerID)); //If player is online. We would rather use player functions to auto update data.
+		else return super.load(playerID);
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,6 +60,10 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	public T loadPlayer(Player player) { return load(player); }
 
 	public T loadPlayer(UUID playerUUID) { return load(playerUUID); }
+
+	public void savePlayer(UUID playerUUID) { save(playerUUID);}
+
+	public void savePlayer(Player player) { save(player); }
 
 	//~~~~~~~~~~~~~~~~~~~~~~~
 	//Static Methods

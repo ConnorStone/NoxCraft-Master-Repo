@@ -193,6 +193,11 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		datafile.save();
 	}
 
+	public void save(UUID id) {
+		T object = getIfLoaded(id);
+		if (object != null) save(object);
+	}
+
 	public void save(T object) {
 		save(object, object.getPersistantID());
 	}

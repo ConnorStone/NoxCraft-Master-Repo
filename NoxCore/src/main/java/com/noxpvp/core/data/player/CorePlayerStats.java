@@ -2,6 +2,7 @@ package com.noxpvp.core.data.player;
 
 import com.bergerkiller.bukkit.common.conversion.Conversion;
 import com.noxpvp.core.SafeLocation;
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.EntityType;
@@ -55,7 +56,34 @@ public class CorePlayerStats extends PlayerStats {
 		return Collections.unmodifiableList(loggedIps);
 	}
 
+
+	//~~~~~~~~~~~~~~~~
+	//IGN'S
+	//~~~~~~~~~~~~~~~~
+
 	public List<String> getUsedIGNs() { return Collections.unmodifiableList(usedIGNs); }
+
+	public String getLastIGN() {
+		if (usedIGNs.size() > 0) return usedIGNs.get(0);
+		else return null;
+	}
+
+	public void addLastIGN(Player player) {
+		Validate.isTrue(getPersistantID().equals(player.getUniqueId()), "Player does not match the ID of this stats handler. This is not the same player!");
+
+		addLastIGN(player.getName());
+	}
+
+	protected void addLastIGN(String name) {
+		Validate.notNull(name);
+
+		final String ign = getLastIGN();
+		if (ign == null || !ign.equals(name)) usedIGNs.add(0, name);
+	}
+
+	//~~~~~~~~~~~~~~~~
+	//Deaths
+	//~~~~~~~~~~~~~~~~
 
 	public DeathEntry getLastDeath() {
 		return lastDeath;
@@ -79,5 +107,4 @@ public class CorePlayerStats extends PlayerStats {
 	public String getType() {
 		return "Core";
 	}
-
 }
