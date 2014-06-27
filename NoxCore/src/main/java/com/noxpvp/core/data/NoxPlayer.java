@@ -113,8 +113,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	public String getPlayerName() {
 		String name = null;
 		if (isOnline()) name = ((Player)getOfflinePlayer()).getName();
-		List<String> names = getStats().getUsedIGNs();
-		if (name == null && names.size() > 0) name = names.get(0);
+		if (name == null) name = getStats().getLastIGN();
 
 		return name;
 	}
