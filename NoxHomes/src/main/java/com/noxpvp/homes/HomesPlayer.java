@@ -65,16 +65,26 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 		Validate.isTrue(data.containsKey("uuid"), "Not a valid data structure. Missing uuid entry!");
 
 		this.playerUUID = UUID.fromString(data.get("uuid").toString());
-		this.homes = (data.containsKey("homes") ? (List<BaseHome>) data.get("homes") : new ArrayList<BaseHome>();
 
+		//Setup Homes
+		try { this.homes =(List<BaseHome>) data.get("homes"); }
+		catch (Exception e) {
+			if (e instanceof ClassCastException) {
+				log(Level.SEVERE, "Data has been corrupted for player \"" + getPlayerUUID() + "\". Failed to deserialize a list of homes.");
+				log(Level.WARNING, "Homes may have been erased as a result.");
+			} else if (e instanceof NullPointerException) {
+				log(Level.FINE, "There is no Homes for the player \"" + getPlayerUUID() + "\". Not entirely sure if data corruption is the cause.");
+			}
+			this.homes = new ArrayList<BaseHome>();
+
+		}
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
 	//~~~~~~~~~~~~~~~~~~~~~
-	private List<BaseHome> homes;
 	private UUID playerUUID;
-
+	private List<BaseHome> homes;
 
 	//~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods: Implements
