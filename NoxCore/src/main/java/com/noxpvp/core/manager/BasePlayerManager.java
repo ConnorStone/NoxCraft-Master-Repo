@@ -82,7 +82,7 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	 * @param object Used to grab the player by the specified object's UUID
 	 * @return true if online false otherwise.
 	 */
-	public static boolean isOnline(Persistent object) { return isOnline(object.getPersistantID()); }
+	public static boolean isOnline(Persistent object) { return isOnline(object.getPersistentID()); }
 
 	/**
 	 * Tells whether or not the player is online.

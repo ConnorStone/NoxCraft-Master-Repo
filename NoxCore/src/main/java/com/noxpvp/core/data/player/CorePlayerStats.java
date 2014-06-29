@@ -2,15 +2,11 @@ package com.noxpvp.core.data.player;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.conversion.Conversion;
-import com.noxpvp.core.SafeLocation;
 import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.utils.UUIDUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -115,7 +111,7 @@ public class CorePlayerStats extends PlayerStats {
 	}
 
 	public void addLastIGN(Player player) {
-		Validate.isTrue(getPersistantID().equals(player.getUniqueId()), "Player does not match the ID of this stats handler. This is not the same player!");
+		Validate.isTrue(getPersistentID().equals(player.getUniqueId()), "Player does not match the ID of this stats handler. This is not the same player!");
 
 		addLastIGN(player.getName());
 	}
@@ -157,7 +153,7 @@ public class CorePlayerStats extends PlayerStats {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public OfflinePlayer getOfflinePlayer() {
-		return Bukkit.getOfflinePlayer(getPersistantID());
+		return Bukkit.getOfflinePlayer(getPersistentID());
 	}
 
 	public boolean isOnline() {

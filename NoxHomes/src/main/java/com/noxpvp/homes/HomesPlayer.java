@@ -91,11 +91,11 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 	//~~~~~~~~~~~~~~~~~~~~~
 
 	public boolean isOnline() {
-		PlayerUtils.isOnline(getPlayerUUID());
+		return PlayerUtils.isOnline(getPlayerUUID());
 	}
 
 	public UUID getPlayerUUID() {
-		return getPersistantID();
+		return getPersistentID();
 	}
 
 	//Helper
@@ -121,7 +121,6 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 		return Collections.unmodifiableList(homes);
 	}
 
-
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Serialization
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,11 +138,11 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 
 	}
 
-	public UUID getPersistantID() {
+	public UUID getPersistentID() {
 		return playerUUID;
 	}
 
-	public String getPersistanceNode() {
+	public String getPersistenceNode() {
 		return "HomesPlayer";
 	}
 

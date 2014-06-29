@@ -25,13 +25,11 @@ package com.noxpvp.core.data;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.bergerkiller.bukkit.common.conversion.Conversion;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.annotation.Temporary;
 import com.noxpvp.core.data.player.CorePlayerStats;
-import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.CoreBar;
 import com.noxpvp.core.gui.CoreBoard;
@@ -39,7 +37,6 @@ import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.PlayerUtils;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -96,9 +93,9 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 		//Temp Data
 		temp_data = new ConfigurationNode();
 
-		this.stats = new CorePlayerStats(getPersistantID());
+		this.stats = new CorePlayerStats(getPersistentID());
 		//Player stats
-//		this.stats = new PlayerStats(getPersistantID());
+//		this.stats = new PlayerStats(getPersistentID());
 	}
 
 	public NoxPlayer(Map<String, Object> data) {
@@ -173,7 +170,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 
 	public NoxCore getPlugin() { return NoxCore.getInstance(); }
 
-	public UUID getPlayerUUID() { return getPersistantID(); }
+	public UUID getPlayerUUID() { return getPersistentID(); }
 
 
 	public CorePlayerStats getStats() {
@@ -390,18 +387,18 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	public Map<String, Object> serialize() {
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		data.put("uuid", getPersistantID().toString());
+		data.put("uuid", getPersistentID().toString());
 		data.put("cool-downs", cds);
 		data.put("stats", stats);
 
 		return data;
 	}
 
-	public UUID getPersistantID() {
+	public UUID getPersistentID() {
 		return playerUUID;
 	}
 
-	public String getPersistanceNode() {
+	public String getPersistenceNode() {
 		return "NoxPlayer";
 	}
 

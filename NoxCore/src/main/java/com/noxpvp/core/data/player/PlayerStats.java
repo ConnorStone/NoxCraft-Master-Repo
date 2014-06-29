@@ -31,7 +31,7 @@ public abstract class PlayerStats implements Persistent {
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~~
 
-	public UUID getPersistantID() {
+	public UUID getPersistentID() {
 		return uuid;
 	}
 
@@ -40,7 +40,7 @@ public abstract class PlayerStats implements Persistent {
 	 * <hr/>
 	 * <p>This specific implementation takes the {@link #getType()} and appends {@literal "-stats"} as a path.</p>
 	 */
-	public final String getPersistanceNode() {
+	public final String getPersistenceNode() {
 		return getType() + "-stats";
 	}
 
@@ -50,7 +50,7 @@ public abstract class PlayerStats implements Persistent {
 	public Map<String, Object> serialize() {
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		data.put("uuid", getPersistantID().toString());
+		data.put("uuid", getPersistentID().toString());
 
 		return data;
 	}

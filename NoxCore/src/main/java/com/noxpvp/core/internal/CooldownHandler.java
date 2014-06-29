@@ -27,7 +27,7 @@ public class CooldownHandler extends AsyncTask {
 	}
 
 	public synchronized void loadPlayer(NoxPlayer player) {
-		cds.put(player.getPersistantID(), player.getCoolDowns());
+		cds.put(player.getPersistentID(), player.getCoolDowns());
 	}
 
 	public void loadPlayer(Player player) {

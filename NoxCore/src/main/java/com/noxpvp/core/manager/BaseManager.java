@@ -172,23 +172,23 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		T created = getConfig(path.toString() + ".yml").get(node, typeClass);
 
 		if (created != null)
-			loadedCache.put(created.getPersistantID(), created);
+			loadedCache.put(created.getPersistentID(), created);
 
 		return created;
 	}
 
 	protected T load(T object) {
-		return load(object.getPersistantID());
+		return load(object.getPersistentID());
 	}
 
 	public void loadObject(T object) {
-		if (!loadedCache.containsKey(object.getPersistantID()))
-			loadedCache.put(object.getPersistantID(), object);
+		if (!loadedCache.containsKey(object.getPersistentID()))
+			loadedCache.put(object.getPersistentID(), object);
 	}
 
 	protected void save(T object, UUID id) {
 		FileConfiguration datafile = getConfig(id.toString() + ".yml");
-		datafile.set(object.getPersistanceNode(), object);
+		datafile.set(object.getPersistenceNode(), object);
 
 		datafile.save();
 	}
@@ -199,11 +199,11 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	}
 
 	public void save(T object) {
-		save(object, object.getPersistantID());
+		save(object, object.getPersistentID());
 	}
 
 	public void unload(T object) {
-		loadedCache.remove(object.getPersistantID());
+		loadedCache.remove(object.getPersistentID());
 	}
 
 	protected void unload(UUID arg) {

@@ -19,7 +19,7 @@ public interface Persistent extends ConfigurationSerializable {
 	 * Returns a Unique persistent ID for this data.
 	 * @return UUID object
 	 */
-	public UUID getPersistantID();
+	public UUID getPersistentID();
 
 	/**
 	 * Returns a path node for the data storage.
@@ -27,5 +27,5 @@ public interface Persistent extends ConfigurationSerializable {
 	 *
 	 * @return String path that must never be null or empty.
 	 */
-	public String getPersistanceNode();
+	public String getPersistenceNode();
 }
