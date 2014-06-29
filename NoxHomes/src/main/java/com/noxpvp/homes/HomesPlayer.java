@@ -24,21 +24,16 @@
 package com.noxpvp.homes;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.conversion.Conversion;
-import com.noxpvp.core.Persistent;
-import com.noxpvp.core.data.PluginPlayer;
-import com.noxpvp.core.manager.CorePlayerManager;
-import com.noxpvp.core.utils.PlayerUtils;
+import com.noxpvp.core.data.player.BasePluginPlayer;
 import com.noxpvp.homes.managers.HomesPlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
-import org.apache.commons.lang.Validate;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.logging.Level;
 
-public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
+public class HomesPlayer extends BasePluginPlayer<NoxHomes> {
 
 	//~~~~~~~~~~~~
 	//Logging
@@ -53,8 +48,9 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 	//Constructors
 	//~~~~~~~~~~~~~~~~~~~~
 
+	//Primary Constructor
 	public HomesPlayer(UUID playerUUID) {
-		this.playerUUID = playerUUID;
+		super(playerUUID);
 	}
 
 	public HomesPlayer(Player player) {
@@ -62,9 +58,7 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 	}
 
 	public HomesPlayer(Map<String, Object> data) {
-		Validate.isTrue(data.containsKey("uuid"), "Not a valid data structure. Missing uuid entry!");
-
-		this.playerUUID = UUID.fromString(data.get("uuid").toString());
+		super(data);
 
 		//Setup Homes
 		try { this.homes =(List<BaseHome>) data.get("homes"); }
@@ -83,33 +77,23 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 	//~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
 	//~~~~~~~~~~~~~~~~~~~~~
-	private UUID playerUUID;
 	private List<BaseHome> homes;
 
-	//~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods: Implements
-	//~~~~~~~~~~~~~~~~~~~~~
-
-	public boolean isOnline() {
-		return PlayerUtils.isOnline(getPlayerUUID());
-	}
-
-	public UUID getPlayerUUID() {
-		return getPersistentID();
-	}
-
-	//Helper
-	public String getPlayerName() {
-		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getPlayerName();
-	}
-
-	//Helper
-	public OfflinePlayer getOfflinePlayer() {
-		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
-	}
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public NoxHomes getPlugin() {
 		return NoxHomes.getInstance();
+	}
+
+	public void log(Level level, String msg) {
+		log.log(level, msg);
+	}
+
+
+	}
+
 	}
 
 
@@ -134,17 +118,7 @@ public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
 		return data;
 	}
 
-	public void log(Level level, String msg) {
-
-	}
-
-	public UUID getPersistentID() {
-		return playerUUID;
-	}
-
 	public String getPersistenceNode() {
 		return "HomesPlayer";
 	}
-
-
 }
