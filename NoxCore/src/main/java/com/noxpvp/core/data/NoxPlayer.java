@@ -113,7 +113,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 				log(Level.SEVERE, "Data has been corrupted for player \"" + getPlayerUUID() + "\". Failed to deserialize a list of cooldowns.");
 				log(Level.WARNING, "Cooldowns has been erased as a result.");
 			} else if (e instanceof NullPointerException) {
-				log(Level.WARNING, "There is no cooldowns for the player \"" + getPlayerUUID() + "\". Not entirely sure if data corruption is the cause.");
+				log(Level.FINE, "There is no cooldowns for the player \"" + getPlayerUUID() + "\". Not entirely sure if data corruption is the cause.");
 			}
 
 			this.cds = new ArrayList<CoolDown>();
