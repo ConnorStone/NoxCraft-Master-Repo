@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>NoxCore</artifactId>
   <name>NoxCore</name>
-  <version>0.2.4-Snapshot</version>
+  <version>0.3-Snapshot</version>
   <description>Provides core functionality to the server</description>
   <developers>
     <developer>
@@ -260,9 +260,15 @@
     </dependency>
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
-      <artifactId>Vault</artifactId>
-      <version>1.4.1</version>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.4</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>bukkit</artifactId>
+          <groupId>org.bukkit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>me.confuser</groupId>

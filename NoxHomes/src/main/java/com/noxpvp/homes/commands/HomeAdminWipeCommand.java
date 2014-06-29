@@ -33,7 +33,7 @@ import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.locales.GlobalLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.homes.HomesPlayerManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.NoxHomes;
 
 public class HomeAdminWipeCommand extends BaseCommand {

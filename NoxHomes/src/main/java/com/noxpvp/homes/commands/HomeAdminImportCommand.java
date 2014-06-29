@@ -34,7 +34,7 @@ import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.locales.GlobalLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.HomesPlayerManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.homes.HomeImporter;
 
 public class HomeAdminImportCommand extends BaseCommand {

@@ -26,6 +26,7 @@ package com.noxpvp.core;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import com.noxpvp.core.data.OldNoxPlayer;
 import org.bukkit.Bukkit;
@@ -118,7 +119,7 @@ public class VaultAdapter {
 			return null;
 		}
 
-		public static String getFormatedPlayerName(Player p) {
+		public static String getFormattedPlayerName(Player p) {
 			String group = getPlayerGroup(p);
 
 			if (group != null)

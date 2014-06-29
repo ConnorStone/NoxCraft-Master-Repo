@@ -60,4 +60,10 @@
     - Added Player Options
         System intended for per player configurations on nox plugins.
         The lone command does nothing on its own and must be hooked into!
+0.3:
+    - Remade the entire player data system.
+        - Serializes the entire player object into data.
+        - Should prevent some of the most annoying bugs we have with data loss.
+    - Breaks most plugins hooking into the player manager system.
+        - However they have been updated along with it unless its third party.
 

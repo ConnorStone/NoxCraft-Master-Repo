@@ -23,33 +23,60 @@
 
 package com.noxpvp.core.data;
 
+import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import com.bergerkiller.bukkit.common.conversion.Conversion;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.Persistent;
+import com.noxpvp.core.VaultAdapter;
+import com.noxpvp.core.annotation.Temporary;
 import com.noxpvp.core.data.player.CorePlayerStats;
 import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.gui.CoreBar;
 import com.noxpvp.core.gui.CoreBoard;
+import com.noxpvp.core.gui.CoreBox;
+import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.utils.PlayerUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.logging.Level;
 
 public class NoxPlayer implements PluginPlayer, Persistent {
+
+	//~~~~~~~~~~~
+	//Logging
+	//~~~~~~~~~~~
+
+	private static ModuleLogger log;
+
+	static {
+		log = CorePlayerManager.getInstance().getModuleLogger("NoxPlayer");
+	}
+
+	public static ModuleLogger getModuleLogger(String... module) {
+		return log.getModule(module);
+	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 	private final UUID playerUUID;
 	private WeakHashMap<String, CoolDown> cd_cache;
 	private List<CoolDown> cds;
 	private ConfigurationNode temp_data;
+	private CoreBar coreBar;
 	private CoreBoard coreBoard;
 	private CorePlayerStats stats;
+	private Reference<CoreBox> coreBox;
+	private String lastFormattedName;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -69,13 +96,59 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 		//Temp Data
 		temp_data = new ConfigurationNode();
 
+		this.stats = new CorePlayerStats(getPersistantID());
 		//Player stats
 //		this.stats = new PlayerStats(getPersistantID());
+	}
+
+	public NoxPlayer(Map<String, Object> data) {
+		Validate.isTrue(data.containsKey("uuid"), "Not a valid data structure. Missing uuid entry!");
+
+		this.playerUUID = UUID.fromString(data.get("uuid").toString());
+
+		//Setup CoolDowns
+		try { this.cds = (List<CoolDown>) data.get("cool-downs"); }
+		catch (Exception e) {
+			if (e instanceof ClassCastException) {
+				log(Level.SEVERE, "Data has been corrupted for player \"" + getPlayerUUID() + "\". Failed to deserialize a list of cooldowns.");
+				log(Level.WARNING, "Cooldowns has been erased as a result.");
+			} else if (e instanceof NullPointerException) {
+				log(Level.WARNING, "There is no cooldowns for the player \"" + getPlayerUUID() + "\". Not entirely sure if data corruption is the cause.");
+			}
+
+			this.cds = new ArrayList<CoolDown>();
+		}
+
+		this.stats = (data.containsKey("stats") ? (data.get("stats") instanceof CorePlayerStats ? (CorePlayerStats) data.get("stats") : new CorePlayerStats(this.playerUUID)) : new CorePlayerStats(this.playerUUID));
+		if (data.containsKey("stats") && this.stats != data.get("stats")) log(Level.SEVERE, "Data for player stats may have been wiped. Not the same instance as the data map.");
+
+		this.temp_data = new ConfigurationNode();
+
+		updateCoolDownCache();
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Internal Methods.
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	private String getMainGroup() {
+		String[] groups = VaultAdapter.permission.getPlayerGroups(getPlayer());
+		LinkedList<String> groupList = new LinkedList<String>();//: put local group list here
+
+		if (groups.length < 0) return null;
+
+		int ind = 100;
+		String finalGroup = null;
+
+		for (String group : groups) {
+			if (groupList.indexOf(group) < ind) {
+				ind = groupList.indexOf(group);
+				finalGroup = group;
+			}
+		}
+
+		return finalGroup;
+	}
 
 	private void updateCoolDownCache() {
 		cd_cache.clear();
@@ -94,6 +167,10 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	//Instanced Methods.
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	public void log(Level level, String msg) {
+		log.log(level, msg);
+	}
+
 	public NoxCore getPlugin() { return NoxCore.getInstance(); }
 
 	public UUID getPlayerUUID() { return getPersistantID(); }
@@ -101,6 +178,22 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 
 	public CorePlayerStats getStats() {
 		return stats;
+	}
+
+	public String getFullName() {
+		StringBuilder text = new StringBuilder();
+		text.append(VaultAdapter.chat.getGroupPrefix(getStats().getLastWorldName(), getMainGroup()) + getPlayer().getName());
+
+		String v = getLastFormattedName();
+
+		if (!isOnline())
+			return v;
+
+		String v2 = VaultAdapter.GroupUtils.getFormattedPlayerName(getPlayer());
+
+		this.lastFormattedName = v2;
+
+		return v2;
 	}
 
 	/**
@@ -118,19 +211,45 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 		return name;
 	}
 
-	public boolean isOnline() { return Bukkit.getOfflinePlayer(getPlayerUUID()).isOnline(); }
+	public boolean isOnline() { return PlayerUtils.isOnline(getPlayerUUID()); }
+
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: GUI
+	//~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public CoreBoard getCoreBoard() {
 		return coreBoard;
 	}
 
-	public UUID getPersistantID() {
-		return playerUUID;
+	public CoreBar getCoreBar() {
+		return coreBar;
 	}
 
-	public String getPersistanceNode() {
-		return "NoxPlayer";
+//	-------- CoreBox --------
+
+	public boolean hasCoreBox() {
+		return coreBox != null && coreBox.get() != null;
 	}
+
+	public boolean hasCoreBox(CoreBox box) {
+		return coreBox != null && coreBox.get() == box;
+	}
+
+	public void setCoreBox(CoreBox box) {
+		if (hasCoreBox())
+			deleteCoreBox();
+
+		coreBox = new WeakReference<CoreBox>(box);
+	}
+
+	public void deleteCoreBox() {
+		if (hasCoreBox() && isOnline())
+			getPlayer().closeInventory();
+
+		coreBox = null;
+	}
+
 
 	//----------------------------------------
 	//Instanced Methods: CoolDowns System
@@ -244,7 +363,24 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public OfflinePlayer getOfflinePlayer() {
-		return Bukkit.getOfflinePlayer(getPlayerUUID());
+		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
+	}
+
+	public Player getPlayer() {
+		if (isOnline()) return (Player) getOfflinePlayer();
+		else return null;
+	}
+
+	/**
+	 * @deprecated Use {@link #getPlayerName()} instead. This is here to help merge new system.
+	 *
+	 * @see #getPlayerName()
+	 * @return {@link #getPlayerName()} result.
+	 */
+	@Deprecated
+	@Temporary
+	public String getName() {
+		return getPlayerName();
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -256,12 +392,20 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 
 		data.put("uuid", getPersistantID().toString());
 		data.put("cool-downs", cds);
-		data.put(stats.getPersistanceNode(), stats);
+		data.put("stats", stats);
 
 		return data;
 	}
 
-	public static NoxPlayer valueOf(Map<String, Object> data) {
-		return new NoxPlayer(UUID.fromString((String) data.get("uuid")));
+	public UUID getPersistantID() {
+		return playerUUID;
+	}
+
+	public String getPersistanceNode() {
+		return "NoxPlayer";
+	}
+
+	public String getLastFormattedName() {
+		return lastFormattedName;
 	}
 }

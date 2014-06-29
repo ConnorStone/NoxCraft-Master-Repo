@@ -376,7 +376,7 @@ public class OldNoxPlayer implements OldPersistant, OldNoxPlayerAdapter {
 		if (!isOnline())
 			return v;
 
-		String v2 = VaultAdapter.GroupUtils.getFormatedPlayerName(getPlayer());
+		String v2 = VaultAdapter.GroupUtils.getFormattedPlayerName(getPlayer());
 		if (!v2.equals(v))
 			persistant_data.set("formatted-name", v2);
 
@@ -486,7 +486,6 @@ public class OldNoxPlayer implements OldPersistant, OldNoxPlayerAdapter {
 		else
 			return null;
 	}
-
 
 	public Player getPlayer() {
 		Player ret = null;

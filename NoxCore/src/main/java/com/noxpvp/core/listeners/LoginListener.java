@@ -57,7 +57,6 @@ public class LoginListener extends NoxListener<NoxCore> {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onLogin(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
-//		CorePlayerManager.getInstance().getPlayer(p);
 
 		VaultAdapter.GroupUtils.reloadGroupTag(p);
 		new FlashingNotification(p, ChatColor.stripColor(loginMessage), 300);

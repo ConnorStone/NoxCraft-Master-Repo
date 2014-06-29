@@ -23,9 +23,10 @@
 
 package com.noxpvp.homes;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 
+import com.noxpvp.homes.managers.old.HomeLimitManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.permissions.PermissionDefault;
 

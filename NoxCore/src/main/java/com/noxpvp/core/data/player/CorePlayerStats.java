@@ -1,9 +1,14 @@
 package com.noxpvp.core.data.player;
 
+import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.conversion.Conversion;
 import com.noxpvp.core.SafeLocation;
+import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.utils.UUIDUtil;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.EntityType;
@@ -12,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class CorePlayerStats extends PlayerStats {
 
@@ -20,10 +26,26 @@ public class CorePlayerStats extends PlayerStats {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	private static final String IPS_KEY = "logged-ips";
-	private static final String LAST_DEATH_KEY = "last-death";
 	private static final String USED_IGN_KEY = "used-igns";
-	private static final String LAST_KILL_UUID_KEY = "last-kill-uuid";
-	private static final String LAST_KILL_TYPE_KEY = "last-kill-type";
+	private static final String LAST_DEATH_KEY = "last.death";
+	private static final String LAST_KILL_UUID_KEY = "last.kill.uuid";
+	private static final String LAST_KILL_TYPE_KEY = "last.kill.type";
+	private static final String LAST_WORLD_NAME_KEY = "last.world.name";
+	private static final String LAST_WORLD_UUID_KEY = "last.world.uuid";
+
+	//~~~~~~~~~~~~~
+	//Logging
+	//~~~~~~~~~~~~~
+
+	private ModuleLogger log;
+
+	static {
+		NoxPlayer.getModuleLogger("stats");
+	}
+
+	public void log(Level level, String msg) {
+		log.log(level, msg);
+	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Fields
@@ -34,6 +56,8 @@ public class CorePlayerStats extends PlayerStats {
 	private List<String> usedIGNs = new ArrayList<String>();
 	private UUID lastKillUUID;
 	private EntityType lastKillType;
+	private String lastWorldName;
+	private UUID lastWorldUUID;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -43,10 +67,13 @@ public class CorePlayerStats extends PlayerStats {
 		super(data);
 
 		if (data.containsKey(IPS_KEY)) loggedIps = (List<String>) Conversion.toList.convertSpecial(data.get(IPS_KEY), String.class, new ArrayList<String>());
-		if (data.containsKey(LAST_DEATH_KEY)) lastDeath = (DeathEntry) data.get(LAST_DEATH_KEY);
 		if (data.containsKey(USED_IGN_KEY)) usedIGNs = (List<String>) Conversion.toList.convertSpecial(data.get(USED_IGN_KEY), String.class, new ArrayList<String>());
-		if (data.containsKey(LAST_KILL_TYPE_KEY)) lastKillType = EntityType.valueOf(data.get(LAST_KILL_TYPE_KEY).toString());
-		if (data.containsKey(LAST_KILL_UUID_KEY)) lastKillUUID = UUID.fromString(data.get(LAST_KILL_UUID_KEY).toString());
+
+		lastKillType = ((data.containsKey(LAST_KILL_TYPE_KEY)) ? EntityType.valueOf(data.get(LAST_KILL_TYPE_KEY).toString()) : null);
+		lastDeath = ((data.containsKey(LAST_DEATH_KEY)) ? (data.get(LAST_DEATH_KEY) instanceof DeathEntry ? (DeathEntry) data.get(LAST_DEATH_KEY) : null) : null);
+		lastKillUUID = ((data.containsKey(LAST_KILL_UUID_KEY)) ? UUID.fromString(data.get(LAST_KILL_UUID_KEY).toString()) : null);
+		lastWorldName = ((data.containsKey(LAST_WORLD_NAME_KEY)) ? data.get(LAST_WORLD_NAME_KEY).toString() : null);
+		lastWorldUUID = ((data.containsKey(LAST_WORLD_UUID_KEY)) ? UUID.fromString(data.get(LAST_WORLD_UUID_KEY).toString()) : null);
 	}
 
 	public CorePlayerStats(Player player) {
@@ -65,6 +92,16 @@ public class CorePlayerStats extends PlayerStats {
 		return Collections.unmodifiableList(loggedIps);
 	}
 
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Last World Info
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public String getLastWorldName() {
+		//Self update.
+		if (isOnline()) this.lastWorldName = ((Player) getOfflinePlayer()).getWorld().getName();
+		return this.lastWorldName;
+	}
 
 	//~~~~~~~~~~~~~~~~
 	//IGN'S
@@ -116,6 +153,28 @@ public class CorePlayerStats extends PlayerStats {
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Helper Methods
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public OfflinePlayer getOfflinePlayer() {
+		return Bukkit.getOfflinePlayer(getPersistantID());
+	}
+
+	public boolean isOnline() {
+		return getOfflinePlayer().isOnline();
+	}
+
+	public World getLastWorld() {
+		World ret = null;
+		if (isOnline()) {
+			ret = ((Player) getOfflinePlayer()).getWorld();
+			this.lastWorldName = ret.getName();
+		} else ret = Bukkit.getWorld(getLastWorldName());
+
+		return ret;
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods: Serialization
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -128,6 +187,7 @@ public class CorePlayerStats extends PlayerStats {
 		data.put(USED_IGN_KEY, getUsedIGNs());
 		data.put(LAST_KILL_UUID_KEY, getLastKillUUID());
 		data.put(LAST_KILL_TYPE_KEY, getLastKillType());
+		data.put(LAST_WORLD_NAME_KEY, getLastWorldName());
 
 		return data;
 	}
@@ -139,4 +199,5 @@ public class CorePlayerStats extends PlayerStats {
 	public void setLastDeath(PlayerDeathEvent e) {
 
 	}
+
 }

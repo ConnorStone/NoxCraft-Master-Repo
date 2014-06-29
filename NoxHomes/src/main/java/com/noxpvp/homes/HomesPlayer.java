@@ -23,152 +23,119 @@
 
 package com.noxpvp.homes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.OfflinePlayer;
-
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.core.OldPersistant;
-import com.noxpvp.core.data.BaseNoxPlayerAdapter;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.bergerkiller.bukkit.common.conversion.Conversion;
+import com.noxpvp.core.Persistent;
+import com.noxpvp.core.data.PluginPlayer;
+import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.utils.PlayerUtils;
+import com.noxpvp.homes.managers.HomesPlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
-import com.noxpvp.homes.tp.DefaultHome;
+import org.apache.commons.lang.Validate;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
-public class HomesPlayer extends BaseNoxPlayerAdapter implements OldPersistant {
+import java.util.*;
+import java.util.logging.Level;
 
-	/**
-	 * Instantiates a new homes playerRef.
-	 *
-	 * @param playerName the name of the playerRef.
-	 */
-	public HomesPlayer(String playerName) {
-		super(playerName);
+public class HomesPlayer implements PluginPlayer<NoxHomes> ,Persistent {
+
+	//~~~~~~~~~~~~
+	//Logging
+	//~~~~~~~~~~~~
+	private static ModuleLogger log;
+
+	static {
+		log = HomesPlayerManager.getInstance().getModuleLogger("HomesPlayer");
 	}
 
-	/**
-	 * Instantiates a new homes playerRef.
-	 *
-	 * @param player an OfflinePlayer.
-	 */
-	public HomesPlayer(OfflinePlayer player) {
-		super(player);
+	//~~~~~~~~~~~~~~~~~~~~
+	//Constructors
+	//~~~~~~~~~~~~~~~~~~~~
+
+	public HomesPlayer(UUID playerUUID) {
+		this.playerUUID = playerUUID;
 	}
 
-	public HomesPlayer(NoxPlayerAdapter player) {
-		super(player);
+	public HomesPlayer(Player player) {
+		this(player.getUniqueId());
 	}
 
-	/**
-	 * Gets the list of homes.
-	 *
-	 * @return homes List
-	 */
+	public HomesPlayer(Map<String, Object> data) {
+		Validate.isTrue(data.containsKey("uuid"), "Not a valid data structure. Missing uuid entry!");
+
+		this.playerUUID = UUID.fromString(data.get("uuid").toString());
+		this.homes = (data.containsKey("homes") ? (List<BaseHome>) data.get("homes") : new ArrayList<BaseHome>();
+
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Fields
+	//~~~~~~~~~~~~~~~~~~~~~
+	private List<BaseHome> homes;
+	private UUID playerUUID;
+
+
+	//~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Implements
+	//~~~~~~~~~~~~~~~~~~~~~
+
+	public boolean isOnline() {
+		PlayerUtils.isOnline(getPlayerUUID());
+	}
+
+	public UUID getPlayerUUID() {
+		return getPersistantID();
+	}
+
+	//Helper
+	public String getPlayerName() {
+		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getPlayerName();
+	}
+
+	//Helper
+	public OfflinePlayer getOfflinePlayer() {
+		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
+	}
+
+	public NoxHomes getPlugin() {
+		return NoxHomes.getInstance();
+	}
+
+
+	//~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Homes
+	//~~~~~~~~~~~~~~~~~~~~~
+
 	public List<BaseHome> getHomes() {
-		List<BaseHome> homes = new ArrayList<BaseHome>();
-		ConfigurationNode data = getPersistantData().getNode("homes");
-		for (String node : data.getKeys())
-			homes.add(data.get(node, BaseHome.class));
 		return Collections.unmodifiableList(homes);
 	}
 
-	/**
-	 * Sets the homes.
-	 * <br/>
-	 * Saves data after completion.
-	 *
-	 * @param list the replacement list of homes.
-	 */
-	protected final void setHomes(List<BaseHome> list) {
-		if (list == null)
-			list = new ArrayList<BaseHome>();
-		ConfigurationNode node = getPersistantData().getNode("homes");
 
-		node.clear();
-		for (BaseHome home : list)
-			node.set(home.getName(), home);
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Serialization
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		saveToManager();
+	public Map<String, Object> serialize() {
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		data.put("uuid", getPlayerUUID());
+		data.put("homes", getHomes());
+
+		return data;
 	}
 
-	public int getHomeCount() {
-		return getPersistantData().getNode("homes").getKeys().size();
+	public void log(Level level, String msg) {
+
 	}
 
-	/**
-	 * Gets the home names.
-	 *
-	 * @return the home names
-	 */
-	public List<String> getHomeNames() {
-		List<String> names = new ArrayList<String>();
-		for (BaseHome home : getHomes())
-			names.add(home.getName());
-		return Collections.unmodifiableList(names);
+	public UUID getPersistantID() {
+		return playerUUID;
 	}
 
-	/**
-	 * Checks for homes.
-	 *
-	 * @return true, if successful
-	 */
-	public boolean hasHomes() {
-		return getHomeCount() > 0;
+	public String getPersistanceNode() {
+		return "HomesPlayer";
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noxpvp.core.Persistant#load()
-	 */
-	public void load() {
-		//Data is already preloaded.
-	}
-
-	/**
-	 * Adds the home to data.
-	 * <br/>
-	 * Saves data after completion.
-	 *
-	 * @param home of type BaseHome to add.
-	 */
-	public void addHome(BaseHome home) {
-		ConfigurationNode node = getPersistantData().getNode("homes");
-		node.set(home.getName(), home);
-		saveToManager();
-	}
-
-	/**
-	 * Removes the home from data.
-	 * <br/>
-	 * Saves data after completion.
-	 *
-	 * @param home to remove.
-	 * @return true if successful.
-	 */
-	public boolean removeHome(BaseHome home) {
-		ConfigurationNode node = getPersistantData().getNode("homes");
-
-		node.remove(home.getName());
-		saveToManager();
-		return !node.contains(home.getName());
-	}
-
-	/**
-	 * Gets the specified home.
-	 *
-	 * @param name of the home
-	 * @return the home
-	 */
-	public BaseHome getHome(String name) {
-		if (name == null)
-			return getHome(DefaultHome.PERM_NODE);
-
-		return getPersistantData().get("homes." + name, BaseHome.class);
-	}
-
-	@Override
-	public void save() {
-		//Data is automatically saved on edit...
-	}
 
 }

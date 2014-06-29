@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>NoxCore</artifactId>
 	<name>NoxCore</name>
-	<version>0.2.4-Snapshot</version>
+	<version>0.3-Snapshot</version>
 	<developers>
 		<developer>
 			<email>ckrier.3000@gmail.com</email>

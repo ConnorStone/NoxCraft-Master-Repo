@@ -35,7 +35,7 @@ import com.noxpvp.core.locales.GlobalLocale;
 import com.noxpvp.core.utils.TownyUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.HomesPlayerManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.locale.HomeLocale;
 import com.noxpvp.homes.tp.BaseHome;
 import com.noxpvp.homes.tp.DefaultHome;

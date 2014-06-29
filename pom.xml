@@ -98,7 +98,14 @@
 	</repositories>
 	<dependencyManagement>
 		<dependencies>
-		    
+		    <!-- Core -->
+
+            <dependency>
+                <groupId>com.noxpvp</groupId>
+                <artifactId>NoxCore</artifactId>
+                <version>0.3-Snapshot</version>
+            </dependency>
+
 		    <!-- Prism -->
 			<dependency>
 				<groupId>me.botsko</groupId>
@@ -187,8 +194,8 @@
 			<!-- Vault -->
 			<dependency>
 				<groupId>net.milkbowl.vault</groupId>
-				<artifactId>Vault</artifactId>
-				<version>1.4.1</version>
+				<artifactId>VaultAPI</artifactId>
+				<version>1.4</version>
 				<scope>provided</scope>
 			</dependency>
 			
@@ -253,7 +260,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
+			<artifactId>VaultAPI</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>me.confuser</groupId>

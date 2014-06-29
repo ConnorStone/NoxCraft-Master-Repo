@@ -21,13 +21,15 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.homes;
+package com.noxpvp.homes.managers.old;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.noxpvp.homes.NoxHomes;
+import com.noxpvp.homes.OldHomesPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -37,11 +39,11 @@ import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.manager.old.BasePlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
 
-public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME: Javadocs
+public class HomesPlayerManager extends BasePlayerManager<OldHomesPlayer> { //FIXME: Javadocs
 	private static HomesPlayerManager instance;
 
 	private HomesPlayerManager() {
-		super(HomesPlayer.class);
+		super(OldHomesPlayer.class);
 	}
 
 	public static HomesPlayerManager getInstance() {
@@ -72,7 +74,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 		com.noxpvp.core.manager.old.CorePlayerManager pm = com.noxpvp.core.manager.old.CorePlayerManager.getInstance();
 		List<String> names = pm.getAllPlayerNames();
 
-		for (HomesPlayer player : getPlayerMap().values()) {
+		for (OldHomesPlayer player : getPlayerMap().values()) {
 			if (!pm.isLoaded(player.getName())) {
 				names.add(player.getName());
 				continue;
@@ -93,21 +95,21 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 	}
 
 	@Override
-	protected HomesPlayer craftNew(OldNoxPlayer noxPlayer) {
-		return new HomesPlayer(noxPlayer);
+	protected OldHomesPlayer craftNew(OldNoxPlayer noxPlayer) {
+		return new OldHomesPlayer(noxPlayer);
 	}
 
 	@Override
-	protected HomesPlayer craftNew(String name) {
-		return new HomesPlayer(name);
+	protected OldHomesPlayer craftNew(String name) {
+		return new OldHomesPlayer(name);
 	}
 
 	@Override
-	protected Map<String, HomesPlayer> craftNewStorage() {
-		return new HashMap<String, HomesPlayer>();
+	protected Map<String, OldHomesPlayer> craftNewStorage() {
+		return new HashMap<String, OldHomesPlayer>();
 	}
 
-	public BaseHome getHome(HomesPlayer player, String homeName) {
+	public BaseHome getHome(OldHomesPlayer player, String homeName) {
 		return player.getHome(homeName);
 	}
 
@@ -158,7 +160,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> { //FIXME
 	}
 
 	public void save() {
-		for (HomesPlayer player : getPlayerMap().values())
+		for (OldHomesPlayer player : getPlayerMap().values())
 			player.save();
 	}
 

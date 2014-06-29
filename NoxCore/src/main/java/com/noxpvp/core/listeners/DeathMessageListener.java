@@ -23,6 +23,7 @@
 
 package com.noxpvp.core.listeners;
 
+import com.noxpvp.core.data.NoxPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -34,9 +35,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.locales.GlobalLocale;
-import com.noxpvp.core.manager.old.CorePlayerManager;
+import com.noxpvp.core.manager.CorePlayerManager;
 
 public class DeathMessageListener extends NoxListener<NoxCore> {
 
@@ -54,7 +54,7 @@ public class DeathMessageListener extends NoxListener<NoxCore> {
 		StringBuilder message = new StringBuilder(event.getDeathMessage());
 		int curIndex = 0;
 
-		OldNoxPlayer p;
+		NoxPlayer p;
 		if ((p = pm.getPlayer(event.getEntity())) == null) return;
 
 		String playerFullName = p.getFullName();
@@ -80,7 +80,7 @@ public class DeathMessageListener extends NoxListener<NoxCore> {
 				Player playerDamager = (Player) damager;
 
 				//Replace player name
-				OldNoxPlayer damagerPlayer;
+				NoxPlayer damagerPlayer;
 				if ((damagerPlayer = pm.getPlayer(playerDamager)) == null) return;
 
 				String damagerName = p.getName();

@@ -212,6 +212,11 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 			unload(object);
 	}
 
+	protected void unloadAndSave(UUID id) {
+		T object = null;
+		if ((object = getIfLoaded(id)) != null) unloadAndSave(object);
+	}
+
 	public void unloadAndSave(T object) {
 		if (isLoaded(object)) {
 			save(object);

@@ -23,6 +23,7 @@
 
 package com.noxpvp.homes.commands;
 
+import com.noxpvp.homes.OldHomesPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -36,9 +37,8 @@ import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.locales.GlobalLocale;
 import com.noxpvp.core.utils.TownyUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.homes.HomesPlayer;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.HomesPlayerManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.locale.HomeLocale;
 import com.noxpvp.homes.tp.BaseHome;
 import com.noxpvp.homes.tp.DefaultHome;
@@ -116,7 +116,7 @@ public class SetHomeCommand extends BaseCommand {
 			homeName = DefaultHome.PERM_NODE;
 		boolean good = false;
 
-		HomesPlayer hPlayer = HomesPlayerManager.getInstance().getPlayer(player);
+		OldHomesPlayer hPlayer = HomesPlayerManager.getInstance().getPlayer(player);
 
 		if (own) {
 			if (plugin.getLimitsManager().canAddHome(hPlayer)) {

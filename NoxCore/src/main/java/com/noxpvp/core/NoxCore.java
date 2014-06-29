@@ -33,7 +33,8 @@ import java.util.logging.Level;
 
 import com.bergerkiller.bukkit.common.bases.mutable.LocationAbstract;
 import com.noxpvp.core.data.OldNoxPlayer;
-import com.noxpvp.core.internal.OldCooldownHandler;
+import com.noxpvp.core.internal.CooldownHandler;
+import com.noxpvp.core.manager.CorePlayerManager;
 import me.botsko.prism.Prism;
 
 import org.bukkit.Bukkit;
@@ -73,7 +74,6 @@ import com.noxpvp.core.listeners.ServerPingListener;
 import com.noxpvp.core.listeners.VoteListener;
 import com.noxpvp.core.locales.CoreLocale;
 import com.noxpvp.core.locales.GlobalLocale;
-import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
 import com.noxpvp.core.reloader.Reloader;
@@ -103,7 +103,7 @@ public class NoxCore extends NoxPlugin {
 	private WorldGuardPlugin worldGuard = null;
 	private HoloAPICore holoAPI = null;
 	private Prism prism = null;
-	private OldCooldownHandler oldCDH;
+	private CooldownHandler cdh;
 	private Command noxCommand;
 
 	//FIXME: Switch to new Cooldown Handler
@@ -236,7 +236,7 @@ public class NoxCore extends NoxPlugin {
 		saveConfig();
 		CorePlayerManager.getInstance().save();
 
-		oldCDH.stop();
+		cdh.stop();
 		cleanup();
 	}
 
@@ -252,7 +252,8 @@ public class NoxCore extends NoxPlugin {
 				VaultAdapter.class,
 				VaultAdapter.GroupUtils.class,
 				CoreLocale.class, GlobalLocale.class,
-				CorePlayerManager.class, MasterReloader.class
+				CorePlayerManager.class, MasterReloader.class,
+				com.noxpvp.core.manager.old.CorePlayerManager.class
 		};
 
 		String[] internalClasses = {};
@@ -410,9 +411,9 @@ public class NoxCore extends NoxPlugin {
 			this.saveGlobalLocalization();
 		}
 
-		oldCDH = new OldCooldownHandler();
+		cdh = new CooldownHandler();
 
-		oldCDH.start();
+		cdh.start();
 
 		reloadConfig();
 	}

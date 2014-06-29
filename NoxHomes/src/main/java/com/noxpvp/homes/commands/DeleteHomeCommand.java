@@ -35,7 +35,7 @@ import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.locales.GlobalLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.HomesPlayerManager;
+import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
 
 public class DeleteHomeCommand extends BaseCommand {

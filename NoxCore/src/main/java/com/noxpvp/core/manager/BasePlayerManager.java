@@ -49,6 +49,8 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 			load(p);
 	}
 
+	public T getPlayer(UUID playerUID) { return get(playerUID); }
+
 	public T getPlayer(Player player) {
 		return get(player.getUniqueId());
 	}
