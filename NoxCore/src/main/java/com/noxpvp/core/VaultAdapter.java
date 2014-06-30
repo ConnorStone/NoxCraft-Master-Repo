@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -150,7 +151,7 @@ public class VaultAdapter {
 
 		public static void reloadAllGroupTags() {
 			if (isChatLoaded() && isPermissionsLoaded() && permission.hasGroupSupport())
-				for (Player p : Bukkit.getOnlinePlayers()) {
+				for (Player p : BukkitUtil.getOnlinePlayers()) {
 					loadGroupTag(p);
 				}
 		}

@@ -2,6 +2,7 @@ package com.noxpvp.core.manager;
 
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.Persistent;
+import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -45,7 +46,7 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	}
 
 	public void load() {
-		for (Player p : Bukkit.getOnlinePlayers())
+		for (Player p : BukkitUtil.getOnlinePlayers())
 			load(p);
 	}
 

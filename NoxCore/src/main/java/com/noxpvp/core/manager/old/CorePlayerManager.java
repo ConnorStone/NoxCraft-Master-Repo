@@ -34,6 +34,7 @@ import java.util.logging.Level;
 
 import com.noxpvp.core.OldPersistant;
 import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.util.FileUtil;
@@ -281,7 +282,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 		getPlayerMap().clear();
 		config.load();
 
-		for (Player player : Bukkit.getOnlinePlayers())
+		for (Player player : BukkitUtil.getOnlinePlayers())
 			loadOrCreate(player.getName());
 
 		for (String name : pls)

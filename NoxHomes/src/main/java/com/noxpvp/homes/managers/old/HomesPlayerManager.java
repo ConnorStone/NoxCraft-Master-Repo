@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.noxpvp.core.utils.BukkitUtil;
 import com.noxpvp.homes.NoxHomes;
 import com.noxpvp.homes.OldHomesPlayer;
 import org.bukkit.Bukkit;
@@ -146,7 +147,7 @@ public class HomesPlayerManager extends BasePlayerManager<OldHomesPlayer> { //FI
 
 	public void load() {
 		getPlayerMap().clear();
-		for (Player player : Bukkit.getOnlinePlayers())
+		for (Player player : BukkitUtil.getOnlinePlayers())
 			getPlayer(player);
 	}
 

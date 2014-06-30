@@ -26,6 +26,7 @@ package com.noxpvp.core.manager.old;
 import java.util.Map;
 
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
+import com.noxpvp.core.utils.BukkitUtil;
 import com.noxpvp.core.utils.UUIDUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -154,7 +155,7 @@ public abstract class BasePlayerManager<T extends OldNoxPlayerAdapter> implement
 	}
 
 	public void load() {
-		for (Player p : Bukkit.getOnlinePlayers())
+		for (Player p : BukkitUtil.getOnlinePlayers())
 			loadPlayer(p);
 	}
 
