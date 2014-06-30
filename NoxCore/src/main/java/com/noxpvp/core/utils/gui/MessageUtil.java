@@ -165,6 +165,10 @@ public class MessageUtil {
 					return true;
 				return false;
 			}
+
+			protected boolean nonMatch() {
+				return false;
+			}
 		}, message);
 	}
 
@@ -175,6 +179,10 @@ public class MessageUtil {
 					return true;
 				else if (sender.hasPermission(permission))
 					return true;
+				return false;
+			}
+
+			protected boolean nonMatch() {
 				return false;
 			}
 		}, messages);
@@ -209,6 +217,10 @@ public class MessageUtil {
 					return VaultAdapter.permission.has(player, "group." + groupName);
 				return false;
 			}
+
+			protected boolean nonMatch() {
+				return false;
+			}
 		}, message);
 	}
 
@@ -219,6 +231,10 @@ public class MessageUtil {
 					return true;
 				else if (VaultAdapter.isPermissionsLoaded() && !VaultAdapter.permission.hasGroupSupport())
 					return VaultAdapter.permission.has(player, "group." + groupName);
+				return false;
+			}
+
+			protected boolean nonMatch() {
 				return false;
 			}
 		}, messages);

@@ -23,9 +23,17 @@
 
 package com.noxpvp.core.internal;
 
+import com.bergerkiller.bukkit.common.filtering.Filter;
 import org.bukkit.entity.Player;
 
-public interface PlayerFilter<T extends Player> extends CommandSenderFilter<T> {
-	@Override
-	boolean isFiltered(T t);
+public abstract class PlayerFilter<T extends Player> implements Filter {
+
+	public final boolean isFiltered(Object t) {
+		if (t instanceof Player) return isFiltered((Player) t);
+		else return nonMatch();
+	}
+
+	protected abstract boolean nonMatch();
+
+	public abstract boolean isFiltered(T t);
 }
