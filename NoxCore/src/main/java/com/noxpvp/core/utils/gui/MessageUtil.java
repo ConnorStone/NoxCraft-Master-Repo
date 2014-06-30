@@ -24,8 +24,10 @@
 package com.noxpvp.core.utils.gui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -45,19 +47,19 @@ import com.noxpvp.core.VaultAdapter;
 public class MessageUtil {
 
 	public static void broadcast(final String permission, String message) {
-		sendMessage(Bukkit.getOnlinePlayers(), permission, message);
+		sendMessage(BukkitUtil.getOnlinePlayers(), permission, message);
 	}
 
 	public static void broadcast(final String permission, String... messages) {
-		sendMessage(Bukkit.getOnlinePlayers(), permission, messages);
+		sendMessage(BukkitUtil.getOnlinePlayers(), permission, messages);
 	}
 
 	public static void broadcast(String message) {
-		sendMessage(Bukkit.getOnlinePlayers(), message);
+		sendMessage(BukkitUtil.getOnlinePlayers(), message);
 	}
 
 	public static void broadcast(String... messages) {
-		sendMessage(Bukkit.getOnlinePlayers(), messages);
+		sendMessage(BukkitUtil.getOnlinePlayers(), messages);
 	}
 
 	public static void broadcast(World world, String message) {
@@ -71,11 +73,11 @@ public class MessageUtil {
 	}
 
 	public static void broadcast(World world, final String permission, String message) {
-		sendMessage(world.getPlayers().toArray(new Player[0]), permission, message);
+		sendMessage(world.getPlayers(), permission, message);
 	}
 
 	public static void broadcast(World world, final String permission, String... messages) {
-		sendMessage(world.getPlayers().toArray(new Player[0]), permission, messages);
+		sendMessage(world.getPlayers(), permission, messages);
 	}
 
 	public static String getGlobalLocale(NoxPlugin plugin, String locale, String... params) {
@@ -131,29 +133,29 @@ public class MessageUtil {
 				sendMessage(sender, message);
 	}
 
-	public static void sendMessage(CommandSender[] senders, Filter<CommandSender> filter, String message) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<CommandSender> filter, String message) {
 		for (CommandSender sender : senders)
 			if (filter.isFiltered(sender))
 				sendMessage(sender, message);
 	}
 
-	public static void sendMessage(CommandSender[] senders, Filter<CommandSender> filter, String... messages) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<CommandSender> filter, String... messages) {
 		for (CommandSender sender : senders)
 			if (filter.isFiltered(sender))
 				sendMessage(sender, messages);
 	}
 
-	public static void sendMessage(CommandSender[] senders, String message) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, String message) {
 		for (CommandSender sender : senders)
 			sender.sendMessage(message);
 	}
 
-	public static void sendMessage(CommandSender[] senders, String... messages) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, String... messages) {
 		for (CommandSender sender : senders)
 			sendMessage(sender, messages);
 	}
 
-	public static void sendMessage(CommandSender[] senders, final String permission, String message) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, final String permission, String message) {
 		sendMessage(senders, new Filter<CommandSender>() {
 			public boolean isFiltered(CommandSender sender) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.has(sender, permission))
@@ -165,7 +167,7 @@ public class MessageUtil {
 		}, message);
 	}
 
-	public static void sendMessage(CommandSender[] senders, final String permission, String... messages) {
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, final String permission, String... messages) {
 		sendMessage(senders, new Filter<CommandSender>() {
 			public boolean isFiltered(CommandSender sender) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.has(sender, permission))
