@@ -27,8 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.noxpvp.core.internal.CommandSenderFilter;
+import com.noxpvp.core.internal.PlayerFilter;
 import com.noxpvp.core.utils.BukkitUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -123,30 +124,30 @@ public class MessageUtil {
 		sender.sendMessage(parseColor(plugin.getLocale(locale, params)));
 	}
 
-	public static void sendMessage(CommandSender sender, String message) {
+	public static <T extends CommandSender> void sendMessage(T sender, String message) {
 		sender.sendMessage(message);
 	}
 
-	public static void sendMessage(CommandSender sender, String... messages) {
+	public static <T extends CommandSender> void sendMessage(T sender, String... messages) {
 		if (!LogicUtil.nullOrEmpty(messages))
 			for (String message : messages)
 				sendMessage(sender, message);
 	}
 
-	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<CommandSender> filter, String message) {
-		for (CommandSender sender : senders)
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<T> filter, String message) {
+		for (T sender : senders)
 			if (filter.isFiltered(sender))
 				sendMessage(sender, message);
 	}
 
-	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<CommandSender> filter, String... messages) {
-		for (CommandSender sender : senders)
+	public static <T extends CommandSender> void sendMessage(Collection<T> senders, Filter<T> filter, String... messages) {
+		for (T sender : senders)
 			if (filter.isFiltered(sender))
 				sendMessage(sender, messages);
 	}
 
 	public static <T extends CommandSender> void sendMessage(Collection<T> senders, String message) {
-		for (CommandSender sender : senders)
+		for (T sender : senders)
 			sender.sendMessage(message);
 	}
 
@@ -156,7 +157,7 @@ public class MessageUtil {
 	}
 
 	public static <T extends CommandSender> void sendMessage(Collection<T> senders, final String permission, String message) {
-		sendMessage(senders, new Filter<CommandSender>() {
+		sendMessage(senders, new CommandSenderFilter<T>() {
 			public boolean isFiltered(CommandSender sender) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.has(sender, permission))
 					return true;
@@ -168,8 +169,8 @@ public class MessageUtil {
 	}
 
 	public static <T extends CommandSender> void sendMessage(Collection<T> senders, final String permission, String... messages) {
-		sendMessage(senders, new Filter<CommandSender>() {
-			public boolean isFiltered(CommandSender sender) {
+		sendMessage(senders, new CommandSenderFilter<T>() {
+			public boolean isFiltered(T sender) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.has(sender, permission))
 					return true;
 				else if (sender.hasPermission(permission))
@@ -177,18 +178,6 @@ public class MessageUtil {
 				return false;
 			}
 		}, messages);
-	}
-
-	public static void sendMessage(Player[] players, Filter<Player> filter, String message) {
-		for (Player player : players)
-			if (filter.isFiltered(player))
-				sendMessage(player, message);
-	}
-
-	public static void sendMessage(Player[] players, Filter<Player> filter, String... messages) {
-		for (Player player : players)
-			if (filter.isFiltered(player))
-				sendMessage(player, messages);
 	}
 
 	public static void sendMessageNearby(Entity entity, double radX, double radY, double radZ, String message) {
@@ -212,7 +201,7 @@ public class MessageUtil {
 	}
 
 	public static void sendMessageToGroup(final String groupName, String message) {
-		sendMessage(Bukkit.getOnlinePlayers(), new Filter<Player>() {
+		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter() {
 			public boolean isFiltered(Player player) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.hasGroupSupport() && VaultAdapter.permission.playerInGroup(player.getWorld(), player.getName(), groupName))
 					return true;
@@ -224,7 +213,7 @@ public class MessageUtil {
 	}
 
 	public static void sendMessageToGroup(final String groupName, String... messages) {
-		sendMessage(Bukkit.getOnlinePlayers(), new Filter<Player>() {
+		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter() {
 			public boolean isFiltered(Player player) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.hasGroupSupport() && VaultAdapter.permission.playerInGroup(player.getWorld(), player.getName(), groupName))
 					return true;
