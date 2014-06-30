@@ -32,22 +32,28 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class BukkitUtil {
-
+	public static boolean useOnlineWorkaround = true;
 	/**
 	 * Safely gets all online players.
 	 * <p>This was made to help with build dependant issues with the new update from {@code Player[] to Collection<? extends Player>}</p>
 	 * @return {@code Collection<? extends Player>} of online players.
 	 */
 	public static Collection<? extends Player> getOnlinePlayers() {
-		try {
-			if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-				return ((Collection<? extends Player>)Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0]));
-			else
-				return Lists.newArrayList((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0]));
+		if (true || useOnlineWorkaround) {
+			try {
+				if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
+					return ((Collection<? extends Player>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0]));
+				else
+					return Lists.newArrayList((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0]));
+			} catch (NoSuchMethodException ex) {
+			} // can never happen
+			catch (InvocationTargetException ex) {
+			} // can also never happen
+			catch (IllegalAccessException ex) {
+			} // can still never happen
+		} else {
+//			return Bukkit.getOnlinePlayers(); //FIXME: Check for spiggot compat.
 		}
-		catch (NoSuchMethodException ex){} // can never happen
-		catch (InvocationTargetException ex){} // can also never happen
-		catch (IllegalAccessException ex){} // can still never happen
 
 		return Collections.emptyList();
 	}

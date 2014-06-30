@@ -26,6 +26,24 @@
 		<module>NoxChat</module>
         <module>NoxGuilds</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>Sk89q</id>
+            <repositories>
+                <!-- WorldGuard , WorldEdit -->
+                <repository>
+                    <id>sk89q</id>
+                    <url>http://maven.sk89q.com/artifactory/repo/</url>
+                </repository>
+            </repositories>
+        </profile>
+
+        <profile>
+            <id>NoSk89q</id>
+        </profile>
+
+    </profiles>
 	<repositories>
 		<!-- INTERNAL PROJECT -->
 		<repository>
@@ -63,12 +81,6 @@
 		<repository>
 			<id>dj-tcraft repository</id>
 			<url>http://ci.dj-tcraft.nl/plugin/repository/everything/</url>
-		</repository>
-
-		<!-- WorldGuard , WorldEdit -->
-		<repository>
-			<id>sk89q</id>
-			<url>http://maven.sk89q.com/artifactory/repo/</url>
 		</repository>
 
 		<!-- Vault -->
@@ -242,7 +254,7 @@
 			<dependency>
 				<groupId>org.spigotmc</groupId>
 				<artifactId>spigot-api</artifactId>
-				<version>1.7.9-R0.2-SNAPSHOT</version>
+				<version>1.7.9-R0.3-SNAPSHOT</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>
