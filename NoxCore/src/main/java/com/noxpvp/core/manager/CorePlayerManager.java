@@ -24,14 +24,11 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 	//~~~~~~~~~~~~~~~~~~~~~~
 	//Logging
 	//~~~~~~~~~~~~~~~~~~~~~~
-	private ModuleLogger log;
-
-	public ModuleLogger getModuleLogger(String... moduleName) {
-		return log.getModule(moduleName);
-	}
+	@Override
+	public ModuleLogger getModuleLogger(String... moduleName) { return super.getModuleLogger(moduleName);} //protected -> public
 
 	public void log(Level level, String msg) {
-		log.log(level, msg);
+		getLogger().log(level, msg);
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~
@@ -40,7 +37,7 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 
 	private CorePlayerManager() {
 		super(NoxPlayer.class, "playerdata");
-		log = NoxCore.getInstance().getModuleLogger("CorePlayerManager");
+
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~

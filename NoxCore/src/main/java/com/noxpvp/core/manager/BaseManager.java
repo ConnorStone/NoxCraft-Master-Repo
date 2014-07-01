@@ -21,9 +21,11 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 
 	private ModuleLogger logger;
 	private Class<T> typeClass;
-	private String saveFolder;
-	private File folder;
-	private Map<UUID, T> loadedCache;
+
+	protected final String saveFolder;
+	protected File folder;
+
+	protected Map<UUID, T> loadedCache;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -34,7 +36,7 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		this.saveFolder = saveFolderPath;
 		this.loadedCache = new HashMap<UUID, T>();
 
-		logger = new ModuleLogger(getPlugin(), typeClass.getName() + "Manager");
+		logger = new ModuleLogger(getPlugin(), getClass().getSimpleName());
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,6 +107,13 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		logger.log(level, msg, thrown);
 	}
 
+	protected ModuleLogger getLogger() {
+		return logger;
+	}
+
+	protected ModuleLogger getModuleLogger(String... modulePath) {
+		return logger.getModule(modulePath);
+	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instance Methods

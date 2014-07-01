@@ -54,14 +54,7 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> {
 	//~~~~~~~~~~~~~~~~~~~~~~
 	//Logging
 	//~~~~~~~~~~~~~~~~~~~~~~
-	private ModuleLogger log;
 
-	public ModuleLogger getModuleLogger(String... moduleName) {
-		return log.getModule(moduleName);
-	}
-
-	public void log(Level level, String msg) {
-		log.log(level, msg);
-	}
-
+	@Override
+	public ModuleLogger getModuleLogger(String... moduleName) { return super.getModuleLogger(moduleName); } //protected -> public
 }
