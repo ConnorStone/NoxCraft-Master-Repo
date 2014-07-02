@@ -23,14 +23,14 @@
 
 package com.noxpvp.core.manager.old;
 
-import com.noxpvp.core.OldPersistant;
+import com.noxpvp.core.ManuelPersistent;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.OfflinePlayer;
 
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.data.OldNoxPlayer;
 
-public interface IPlayerManager<T extends OldNoxPlayerAdapter> extends OldPersistant {
+public interface IPlayerManager<T extends OldNoxPlayerAdapter> extends ManuelPersistent {
 	public T[] getLoadedPlayers();
 
 	/**

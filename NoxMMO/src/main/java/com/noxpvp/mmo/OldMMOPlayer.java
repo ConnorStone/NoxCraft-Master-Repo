@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.MapMaker;
+import com.noxpvp.core.ManuelPersistent;
 import com.noxpvp.core.data.OldBaseNoxPlayerAdapter;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.mmo.util.PlayerClassUtil;
@@ -48,7 +49,6 @@ import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.utils.EntityUtil;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.core.OldPersistant;
 import com.noxpvp.core.annotation.Temporary;
 import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.mmo.abilities.Ability;
@@ -59,7 +59,7 @@ import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 
-public class OldMMOPlayer extends OldBaseNoxPlayerAdapter implements OldPersistant, MenuItemRepresentable {
+public class OldMMOPlayer extends OldBaseNoxPlayerAdapter implements ManuelPersistent, MenuItemRepresentable {
 
 	/** Not recommended for use **/
 	private static final String PRIMARY_CLASS_NODE = "current.primary-class";

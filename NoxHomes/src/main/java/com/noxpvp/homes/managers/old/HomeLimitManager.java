@@ -30,11 +30,11 @@ import org.bukkit.World;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
-import com.noxpvp.core.OldPersistant;
+import com.noxpvp.core.ManuelPersistent;
 import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 
-public class HomeLimitManager implements OldPersistant {
+public class HomeLimitManager implements ManuelPersistent {
 	private static HomeLimitManager instance;
 	private static boolean cumulativeLimits = false;
 	private static boolean superPerms = true;

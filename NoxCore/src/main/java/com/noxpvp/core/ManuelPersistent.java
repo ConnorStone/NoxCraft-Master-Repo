@@ -23,7 +23,8 @@
 
 package com.noxpvp.core;
 
-public interface OldPersistant {
+public interface ManuelPersistent {
+
 	/**
 	 * Loads data for this object.
 	 */

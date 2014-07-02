@@ -32,10 +32,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import com.noxpvp.core.OldPersistant;
+import com.noxpvp.core.ManuelPersistent;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.utils.BukkitUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.util.FileUtil;
 
@@ -45,7 +44,7 @@ import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.utils.UUIDUtil;
 
-public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implements OldPersistant {
+public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implements ManuelPersistent {
 	//FIXME: need to add ways to detect if uuid was changed (From null to none null to auto change file names)
 
 	private volatile static CorePlayerManager instance;
@@ -274,7 +273,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	}
 
 	/* (non-Javadoc)
-	 * @see com.noxpvp.core.OldPersistant#load()
+	 * @see com.noxpvp.core.ManuelPersistent#load()
 	 */
 	public void load() {
 		Collection<String> pls = getPlayerMap().keySet();
@@ -333,7 +332,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	}
 
 	/* (non-Javadoc)
-	 * @see com.noxpvp.core.OldPersistant#save()
+	 * @see com.noxpvp.core.ManuelPersistent#save()
 	 */
 	public void save() {
 		super.save();

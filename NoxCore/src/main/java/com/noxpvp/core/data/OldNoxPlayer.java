@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.Map.Entry;
 
-import com.noxpvp.core.OldPersistant;
+import com.noxpvp.core.ManuelPersistent;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -60,7 +60,7 @@ import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.TimeUtils;
 import com.noxpvp.core.utils.UUIDUtil;
 
-public class OldNoxPlayer implements OldPersistant, OldNoxPlayerAdapter {
+public class OldNoxPlayer implements ManuelPersistent, OldNoxPlayerAdapter {
 
 	private final PermissionHandler permHandler;
 	private WeakHashMap<String, CoolDown> cd_cache;
