@@ -23,32 +23,8 @@
 
 package com.noxpvp.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.logging.Level;
-
-import com.bergerkiller.bukkit.common.bases.mutable.LocationAbstract;
-import com.noxpvp.core.data.OldNoxPlayer;
-import com.noxpvp.core.internal.CooldownHandler;
-import com.noxpvp.core.manager.CorePlayerManager;
-import me.botsko.prism.Prism;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-
 import com.bergerkiller.bukkit.common.Common;
+import com.bergerkiller.bukkit.common.bases.mutable.LocationAbstract;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.bergerkiller.bukkit.common.conversion.BasicConverter;
@@ -62,18 +38,15 @@ import com.dsh105.holoapi.HoloAPICore;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.commands.NoxCommand;
 import com.noxpvp.core.commands.ReloadCommand;
+import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.internal.CooldownHandler;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.listeners.ChatPingListener;
-import com.noxpvp.core.listeners.ChestBlockListener;
-import com.noxpvp.core.listeners.DeathListener;
-import com.noxpvp.core.listeners.LoginListener;
-import com.noxpvp.core.listeners.OnLogoutSaveListener;
-import com.noxpvp.core.listeners.ServerPingListener;
-import com.noxpvp.core.listeners.VoteListener;
+import com.noxpvp.core.listeners.*;
 import com.noxpvp.core.locales.CoreLocale;
 import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
 import com.noxpvp.core.reloader.Reloader;
@@ -81,6 +54,20 @@ import com.noxpvp.core.utils.StaticCleaner;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.command.TownyAdminCommand;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import me.botsko.prism.Prism;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
+import java.util.*;
+import java.util.logging.Level;
 
 public class NoxCore extends NoxPlugin {
 	@SuppressWarnings("unchecked")
