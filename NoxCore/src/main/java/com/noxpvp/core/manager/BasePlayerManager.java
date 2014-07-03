@@ -13,6 +13,10 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 		super(type, saveFolderPath);
 	}
 
+	public BasePlayerManager(Class<T> type, String saveFolderPath, boolean useNoxFolder) {
+		super(type, saveFolderPath, useNoxFolder);
+	}
+
 	//~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~
