@@ -23,7 +23,7 @@
 
 package com.noxpvp.mmo.locale;
 
-import com.noxpvp.core.locales.NoxLocale;
+import com.noxpvp.core.localization.NoxLocale;
 import com.noxpvp.mmo.NoxMMO;
 
 public class MMOLocale extends NoxLocale {

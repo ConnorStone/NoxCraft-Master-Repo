@@ -27,8 +27,7 @@ import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.commands.BaseCommand;
-import com.noxpvp.core.commands.NoxCommand;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 
 public class NoxMessageBuilder extends MessageBuilder {
 

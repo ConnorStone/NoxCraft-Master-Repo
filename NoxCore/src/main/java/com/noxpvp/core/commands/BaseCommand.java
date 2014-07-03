@@ -34,7 +34,7 @@ import org.bukkit.command.CommandSender;
 import com.bergerkiller.bukkit.common.collections.StringMap;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.utils.NoxMessageBuilder;
 
 public abstract class BaseCommand implements Command {

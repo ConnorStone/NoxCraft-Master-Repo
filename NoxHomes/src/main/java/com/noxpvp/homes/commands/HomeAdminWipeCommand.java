@@ -31,7 +31,7 @@ import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.NoxHomes;

@@ -26,7 +26,6 @@ package com.noxpvp.core;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.utils.BukkitUtil;
@@ -39,7 +38,7 @@ import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
 import com.bergerkiller.bukkit.common.scoreboards.CommonTeam;
 import com.bergerkiller.bukkit.common.scoreboards.CommonTeam.FriendlyFireType;
-import com.noxpvp.core.locales.CoreLocale;
+import com.noxpvp.core.localization.CoreLocale;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;

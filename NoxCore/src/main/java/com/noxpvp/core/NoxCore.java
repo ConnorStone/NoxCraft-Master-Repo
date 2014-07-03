@@ -44,8 +44,8 @@ import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.internal.CooldownHandler;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.listeners.*;
-import com.noxpvp.core.locales.CoreLocale;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.CoreLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
@@ -550,7 +550,7 @@ public class NoxCore extends NoxPlugin {
 			setInstance(this);
 
 		VaultAdapter.load();
-		Common.loadClasses("com.noxpvp.core.locales.CoreLocale", "com.noxpvp.core.VaultAdapter");
+		Common.loadClasses("CoreLocale", "com.noxpvp.core.VaultAdapter");
 
 		globalLocales = new FileConfiguration(this, "Global-Localization.yml");
 

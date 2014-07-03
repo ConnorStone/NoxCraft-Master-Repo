@@ -23,7 +23,7 @@
 
 package com.noxpvp.homes.locale;
 
-import com.noxpvp.core.locales.NoxLocale;
+import com.noxpvp.core.localization.NoxLocale;
 import com.noxpvp.homes.NoxHomes;
 
 public class HomeLocale extends NoxLocale {

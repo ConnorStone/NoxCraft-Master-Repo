@@ -29,7 +29,7 @@ import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.MasterReloader;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.reloader.Reloader;
 import com.noxpvp.core.utils.NoxMessageBuilder;
 

@@ -38,7 +38,7 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.events.ChatPingEvent;
-import com.noxpvp.core.locales.CoreLocale;
+import com.noxpvp.core.localization.CoreLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
 public class ChatPingListener extends NoxListener<NoxCore> {
