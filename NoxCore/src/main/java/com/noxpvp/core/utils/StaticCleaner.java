@@ -1,60 +1,16 @@
-/*
- * Copyright (c) 2014. NoxPVP.com
- *
- * All rights are reserved.
- *
- * You are not permitted to
- * 	Modify
- * 	Redistribute nor distribute
- * 	Sublicense
- *
- * You are required to keep this license header intact
- *
- * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
- *
- * When using this you are required to
- * 	Display a visible link to noxpvp.com
- * 	For crediting purpose.
- *
- * For more information please refer to the license.md file in the root directory of repo.
- *
- * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
- */
-
-/*
- * Copyright (c) 2014. NoxPVP.com
- *
- * All rights are reserved.
- *
- * You are not permitted to
- * 	Modify
- * 	Redistribute nor distribute
- * 	Sublicense
- *
- * You are required to keep this license header intact
- *
- * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
- *
- * When using this you are required to
- * 	Display a visible link to noxpvp.com
- * 	For crediting purpose.
- *
- * For more information please refer to the license.md file in the root directory of repo.
- *
- * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
- */
-
 package com.noxpvp.core.utils;
+
+import com.bergerkiller.bukkit.common.AsyncTask;
+import com.bergerkiller.bukkit.common.PluginBase;
+import com.noxpvp.core.reflection.FieldUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.bergerkiller.bukkit.common.AsyncTask;
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.reflection.FieldUtils;
+import java.util.logging.Logger;
 
 
 /**
@@ -67,13 +23,17 @@ import com.noxpvp.core.reflection.FieldUtils;
  * @author Kristian
  */
 public class StaticCleaner {
-	private ModuleLogger log;
+	private Logger log;
 	private ClassLoader loader;
 	private String[] internalClasses;
 	private Class<?>[] publicClasses;
 
-	public StaticCleaner(NoxPlugin plugin, ClassLoader loader, String[] internals, Class<?>[] classes) {
-		log = plugin.getModuleLogger("Static Cleaner");
+	public StaticCleaner(Plugin plugin, ClassLoader loader, String[] internals, Class<?>[] classes) {
+		if (plugin instanceof PluginBase) log = ((PluginBase)plugin).getModuleLogger("Static Cleaner");
+		else log = plugin.getLogger();
+
+		Validate.notNull(log, "Plugin does not contain a logger. Plugin must have a logger!");
+
 		this.loader = loader;
 		this.internalClasses = internals;
 		this.publicClasses = classes;
