@@ -23,24 +23,18 @@
 
 package com.noxpvp.homes.commands;
 
-import java.util.Random;
-
-import org.bukkit.command.CommandSender;
-
 import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
-import com.noxpvp.core.localization.GlobalLocale;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.homes.managers.old.HomesPlayerManager;
 import com.noxpvp.homes.NoxHomes;
+
+import java.util.Random;
 
 public class HomeAdminWipeCommand extends BaseCommand {
 	public static final String COMMAND_NAME = "wipehomes";
 	public static final String PERM_NODE = "wipe.homes";
 	private static final Random r = new Random();
-	private HomesPlayerManager manager;
 
 	private String key;
 	private String[] helpLines;
@@ -50,43 +44,42 @@ public class HomeAdminWipeCommand extends BaseCommand {
 		key = getNextKey();
 
 		updateHelp();
-
-		manager = getPlugin().getHomeManager();
 	}
 
 	public CommandResult execute(CommandContext context) {
-		String[] args = context.getArguments();
-		CommandSender sender = context.getSender();
-
-		boolean wiped = false;
-		if (args.length < 1) {
-			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Must Specify Safety Key.");
-			return new CommandResult(this, false);
-		}
-
-		String k = null;
-		if (args.length > 0) {
-			k = args[0];
-
-			if (k.equals(key)) {
-				manager.clear();
-				manager.save();
-				wiped = true;
-			} else {
-				MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Incorrect safety key. Key is not \"" + k + "\"");
-				return new CommandResult(this, false);
-			}
-		}
-
-		if (wiped) {
-			key = getNextKey();
-			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_SUCCESS, "Wiped home data.");
-
-			updateHelp();
-		} else {
-			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Could not wipe data.");
-		}
-		return new CommandResult(this, true);
+//		HomesPlayerManager manager = HomesPlayerManager.getInstance();
+//		String[] args = context.getArguments();
+//		CommandSender sender = context.getSender();
+//
+//		boolean wiped = false;
+//		if (args.length < 1) {
+//			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Must Specify Safety Key.");
+//			return new CommandResult(this, false);
+//		}
+//
+//		String k = null;
+//		if (args.length > 0) {
+//			k = args[0];
+//
+//			if (k.equals(key)) {
+//				manager.clear();
+//				manager.save();
+//				wiped = true;
+//			} else {
+//				MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Incorrect safety key. Key is not \"" + k + "\"");
+//				return new CommandResult(this, false);
+//			}
+//		}
+//
+//		if (wiped) {
+//			key = getNextKey();
+//			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_SUCCESS, "Wiped home data.");
+//
+//			updateHelp();
+//		} else {
+//			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Could not wipe data.");
+//		}
+		return new CommandResult(this, true, "This command is currently not implemented in this version.", "The new save system makes it a bit harder to wipe all data.", "To speed up the release this command is now disabled until further implementations are made."); //FIXME: Implement again.
 	}
 
 	private String getNextKey() {

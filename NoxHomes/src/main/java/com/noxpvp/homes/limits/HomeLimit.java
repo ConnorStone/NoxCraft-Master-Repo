@@ -24,11 +24,19 @@
 package com.noxpvp.homes.limits;
 
 import com.noxpvp.core.Persistent;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public interface HomeLimit extends Persistent {
+
+	/**
+	 * Tell whether or not this limiter applies to this player.
+	 * @param player to check
+	 * @return true if being limited by this limiter else false.
+	 */
+	public boolean canLimit(OfflinePlayer player);
 
 	/**
 	 * Tells whether or not the player has passed the allowed limit.

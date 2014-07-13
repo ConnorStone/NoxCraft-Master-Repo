@@ -23,10 +23,7 @@
 
 package com.noxpvp.core.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
+import com.bergerkiller.bukkit.common.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,7 +35,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
-import com.bergerkiller.bukkit.common.utils.PlayerUtil;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class PlayerUtils extends PlayerUtil {
 
@@ -82,6 +81,13 @@ public class PlayerUtils extends PlayerUtil {
 
 	public static OfflinePlayer getOfflinePlayer(UUID uuid) {
 		return Bukkit.getOfflinePlayer(uuid);
+	}
+
+	public static boolean isOnline(String player) {
+		for (Player p : BukkitUtil.getOnlinePlayers())
+			if (p.getName().equals(player))
+				return true;
+		return false;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~

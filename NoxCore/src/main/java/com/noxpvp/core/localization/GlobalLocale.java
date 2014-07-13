@@ -51,7 +51,7 @@ public class GlobalLocale extends NoxLocale {
 
 		//Permissions
 		FAILED_PERMISSION = new GlobalLocale("permission.denied.default", "&cNope&r: &e%0%");
-		FAILED_PERMISSION_VERBOSE = new GlobalLocale("permission.denied.verbose", FAILED_PERMISSION.getDefault().replace("%0", "%0% >> Node '%1%'"));
+		FAILED_PERMISSION_VERBOSE = new GlobalLocale("permission.denied.verbose", FAILED_PERMISSION.getDefault().replace("%0%", "%0% >> Node '%1%'"));
 
 		//Commands
 		COMMAND_SUCCESS = new GlobalLocale("command.successful", "&aSuccessfully executed command: %0%");

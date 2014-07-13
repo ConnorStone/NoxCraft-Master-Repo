@@ -23,31 +23,23 @@
 
 package com.noxpvp.homes.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
-import com.noxpvp.core.commands.NoPermissionException;
-import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.localization.GlobalLocale;
-import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.core.utils.PlayerUtils;
+import com.noxpvp.homes.HomesPlayer;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.managers.old.HomesPlayerManager;
-import com.noxpvp.homes.tp.BaseHome;
+import com.noxpvp.homes.managers.HomesPlayerManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class DeleteHomeCommand extends BaseCommand {
 	public static final String COMMAND_NAME = "delhome";
 	public static final String PERM_NODE = "delhome";
-	private HomesPlayerManager manager;
-	private PermissionHandler permHandler;
 
 	public DeleteHomeCommand() {
 		super(COMMAND_NAME, false);
-		manager = getPlugin().getHomeManager();
-		permHandler = NoxHomes.getInstance().getPermissionHandler();
 	}
 
 
@@ -60,37 +52,37 @@ public class DeleteHomeCommand extends BaseCommand {
 				return new CommandResult(this, false);
 		}
 
-		Player player;
+		Player sender = context.getPlayer();
+
+		if (context.hasFlag("h") || context.hasFlag("help"))
+			return new CommandResult(this, false);
+
+		String playerString;
 
 		if (context.hasFlag("p"))
-			player = Bukkit.getPlayer(context.getFlag("p", String.class));
+			playerString = context.getFlag("p", String.class);
 		else if (context.hasFlag("player"))
-			player = Bukkit.getPlayer(context.getFlag("player", String.class));
+			playerString = context.getFlag("player", String.class);
 		else
-			player = (context.isPlayer()) ? context.getPlayer() : null;
+			playerString = sender.getName();
 
-		if (player == null) {
-			MessageUtil.sendLocale(context.getSender(), GlobalLocale.CONSOLE_NEEDPLAYER, "To delete a home.");
-			return new CommandResult(this, true);
-		}
-
-		boolean own = player.equals(context.getSender());
+		Player player;
 
 		String homeName = null;
+
 		if (context.hasArgument(0))
 			homeName = context.getArgument(0);
 
-		String perm = StringUtil.join(".", NoxHomes.HOMES_NODE, PERM_NODE, (own ? "" : "others.") + (homeName == null ? "default" : "named"));
+		if (LogicUtil.nullOrEmpty(homeName)) homeName = null;
 
-		if (!permHandler.hasPermission(context.getSender(), perm))
-			throw new NoPermissionException(context.getSender(), perm, new StringBuilder().append("Delete ").append(((own) ? "Own" : "Others")).append(" homes.").toString());
+		if (!playerString.equals(sender.getName()) && !PlayerUtils.isOnline(playerString))
+			return new CommandResult(this, true, "For safety we could not allow removing homes for offline players. ", " This feature will be made at a later time. ", " This is due to the UUID update.");
+		else
+			player = Bukkit.getPlayer(playerString);
 
-		BaseHome home = manager.getHome(player.getName(), homeName);
+		HomesPlayer hPlayer = HomesPlayerManager.getInstance().getPlayer(player);
+		hPlayer.tryRemoveHome(sender, homeName);
 
-		if (home != null)
-			manager.removeHome(home);
-
-		MessageUtil.sendLocale(getPlugin(), context.getSender(), "homes.delhome" + ((own) ? ".own" : ""), player.getName(), (homeName == null ? "default" : homeName));
 		return new CommandResult(this, true);
 	}
 

@@ -64,6 +64,11 @@ public abstract class NoxPlugin extends PluginBase {
 		return noxPluginFolder;
 	}
 
+	public void addPermissions(Class<? extends NoxPermission> permDefaults) {
+		for (NoxPermission def : CommonUtil.getClassConstants(permDefaults))
+			this.addPermission(def);
+	}
+
 	public void addPermission(NoxPermission perm) {
 		NoxCore.getInstance().addPermission(perm);
 	}

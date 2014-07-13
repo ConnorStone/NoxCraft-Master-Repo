@@ -26,9 +26,6 @@ package com.noxpvp.homes.managers;
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.manager.BasePlayerManager;
 import com.noxpvp.homes.HomesPlayer;
-import com.noxpvp.homes.NoxHomes;
-
-import java.util.logging.Level;
 
 public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> {
 

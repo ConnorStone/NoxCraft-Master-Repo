@@ -23,37 +23,29 @@
 
 package com.noxpvp.homes.commands;
 
-import com.noxpvp.homes.OldHomesPlayer;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
 import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.noxpvp.core.SafeLocation;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
-import com.noxpvp.core.commands.NoPermissionException;
-import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.localization.GlobalLocale;
-import com.noxpvp.core.utils.TownyUtil;
+import com.noxpvp.core.utils.PlayerUtils;
 import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.homes.HomesPlayer;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.managers.old.HomesPlayerManager;
-import com.noxpvp.homes.locale.HomeLocale;
+import com.noxpvp.homes.managers.HomesPlayerManager;
 import com.noxpvp.homes.tp.BaseHome;
 import com.noxpvp.homes.tp.DefaultHome;
 import com.noxpvp.homes.tp.NamedHome;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import static com.noxpvp.core.localization.GlobalLocale.CONSOLE_ONLYPLAYER;
 
 public class SetHomeCommand extends BaseCommand {
 	public static final String COMMAND_NAME = "sethome";
 	public static final String PERM_NODE = "sethome";
-	private final PermissionHandler permHandler;
-	private HomesPlayerManager manager;
 
 	public SetHomeCommand() {
 		super(COMMAND_NAME, true);
-		manager = getPlugin().getHomeManager();
-		permHandler = NoxHomes.getInstance().getPermissionHandler();
 	}
 
 	public String[] getHelp() {
@@ -64,9 +56,8 @@ public class SetHomeCommand extends BaseCommand {
 	}
 
 	public CommandResult execute(CommandContext context) {
-		NoxHomes plugin = getPlugin();
 		if (!context.isPlayer()) {
-			MessageUtil.sendLocale(context.getSender(), GlobalLocale.CONSOLE_ONLYPLAYER);
+			MessageUtil.sendLocale(context.getSender(), CONSOLE_ONLYPLAYER);
 			return new CommandResult(this, true);
 		}
 
@@ -75,77 +66,37 @@ public class SetHomeCommand extends BaseCommand {
 		if (context.hasFlag("h") || context.hasFlag("help"))
 			return new CommandResult(this, false);
 		
-		/*
-		 * Scoped for variable usage.
-		 */
-		{
-			Location loc = sender.getLocation();
-			String perm = StringUtil.join(".", NoxHomes.HOMES_NODE, PERM_NODE, "other-towns");
-			if (TownyUtil.isClaimedLand(loc) && !TownyUtil.isOwnLand(sender, loc) && !permHandler.hasPermission(sender, perm))
-				return new CommandResult(this, true, HomeLocale.BAD_LOCATION.get("You are not allowed to set home in other towns."));
-		}
-
-		String player = null;
+		String playerString;
 
 		if (context.hasFlag("p"))
-			player = context.getFlag("p", String.class);
+			playerString = context.getFlag("p", String.class);
 		else if (context.hasFlag("player"))
-			player = context.getFlag("player", String.class);
+			playerString = context.getFlag("player", String.class);
 		else
-			player = sender.getName();
+			playerString = sender.getName();
 
-		boolean own = player.equals(sender.getName());
+		Player player;
+
 		String homeName = null;
 
 		if (context.hasArgument(0))
 			homeName = context.getArgument(0);
 
-		String perm = StringUtil.join(".", NoxHomes.HOMES_NODE, PERM_NODE, (own ? "" : "others.") + (homeName == null ? "default" : "named"));
-		if (!permHandler.hasPermission(sender, perm))
-			throw new NoPermissionException(sender, perm, new StringBuilder("Set New Homes for ").append((own ? "self" : "others")).append(".").toString());
+		if (LogicUtil.nullOrEmpty(homeName)) homeName = null;
 
-
-		boolean success = false;
-		BaseHome newHome = null;
-		if (homeName == null)
-			newHome = new DefaultHome(player, sender);
+		if (!playerString.equals(sender.getName()) && !PlayerUtils.isOnline(playerString))
+			return new CommandResult(this, true, "For safety we could not allow creating homes for offline players. ", " This feature will be made at a later time. ", " This is due to the UUID update.");
 		else
-			newHome = new NamedHome(player, homeName, sender);
+			player = Bukkit.getPlayer(playerString);
 
-		if (newHome instanceof DefaultHome)
-			homeName = DefaultHome.PERM_NODE;
-		boolean good = false;
+		BaseHome newHome;
+		if (homeName == null)
+			newHome = new DefaultHome(playerString, sender);
+		else
+			newHome = new NamedHome(playerString, homeName, sender);
 
-		OldHomesPlayer hPlayer = HomesPlayerManager.getInstance().getPlayer(player);
-
-		if (own) {
-			if (plugin.getLimitsManager().canAddHome(hPlayer)) {
-				good = true;
-			} else {
-				MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "You already " + plugin.getHomeManager().getHomes(player).size() + "/" + plugin.getLimitsManager().getLimit(player) + " of the maximum amount of homes allowed.");
-				return new CommandResult(this, true);
-			}
-		} else
-			good = true;
-
-		if (manager.getHome(hPlayer, homeName) != null) {
-			good = true;
-			hPlayer.removeHome(plugin.getHomeManager().getHome(player, homeName));
-		}
-
-		if (good) {
-			hPlayer.addHome(newHome);
-			success = manager.getHome(hPlayer, homeName) != null;
-		} else
-			success = false;
-		if (success) {
-			SafeLocation l = new SafeLocation(newHome.getLocation());
-			MessageUtil.sendLocale(plugin, sender, "homes.sethome" + (own ? ".own" : ""), player, (homeName == null ? "default" : homeName), String.format(
-					"x=%1$.1f y=%2$.1f z=%3$.1f on world \"%4$s\"", l.getX(), l.getY(), l.getZ(), l.getWorldName()
-			));
-		} else {
-			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Home never stored in memory...");
-		}
+		HomesPlayer hPlayer = HomesPlayerManager.getInstance().getPlayer(player);
+		hPlayer.tryAddHome(sender, newHome);
 
 		return new CommandResult(this, true);
 	}

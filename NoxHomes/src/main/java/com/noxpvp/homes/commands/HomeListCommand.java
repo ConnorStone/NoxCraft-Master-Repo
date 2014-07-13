@@ -23,11 +23,6 @@
 
 package com.noxpvp.homes.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
@@ -35,20 +30,27 @@ import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.localization.GlobalLocale;
+import com.noxpvp.core.utils.PlayerUtils;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.homes.NoxHomes;
-import com.noxpvp.homes.managers.old.HomesPlayerManager;
+import com.noxpvp.homes.locale.HomeLocale;
+import com.noxpvp.homes.managers.HomesPlayerManager;
+import com.noxpvp.homes.permissions.HomePermission;
 import com.noxpvp.homes.tp.BaseHome;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeListCommand extends BaseCommand {
 	public static final String COMMAND_NAME = "homes";
 	public static final String LIST_PERM_NODE = "list";
 	private final PermissionHandler permHandler;
-	private HomesPlayerManager manager;
 
 	public HomeListCommand() {
 		super(COMMAND_NAME, false);
-		manager = getPlugin().getHomeManager();
 		permHandler = NoxHomes.getInstance().getPermissionHandler();
 	}
 
@@ -57,58 +59,60 @@ public class HomeListCommand extends BaseCommand {
 			return new CommandResult(this, false);
 
 		CommandSender sender = context.getSender();
+		HomesPlayerManager manager = HomesPlayerManager.getInstance();
 
-		if (manager == null) {
-			manager = getPlugin().getHomeManager();
-			if (manager == null) ;
-			{
-				return new CommandResult(this, true);
-			}
-		}
+		String playerName;
+		Player player;
 
-		String player = null;
 
 		if (context.hasFlag("p"))
-			player = context.getFlag("p", String.class);
+			playerName = context.getFlag("p", String.class);
 		else if (context.hasFlag("player"))
-			player = context.getFlag("player", String.class);
-		else if (context.isPlayer())
-			player = context.getPlayer().getName();
+			playerName = context.getFlag("player", String.class);
+		else
+			playerName = sender.getName();
 
-		if ((player == null || player.length() == 0) && context.isPlayer()) {
-			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Player match failed. Player was " + ((player == null) ? "null" : "blank"));
+		if (!playerName.equals(sender.getName()) && !PlayerUtils.isOnline(playerName))
+			return new CommandResult(this, true, "For safety we could not allow removing homes for offline players. ", " This feature will be made at a later time. ", " This is due to the UUID update.");
+		else
+			player = Bukkit.getPlayer(playerName);
+
+		if ((playerName == null || playerName.length() == 0) && context.isPlayer()) {
+			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Player match failed. Player was " + ((playerName == null) ? "null" : "blank"));
 			return new CommandResult(this, true);
-		} else if ((player == null || player.length() == 0)) {
+		} else if ((playerName == null || playerName.length() == 0)) {
 			MessageUtil.sendLocale(sender, GlobalLocale.CONSOLE_NEEDPLAYER, "Use the -p \"PlayerName\" flag");
 			return new CommandResult(this, true);
 		}
 
 		boolean own = false;
-		if (player.equals(sender.getName()) && context.isPlayer())
+		if (playerName.equals(sender.getName()) && context.isPlayer()) {
 			own = true;
+		}
 
-		String perm = StringUtil.join(".", NoxHomes.HOMES_NODE, LIST_PERM_NODE, (own ? "own" : "others"));
-		if (!permHandler.hasPermission(sender, perm))
+		String perm = ((own) ? HomePermission.LIST_OWN : HomePermission.LIST_OTHERS).getName();
+		if (!permHandler.hasPermission(sender, perm)) {
 			throw new NoPermissionException(sender, perm, new StringBuilder("Not allowed to view list of ").append((own ? "your own " : "other's ")).append("homes!").toString());
+		}
 
-		List<BaseHome> homes = manager.getHomes(player);
 
-		String homelist;
+		List<BaseHome> homes = manager.getPlayer(player).getHomes();
+
+		String homeList;
 		List<String> homeNames = new ArrayList<String>(homes.size());
 
 
 		if (homes.isEmpty())
-			homelist = "None";
+			homeList = "None";
 		else {
 			for (BaseHome home : homes)
 				homeNames.add(home.getName());
-			homelist = StringUtil.combineNames(homeNames);
+			homeList = StringUtil.combineNames(homeNames);
 		}
 
-		if (own)
-			player = "own";
+		if (own) playerName = "own";
 
-		MessageUtil.sendLocale(getPlugin(), sender, "homes.list", player, homelist);//TODO: Prettify large lists.
+		MessageUtil.sendLocale(sender, ((own) ? HomeLocale.LIST_OWN  : HomeLocale.LIST_OTHERS), playerName, homeList);//TODO: Prettify large lists.
 		return new CommandResult(this, true);
 	}
 
