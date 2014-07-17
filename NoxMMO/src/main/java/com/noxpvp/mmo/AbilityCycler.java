@@ -31,9 +31,9 @@ import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.utils.UUIDUtil;
 import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
 import com.noxpvp.mmo.renderers.ItemDisplayACRenderer;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -57,7 +57,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	static ConcurrentMap<String, List<AbilityCycler>> cyclers = null;
 	private static NoxListener<NoxMMO> iHeld = null, iInteract;
 	private ItemStack cycleItem;
-	private Reference<OldMMOPlayer> player = null;
+	private Reference<MMOPlayer> player = null;
 	private BaseAbilityCyclerRenderer renderer;
 	private int lastSlot = 0;
 
@@ -74,17 +74,17 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		this(data, MMOPlayerManager.getInstance().getPlayer(player), cycleItem);
 	}
 
-	public AbilityCycler(int size, OldMMOPlayer player, ItemStack cycleItem) {
+	public AbilityCycler(int size, MMOPlayer player, ItemStack cycleItem) {
 		super(size);
-		this.player = new SoftReference<OldMMOPlayer>(player);
+		this.player = new SoftReference<MMOPlayer>(player);
 		this.cycleItem = cycleItem;
 
 		register(this);
 	}
 
-	public AbilityCycler(Collection<Ability> data, OldMMOPlayer player, ItemStack cycleItem) {
+	public AbilityCycler(Collection<Ability> data, MMOPlayer player, ItemStack cycleItem) {
 		super(data);
-		this.player = new SoftReference<OldMMOPlayer>(player);
+		this.player = new SoftReference<MMOPlayer>(player);
 		this.cycleItem = cycleItem;
 		
 		register(this);
@@ -93,9 +93,9 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	public static void register(AbilityCycler cycler) {
 		Validate.notNull(cycler.getMMOPlayer());
 
-		OldMMOPlayer p = cycler.getMMOPlayer();
+		MMOPlayer p = cycler.getMMOPlayer();
 
-		final String identity = UUIDUtil.compressUUID(p.getUUID());
+		final String identity = UUIDUtil.compressUUID(p.getPlayerUUID());
 		if (cyclers == null) cyclers = new MapMaker().concurrencyLevel(4).makeMap();
 		if (cyclers.containsKey(identity))
 			cyclers.get(identity).add(cycler);
@@ -130,13 +130,13 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 	}
 
 	public boolean isPlayerMatch(Object ob) {
-		if (!(ob instanceof OfflinePlayer || UUIDUtil.isUUID(ob) || ob instanceof OldMMOPlayer))
+		if (!(ob instanceof OfflinePlayer || UUIDUtil.isUUID(ob) || ob instanceof MMOPlayer))
 			return false;
 
 		if (UUIDUtil.isUUID(ob) && getMMOPlayer() != null)
-			return getMMOPlayer().getUUID().equals(UUIDUtil.toUUID(ob));
+			return getMMOPlayer().getPlayerUUID().equals(UUIDUtil.toUUID(ob));
 
-		if (getMMOPlayer() != null && ob instanceof OldMMOPlayer)
+		if (getMMOPlayer() != null && ob instanceof MMOPlayer)
 			return getMMOPlayer().equals(ob);
 
 		return false;
@@ -186,7 +186,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 				if (!player.isSneaking())
 					return;
 
-				final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+				final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 				if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
 
@@ -224,7 +224,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 					final Player player = event.getPlayer();
 					final String identity = UUIDUtil.compressUUID(player.getUniqueId());
 
-					final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+					final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 					if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
 
@@ -261,7 +261,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		//Store current state.
 		ret.put("current-index", currentIndex());
 
-		ret.put("player", getMMOPlayer().getUUID(true));
+		ret.put("player", getMMOPlayer().getPlayerUUID());
 
 		//Store item that tells if its the cycler item.
 		ret.put("cycle-item", getCycleItem());
@@ -294,11 +294,11 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		if (id == null || cycleItem == null || LogicUtil.nullOrEmpty(abilityNames))
 			return null;
 
-		OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
+		MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
 
 		List<Ability> abilities = new ArrayList<Ability>();
 
-		for (Ability a : mmoPlayer.getAllAbilities())
+		for (Ability a : mmoPlayer.getAbilities())
 			if (abilityNames.contains(a.getName()))
 				abilities.add(a);
 
@@ -322,7 +322,7 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 		return ret;
 	}
 
-	public OldMMOPlayer getMMOPlayer() {
+	public MMOPlayer getMMOPlayer() {
 		if (player != null) return player.get();
 		return null;
 	}

@@ -21,15 +21,10 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.events;
+package com.noxpvp.mmo.party.old;
 
-import com.noxpvp.core.data.OldNoxPlayerAdapter;
-
-@Deprecated
-public class PlayerDataUnloadEvent extends NoxPlayerDataEvent {
-
-	@Deprecated
-	public PlayerDataUnloadEvent(OldNoxPlayerAdapter player, boolean honorCore) {
-		super(player, honorCore);
-	}
+public enum SharingType {
+	NONE,
+	SHARED,
+	FOCUSED
 }

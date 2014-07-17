@@ -43,7 +43,7 @@ public abstract class BaseHome implements WarpPoint, ConfigurationSerializable {
 
 	public static final String HOME_NODE = "nox.homes.home";
 	public static final String OTHER_HOME_NODE = "nox.homes.others.home";
-	protected transient final PermissionHandler permHandler;
+	protected final transient PermissionHandler permHandler;
 	protected String owner;
 	protected SafeLocation warpPoint;
 

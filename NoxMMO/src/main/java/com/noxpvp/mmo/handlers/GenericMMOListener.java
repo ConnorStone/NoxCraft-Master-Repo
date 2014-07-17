@@ -23,11 +23,7 @@
 
 package com.noxpvp.mmo.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

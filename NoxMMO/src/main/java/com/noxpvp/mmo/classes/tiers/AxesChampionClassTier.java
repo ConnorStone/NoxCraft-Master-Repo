@@ -39,7 +39,7 @@ public class AxesChampionClassTier extends ClassTier {
 
 	public static final String TIER_NAME = "Champion";
 
-	private volatile static String dName = "Champion";
+	private static volatile String dName = "Champion";
 	private final double maxHealth;
 	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 

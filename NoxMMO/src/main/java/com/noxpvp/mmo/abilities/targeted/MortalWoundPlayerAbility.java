@@ -23,16 +23,16 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
-import java.util.Arrays;
-
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
 import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import java.util.Arrays;
 
 public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
 
@@ -49,7 +49,7 @@ public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implemen
 
 		setDamage(8);
 		setRange(range);
-		setCD(45);
+		setCD(new CoolDown.Time().seconds(45));
 		this.duration = (20 * 4);
 		this.amplifier = 2;
 	}

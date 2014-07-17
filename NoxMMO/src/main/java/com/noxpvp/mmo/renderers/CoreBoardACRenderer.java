@@ -23,14 +23,15 @@
 
 package com.noxpvp.mmo.renderers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.ChatColor;
+
 import com.noxpvp.core.gui.CoreBoard;
 import com.noxpvp.core.gui.rendering.ICoreBoardRenderer;
 import com.noxpvp.mmo.AbilityCycler;
 import com.noxpvp.mmo.abilities.Ability;
-import org.bukkit.ChatColor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements ICoreBoardRenderer {
 	private CoreBoard board;

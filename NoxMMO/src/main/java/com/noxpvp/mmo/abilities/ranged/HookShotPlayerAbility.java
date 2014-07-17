@@ -116,15 +116,15 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 			}
 		};
 	}
-	
+
 	public HookShotPlayerAbility(Player p) {
 		this(p, 5, 50);
 	}
-	
+
 	public HookShotPlayerAbility(Player p, int cd) {
 		this(p, cd, 50);
 	}
-	
+
 	public HookShotPlayerAbility(Player p, double range) {
 		this(p, 5, range);
 	}
@@ -179,7 +179,7 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 
 		if (active && arrow != null && arrow.isOnGround()) {
 			return eventExecute();
-		} else if (!active) {	
+		} else if (!active) {
 			Player p = getPlayer();
 			PlayerInventory inv = p.getInventory();
 
@@ -229,21 +229,21 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 		if (getDistance() > getRange()) {
 			arrow.remove();
 			setActive(false);
-			
+
 			return new AbilityResult(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
 		}
 
 //		if (!hasLOS()) {
 //			arrow.remove();
 //			setActive(false);
-//			
+//
 //			return new AbilityResult(this, false, MMOLocale.ABIL_NO_LOS.get(getName()));
 //		}
 
 		if (!inv.containsAtLeast(pullRegent, pullRegent.getAmount())) {
 			arrow.remove();
 			setActive(false);
-			
+
 			return new AbilityResult(this, false,
 					MMOLocale.ABIL_NOT_ENOUGH_REGENT.get(
 							Integer.toString(pullRegent.getAmount()), pullRegent.getType().name().toLowerCase()));
@@ -251,7 +251,7 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 
 		inv.removeItem(pullRegent);
 		p.updateInventory();
-		
+
 		Block blockBelow = hBlock.getRelative(BlockFace.DOWN);
 		if (blockBelow.getType() == Material.AIR) {
 			hBlock.getRelative(BlockFace.DOWN).setType(holdingBlockType);
@@ -265,17 +265,16 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 		setActive(false);
 		return new AbilityResult(this, true, "&6You pull to the hook");
 	}
-	
+
 	public double getDistance() {
-		double distance = getPlayer().getLocation().distance(arrow.getLocation());
-		
-		return distance;
+
+		return getPlayer().getLocation().distance(arrow.getLocation());
 	}
-	
+
 	public boolean hasLOS() {
 		Location loc = getPlayer().getLocation();
 		loc.add(loc.getDirection().setY(0).normalize());
-		
+
 		return LineOfSightUtil.getTargetBlock(loc, (int) Math.floor(getDistance()), Material.AIR) == null;
 	}
 

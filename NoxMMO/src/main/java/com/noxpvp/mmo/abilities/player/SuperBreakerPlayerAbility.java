@@ -23,17 +23,17 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDamageEvent;
 
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.runnables.UnregisterMMOHandlerRunnable;
 
 /**

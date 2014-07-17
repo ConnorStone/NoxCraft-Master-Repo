@@ -31,13 +31,13 @@ import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.commands.SafeNullPointerException;
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.command.subcommands.AbilityBindCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityInfoCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityListCommand;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityCommand extends BaseCommand {
 
@@ -69,12 +69,12 @@ public class AbilityCommand extends BaseCommand {
 
 		String abilityName = StringUtil.join(" ", context.getArguments());
 
-		OldMMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		MMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 
 		if (mPlayer == null)
 			return new CommandResult(this, true, new MessageBuilder().red("mPlayer object is null!").lines());
 
-		Map<String, Ability> abilities = mPlayer.getAllMappedAbilities();
+		Map<String, Ability> abilities = mPlayer.getAbilitiesMap();
 
 		Ability ability = null;
 		if (abilities.containsKey(abilityName))

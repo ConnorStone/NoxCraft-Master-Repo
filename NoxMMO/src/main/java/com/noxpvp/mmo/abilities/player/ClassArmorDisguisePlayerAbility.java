@@ -31,9 +31,9 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import com.bergerkiller.bukkit.common.protocol.CommonPacket;
 import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOutEntityEquipment;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class ClassArmorDisguisePlayerAbility extends BasePlayerAbility {
 

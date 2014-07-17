@@ -23,9 +23,10 @@
 
 package com.noxpvp.mmo.renderers;
 
+import org.bukkit.entity.Player;
+
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.AbilityCycler;
-import org.bukkit.entity.Player;
 
 public class TextACRenderer extends BaseAbilityCyclerRenderer {
 

@@ -23,11 +23,7 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Wolf;
+import org.bukkit.entity.*;
 
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 

@@ -40,7 +40,7 @@ public class AxesWarlordClassTier extends ClassTier {
 
 	public static final String TIER_NAME = "Warlord";
 
-	private volatile static String dName = "Warlord";
+	private static volatile String dName = "Warlord";
 	private final double maxHealth;
 	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 

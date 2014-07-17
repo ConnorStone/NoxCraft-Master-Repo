@@ -55,6 +55,7 @@ import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.command.TownyAdminCommand;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.botsko.prism.Prism;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
@@ -362,7 +363,7 @@ public class NoxCore extends NoxPlugin {
 			setInstance(this);
 
 		VaultAdapter.load();
-		Common.loadClasses("CoreLocale", "com.noxpvp.core.VaultAdapter");
+		Common.loadClasses("com.noxpvp.core.localization.CoreLocale", "com.noxpvp.core.VaultAdapter");
 
 		globalLocales = new FileConfiguration(this, "Global-Localization.yml");
 
@@ -518,6 +519,10 @@ public class NoxCore extends NoxPlugin {
 
 	@Override
 	public void addPermission(NoxPermission permission) {
+		Validate.notNull(permission);
+		Validate.notNull(permission.getPlugin(), "Plugin is invalid! It must never be null!");
+		Validate.notNull(permission.getChildren(), "Children should never be null in NoxPermission. Return an empty array instead!");
+
 		NoxPlugin plugin = permission.getPlugin();
 		if (!permission_cache.containsKey(plugin))
 			permission_cache.put(plugin, new WeakHashMap<String, NoxPermission>());
@@ -533,7 +538,7 @@ public class NoxCore extends NoxPlugin {
 			return;
 		cache.put(permission.getName(), permission);
 		permissions.add(permission);
-		if (permission.getChildren().length > 0)
+		if (permission.getChildren().length > 0 && permission.getChildren() != null)
 			addPermissions(permission.getChildren());
 
 
@@ -544,7 +549,7 @@ public class NoxCore extends NoxPlugin {
 //
 //		if (permission.getChildren().length > 0)
 //			addPermissions(permission.getChildren());
-
+//
 //		if (permission.getParentNodes().length > 0) //Should not be needed since we know we are creating parents before we create nodes. Unless someone develops plugin ontop of this plugin that is not our developers.
 //			for (String node : permission.getParentNodes())
 //			{
@@ -557,8 +562,13 @@ public class NoxCore extends NoxPlugin {
 
 	@Override
 	public void addPermissions(NoxPermission... perms) {
-		for (NoxPermission perm : perms)
-			addPermission(perm);
+		boolean hasNulls = false;
+		for (NoxPermission perm : perms) {
+			if (!hasNulls && perm == null) hasNulls = true;
+			else if (perm != null) addPermission(perm);
+		}
+
+		if (hasNulls) log(Level.SEVERE, "Core was fed null permissions!");
 	}
 
 

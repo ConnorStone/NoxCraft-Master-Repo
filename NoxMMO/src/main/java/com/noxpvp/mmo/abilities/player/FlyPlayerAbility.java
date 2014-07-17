@@ -104,7 +104,7 @@ public class FlyPlayerAbility extends BasePlayerAbility {
 
 			return new AbilityResult(this, true, MMOLocale.ABIL_DEACTIVATED.get(getName()));
 		}
-		
+
 		Inventory i = p.getInventory();
 		if (!i.containsAtLeast(getReg(), getReg().getAmount()))
 			return new AbilityResult(this, false,

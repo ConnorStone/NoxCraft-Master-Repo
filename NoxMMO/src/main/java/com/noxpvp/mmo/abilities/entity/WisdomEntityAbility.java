@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -35,6 +34,7 @@ import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 public class WisdomEntityAbility extends BaseEntityAbility implements PVPAbility {
 

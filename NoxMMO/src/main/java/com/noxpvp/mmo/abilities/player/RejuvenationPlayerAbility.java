@@ -23,11 +23,11 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.runnables.HealRunnable;
 
 /**

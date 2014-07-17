@@ -41,7 +41,7 @@ import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
 
 public class ClassListCommand extends BaseCommand {
 
-	public final static String COMMAND_NAME = "list";
+	public static final String COMMAND_NAME = "list";
 	
 	public ClassListCommand() {
 		super(COMMAND_NAME, true);

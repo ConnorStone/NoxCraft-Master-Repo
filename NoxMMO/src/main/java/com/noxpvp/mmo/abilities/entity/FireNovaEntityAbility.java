@@ -25,7 +25,6 @@ package com.noxpvp.mmo.abilities.entity;
 
 import java.util.HashSet;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -37,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 /**
  * @author NoxPVP

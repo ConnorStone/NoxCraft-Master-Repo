@@ -23,23 +23,24 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-
+import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.Vector3D;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.gui.corebar.LivingEntityTracker;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.SilentAbility;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.noxpvp.core.data.Vector3D;
-import com.noxpvp.core.gui.corebar.LivingEntityTracker;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
-import com.noxpvp.mmo.abilities.SilentAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 
 public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPassiveAbility<PlayerInteractEvent>, SilentAbility {
 
@@ -54,7 +55,7 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 	public TargetPlayerAbility(Player player) {
 		super(ABILITY_NAME, player, 30);
 
-		setCD(1);
+		setCD(new CoolDown.Time().seconds(1));
 	}
 
 	/**
@@ -90,7 +91,8 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 				this.target_ref = new SoftReference<LivingEntity>((LivingEntity) it);
 
 				MMOPlayerManager pm = MMOPlayerManager.getInstance();
-				OldMMOPlayer mmoPlayer = pm.getPlayer(p), mmoIt = it instanceof Player ? pm.getPlayer((Player) it) : null;
+				MMOPlayer mmoPlayer = pm.getPlayer(p), mmoIt = it instanceof Player ? pm.getPlayer((Player) it) : null;
+				NoxPlayer itNP = mmoIt.getNoxPlayer();
 
 				if (mmoPlayer == null)
 					return new AbilityResult(this, false);
@@ -103,8 +105,8 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 					IPlayerClass c = mmoIt.getPrimaryClass();
 
 					if (c != null && c.getTier() != null) {
-						name = mmoIt.getFullName() + LivingEntityTracker.color + LivingEntityTracker.separater + c.getTier().getDisplayName();
-					} else name = mmoIt.getFullName();
+						name = itNP.getFullName() + LivingEntityTracker.color + LivingEntityTracker.separater + c.getTier().getDisplayName();
+					} else name = itNP.getFullName();
 				} else {
 					if (it instanceof Player) name = ((Player) it).getName();
 					else name = it.getType().name();

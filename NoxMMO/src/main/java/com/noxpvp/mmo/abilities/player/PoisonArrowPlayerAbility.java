@@ -26,7 +26,6 @@ package com.noxpvp.mmo.abilities.player;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -40,6 +39,7 @@ import org.bukkit.potion.PotionEffectType;
 import com.noxpvp.mmo.MasterListener;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.locale.MMOLocale;
 

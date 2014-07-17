@@ -100,17 +100,18 @@ public class NoxHomes extends NoxPlugin {
 
 	@Override
 	public void enable() {
-		if (instance != null) {
-			log(Level.SEVERE, "Instance already running of NoxHomes!");
-			log(Level.SEVERE, "Self Disabling new instance.");
-			setEnabled(false);
-			return;
-		}
+//		if (instance != null) {
+//			log(Level.SEVERE, "Instance already running of NoxHomes!");
+//			log(Level.SEVERE, "Self Disabling new instance.");
+//			setEnabled(false);
+//			return;
+//		}
+//
+//		setInstance(this);
 
-		Common.loadClasses("com.noxpvp.homes.locale.HomeLocale");
+		Common.loadClasses("com.noxpvp.homes.locale.HomeLocale", "com.noxpvp.homes.permissions.HomePermission");
 		permHandler = new PermissionHandler(this);
 
-		instance = this;
 		core = NoxCore.getInstance();
 
 		commandExecs = new StringMap<Command>();
@@ -141,7 +142,6 @@ public class NoxHomes extends NoxPlugin {
 
 		MasterReloader.getInstance().addModule(r);
 		registerAllCommands();
-
 	}
 
 	public NoxCore getCore() {
@@ -155,6 +155,16 @@ public class NoxHomes extends NoxPlugin {
 
 	@Override
 	public void permissions() {
+		if (instance != null) {
+			log(Level.SEVERE, "Instance already running of NoxHomes!");
+			log(Level.SEVERE, "Self Disabling new instance.");
+			setEnabled(false);
+			return;
+		}
+
+		setInstance(this);
+		Common.loadClasses("com.noxpvp.homes.permissions.HomePermission");
+
 		addPermissions(HomePermission.class);
 	}
 

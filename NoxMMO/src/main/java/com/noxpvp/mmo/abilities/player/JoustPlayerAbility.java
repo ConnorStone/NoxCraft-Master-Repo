@@ -23,12 +23,12 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 //FIXME not made yet
 
@@ -49,7 +49,7 @@ public class JoustPlayerAbility extends BasePlayerAbility implements PVPAbility 
 
 		throw new NotImplementedException();
 
-//		OldMMOPlayer mmoP;
+//		MMOPlayer mmoP;
 //		PlayerClass clazz = (mmoP = PlayerManager.getInstance().getPlayer(getPlayer())) != null? mmoP.getPrimaryClass() : null;
 //		
 //		if (clazz == null) return false;

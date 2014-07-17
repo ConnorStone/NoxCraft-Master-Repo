@@ -23,16 +23,16 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.runnables.DamageRunnable;
 
 public class RazerClawsPlayerAbility extends BasePlayerAbility implements IPassiveAbility<EntityDamageByEntityEvent>, PVPAbility {

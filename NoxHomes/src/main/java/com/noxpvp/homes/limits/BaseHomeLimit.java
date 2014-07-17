@@ -178,8 +178,7 @@ public abstract class BaseHomeLimit implements HomeLimit {
 		if (data.containsKey("type")) {
 			if (constructors.containsKey(data.get("type").toString())) {
 				try {
-					HomeLimit limit = constructors.get(data.get("type").toString()).newInstance(data);
-					return limit;
+					return constructors.get(data.get("type").toString()).newInstance(data);
 				} catch (RuntimeException e) {
 					log.severe("There was an exception while constructing HomeLimit. Storing backup for analysis.");
 				}

@@ -23,13 +23,13 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.core.data.Vector3D;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAbility {
 

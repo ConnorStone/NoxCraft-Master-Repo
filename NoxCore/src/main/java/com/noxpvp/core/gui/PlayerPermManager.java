@@ -23,13 +23,12 @@
 
 package com.noxpvp.core.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.bergerkiller.bukkit.common.utils.StringUtil;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.manager.CorePlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,11 +38,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.Vector;
 
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.VaultAdapter;
-import com.noxpvp.core.manager.CorePlayerManager;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerPermManager extends CoreBox {
 	
@@ -106,7 +103,7 @@ public class PlayerPermManager extends CoreBox {
 		
 		options.add(new CoreBoxItem(this, addGroup) {
 			public boolean onClick(InventoryClickEvent click) {
-				new GroupBox(getPlayer(), true, VaultAdapter.GroupUtils.getGroupList()).show();;
+				new GroupBox(getPlayer(), true, VaultAdapter.GroupUtils.getGroupList()).show();
 				return true;
 			}
 		});
@@ -117,7 +114,7 @@ public class PlayerPermManager extends CoreBox {
 				for (String g : VaultAdapter.permission.getPlayerGroups(getPlayer()))
 					pGroups.add(g);
 				
-				new GroupBox(getPlayer(), false, pGroups).show();;
+				new GroupBox(getPlayer(), false, pGroups).show();
 				return true;
 			}
 		});

@@ -23,9 +23,15 @@
 
 package com.noxpvp.mmo.classes;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.bergerkiller.bukkit.common.config.FileConfiguration;
+import com.noxpvp.mmo.classes.internal.ClassType;
+import com.noxpvp.mmo.classes.internal.ExperienceType;
+import com.noxpvp.mmo.classes.internal.IClassTier;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.classes.tiers.AxesBasherClassTier;
+import com.noxpvp.mmo.classes.tiers.AxesBerserkerClassTier;
+import com.noxpvp.mmo.classes.tiers.AxesChampionClassTier;
+import com.noxpvp.mmo.classes.tiers.AxesWarlordClassTier;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -34,13 +40,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.bergerkiller.bukkit.common.config.FileConfiguration;
-import com.noxpvp.mmo.classes.internal.ClassType;
-import com.noxpvp.mmo.classes.internal.ExperienceType;
-import com.noxpvp.mmo.classes.internal.IClassTier;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.classes.tiers.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @DelegateDeserialization(PlayerClass.class)
 public class AxesPlayerClass extends PlayerClass {
@@ -53,11 +55,11 @@ public class AxesPlayerClass extends PlayerClass {
 		super(uniqueID, className, player);
 	}
 
-	public AxesPlayerClass(String playerIdentifier, Player player) {
+	public AxesPlayerClass(UUID playerIdentifier, Player player) {
 		super(uniqueID, className, playerIdentifier, player);
 	}
 
-	public AxesPlayerClass(String playerIdentifier) {
+	public AxesPlayerClass(UUID playerIdentifier) {
 		super(uniqueID, className, playerIdentifier);
 	}
 
@@ -130,5 +132,4 @@ public class AxesPlayerClass extends PlayerClass {
 	protected FileConfiguration getClassConfig() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-}
+	}}

@@ -23,11 +23,12 @@
 
 package com.noxpvp.mmo.listeners;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.gui.HealthBar;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 public class LoginListener extends NoxListener<NoxMMO> {
 

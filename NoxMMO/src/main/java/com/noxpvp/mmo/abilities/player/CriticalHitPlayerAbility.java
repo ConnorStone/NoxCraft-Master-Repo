@@ -23,18 +23,18 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class CriticalHitPlayerAbility extends BasePlayerAbility implements IPassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
 
@@ -67,7 +67,7 @@ public class CriticalHitPlayerAbility extends BasePlayerAbility implements IPass
 		if (!itemName.contains("SWORD") && !itemName.contains("AXE"))
 			return new AbilityResult(this, false);
 
-		OldMMOPlayer player = pm.getPlayer(getPlayer());
+		MMOPlayer player = pm.getPlayer(getPlayer());
 
 		if (player == null)
 			return new AbilityResult(this, false);

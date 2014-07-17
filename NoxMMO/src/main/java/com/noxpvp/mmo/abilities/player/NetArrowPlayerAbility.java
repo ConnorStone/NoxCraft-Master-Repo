@@ -26,7 +26,6 @@ package com.noxpvp.mmo.abilities.player;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,6 +38,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import com.noxpvp.mmo.MasterListener;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.runnables.BlockTimerRunnable;

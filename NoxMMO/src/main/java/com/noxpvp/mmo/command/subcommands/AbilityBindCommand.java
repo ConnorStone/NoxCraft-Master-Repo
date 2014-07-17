@@ -23,6 +23,12 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import com.bergerkiller.bukkit.common.Task;
 import com.dsh105.holoapi.util.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
@@ -31,19 +37,13 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.gui.QuestionBox;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.AbilityCycler;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
 import com.noxpvp.mmo.abilities.SilentAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityBindCommand extends BaseCommand {
 
@@ -56,7 +56,7 @@ public class AbilityBindCommand extends BaseCommand {
 
 	@Override
 	public CommandResult execute(CommandContext context) throws NoPermissionException {
-		final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 
 		final Player player = context.getPlayer();
 		final ItemStack currentItem = player.getItemInHand();
@@ -80,13 +80,13 @@ public class AbilityBindCommand extends BaseCommand {
 					cycler = AbilityCycler.getCycler(player);
 				else
 					cycler = new AbilityCycler((!singleItem?
-							mmoPlayer.getAllAbilities() :
+							mmoPlayer.getAbilities() :
 							new ArrayList<Ability>()), player, currentItem);
 				
 				cycler.getList().clear();
 				List<Ability> abs = new ArrayList<Ability>();
 				if (singleItem) {
-					for (Ability a : mmoPlayer.getAllAbilities())
+					for (Ability a : mmoPlayer.getAbilities())
 						if (a.getName().equalsIgnoreCase(arg)) {
 							abs.add(a);
 							break;
@@ -97,7 +97,7 @@ public class AbilityBindCommand extends BaseCommand {
 						return;
 					}
 				} else {
-					for (Ability a : mmoPlayer.getAllAbilities())
+					for (Ability a : mmoPlayer.getAbilities())
 						if (!(a instanceof SilentAbility) && !(a instanceof IPassiveAbility<?>)) {
 							abs.add(a);
 						}

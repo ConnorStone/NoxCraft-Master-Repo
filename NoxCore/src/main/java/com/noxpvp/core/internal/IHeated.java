@@ -23,6 +23,8 @@
 
 package com.noxpvp.core.internal;
 
+import com.noxpvp.core.gui.CoolDown;
+
 public interface IHeated {
 
 	/**
@@ -30,5 +32,5 @@ public interface IHeated {
 	 *
 	 * @return {@link Integer} Seconds
 	 */
-	public int getCD();
+	public CoolDown.Time getCD();
 }

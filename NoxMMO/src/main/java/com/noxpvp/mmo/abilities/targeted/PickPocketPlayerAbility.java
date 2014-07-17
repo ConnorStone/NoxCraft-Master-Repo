@@ -32,8 +32,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP

@@ -23,11 +23,11 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.IPassiveAbility;
 import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -35,9 +35,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author NoxPVP
@@ -88,7 +87,7 @@ public class ParryPlayerAbility extends BasePlayerAbility implements IPassiveAbi
 
 		Player p = getPlayer();
 
-		OldMMOPlayer mmoPlayer;
+		MMOPlayer mmoPlayer;
 
 		if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p)) == null || (mustBlock && (!parriedWeapons.contains(p.getItemInHand().getType()))))
 			return new AbilityResult(this, false);

@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
@@ -40,6 +39,7 @@ import com.noxpvp.core.packet.NoxPacketUtil;
 import com.noxpvp.core.utils.DamageUtil;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
 public class ShurikenPlayerAbility extends BasePlayerAbility implements PVPAbility {

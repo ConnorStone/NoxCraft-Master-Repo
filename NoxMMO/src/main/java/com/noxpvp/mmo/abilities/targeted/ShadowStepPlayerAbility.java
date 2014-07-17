@@ -23,15 +23,15 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP

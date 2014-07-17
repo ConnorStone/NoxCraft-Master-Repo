@@ -27,6 +27,7 @@ import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -44,7 +45,7 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~
 
-	public void save(Player player) {
+	public void save(OfflinePlayer player) {
 		super.save(player.getUniqueId());
 	}
 
@@ -54,7 +55,7 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 		else super.save(id);
 	}
 
-	public T load(Player player) {
+	public T load(OfflinePlayer player) {
 		return super.load(player.getUniqueId());
 	}
 
@@ -79,7 +80,7 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 
 	public T getPlayer(UUID playerUID) { return get(playerUID); }
 
-	public T getPlayer(Player player) {
+	public T getPlayer(OfflinePlayer player) {
 		return get(player.getUniqueId());
 	}
 
@@ -87,13 +88,13 @@ public abstract class BasePlayerManager<T extends Persistent> extends BaseManage
 	//Instanced: Helpers
 	//~~~~~~~~~~~~~~~~~~
 
-	public T loadPlayer(Player player) { return load(player); }
+	public T loadPlayer(OfflinePlayer player) { return load(player); }
 
 	public T loadPlayer(UUID playerUUID) { return load(playerUUID); }
 
 	public void savePlayer(UUID playerUUID) { save(playerUUID);}
 
-	public void savePlayer(Player player) { save(player); }
+	public void savePlayer(OfflinePlayer player) { save(player); }
 
 	//~~~~~~~~~~~~~~~~~~~~~~~
 	//Static Methods

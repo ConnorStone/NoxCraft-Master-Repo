@@ -29,12 +29,12 @@ import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.localization.GlobalLocale;
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.gui.ClassChooseMenu;
 import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassSwitchCommand extends BaseCommand {
@@ -99,7 +99,7 @@ public class ClassSwitchCommand extends BaseCommand {
 
 		PlayerClass c = PlayerClassUtil.getClass(cName, context.getPlayer());
 
-		OldMMOPlayer p = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+		MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 
 		if (tier == -1)
 			c.setCurrentTier(c.getLatestTier());

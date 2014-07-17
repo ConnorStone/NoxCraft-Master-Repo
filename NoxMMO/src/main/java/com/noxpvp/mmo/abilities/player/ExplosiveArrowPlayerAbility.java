@@ -26,7 +26,6 @@ package com.noxpvp.mmo.abilities.player;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -36,6 +35,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.locale.MMOLocale;
 

@@ -40,7 +40,7 @@ public class AxesBerserkerClassTier extends ClassTier {
 
 	public static final String TIER_NAME = "Berserker";
 
-	private volatile static String dName = "Berserker";
+	private static volatile String dName = "Berserker";
 	private final double maxHealth;
 	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 

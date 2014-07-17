@@ -1,42 +1,33 @@
 /*
- * Copyright (c) 2014. NoxPVP.com
- *
- * All rights are reserved.
- *
- * You are not permitted to
- * 	Modify
- * 	Redistribute nor distribute
- * 	Sublicense
- *
- * You are required to keep this license header intact
- *
- * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
- *
- * When using this you are required to
- * 	Display a visible link to noxpvp.com
- * 	For crediting purpose.
- *
- * For more information please refer to the license.md file in the root directory of repo.
- *
- * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
- */
+* Copyright (c) 2014. NoxPVP.com
+*
+* All rights are reserved.
+*
+* You are not permitted to
+* 	Modify
+* 	Redistribute nor distribute
+* 	Sublicense
+*
+* You are required to keep this license header intact
+*
+* You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+*
+* When using this you are required to
+* 	Display a visible link to noxpvp.com
+* 	For crediting purpose.
+*
+* For more information please refer to the license.md file in the root directory of repo.
+*
+* To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+*/
 
 package com.noxpvp.mmo.listeners;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import org.bukkit.Material;
-import org.bukkit.entity.AnimalTamer;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -50,14 +41,12 @@ import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.bergerkiller.bukkit.common.utils.MathUtil;
 import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class ExperienceListener extends NoxListener<NoxMMO> {
-
-	private final MMOPlayerManager pm;
 
 	private final FileConfiguration expFile;
 	private final ConfigurationNode expNode;
@@ -76,8 +65,6 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 
 	public ExperienceListener(NoxMMO mmo) {
 		super(mmo);
-
-		this.pm = mmo.getPlayerManager();
 
 		this.expFile = mmo.getExperienceConfig();
 		this.expNode = expFile.getNode("experience");
@@ -223,7 +210,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 		Player attacker = (Player) (last.getDamager() instanceof Player ? last.getDamager() : null);
 		if (attacker == null) return;
 
-		OldMMOPlayer mmoPlayer = pm.getPlayer(attacker);
+		MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(attacker);
 		if (mmoPlayer == null) return;
 
 		double multiplier = cachedMultipliers.get(killed.getType().name());
@@ -236,7 +223,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 	public void onBreak(BlockBreakEvent event) {
 		Player breaker = event.getPlayer();
 
-		OldMMOPlayer player = pm.getPlayer(breaker);
+		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(breaker);
 		if (player == null) return;
 
 		double xpMulti = cachedMultipliers.get(event.getBlock().getType().name());
@@ -255,7 +242,7 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 
 		Player smelter = event.getPlayer();
 
-		OldMMOPlayer player = pm.getPlayer(smelter);
+		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(smelter);
 
 		if (player == null) return;
 		double xpMulti = cachedMultipliers.get(event.getItemType().name());
@@ -276,8 +263,8 @@ public class ExperienceListener extends NoxListener<NoxMMO> {
 		if (!(tamer instanceof Player) || (player = (Player) tamer) == null)
 			return;
 
-		OldMMOPlayer mmoPlayer;
-		if ((mmoPlayer = pm.getPlayer(player)) == null) return;
+		MMOPlayer mmoPlayer;
+		if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player)) == null) return;
 
 		double xpMulti = cachedMultipliers.get(event.getEntityType().name());
 		if (xpMulti != 0)

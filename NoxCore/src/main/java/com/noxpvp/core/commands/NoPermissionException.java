@@ -39,14 +39,14 @@ public class NoPermissionException extends RuntimeException {
 	/**
 	 * @return the permission
 	 */
-	public synchronized final String getPermission() {
+	public final synchronized String getPermission() {
 		return permission;
 	}
 
 	/**
 	 * @return the sender
 	 */
-	public synchronized final CommandSender getSender() {
+	public final synchronized CommandSender getSender() {
 		return sender;
 	}
 }

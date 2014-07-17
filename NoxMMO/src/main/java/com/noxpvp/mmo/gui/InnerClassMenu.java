@@ -23,11 +23,18 @@
 
 package com.noxpvp.mmo.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.noxpvp.core.effect.StaticEffects;
+import com.noxpvp.core.gui.CoreBox;
+import com.noxpvp.core.gui.CoreBoxItem;
+import com.noxpvp.core.gui.CoreBoxRegion;
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.classes.internal.ClassTier;
+import com.noxpvp.mmo.classes.internal.IClassTier;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,18 +44,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.core.effect.StaticEffects;
-import com.noxpvp.core.gui.CoreBox;
-import com.noxpvp.core.gui.CoreBoxItem;
-import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.classes.internal.ClassTier;
-import com.noxpvp.mmo.classes.internal.IClassTier;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class InnerClassMenu extends CoreBox {
 
@@ -69,7 +68,7 @@ public class InnerClassMenu extends CoreBox {
 		CoreBoxRegion tiers = new CoreBoxRegion(this, new Vector(0, 0, 2), 0, 7),
 				abilities = new CoreBoxRegion(this, new Vector(2, 0, 0), 1, 9);
 
-		final OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
+		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
 
 		for (Map.Entry<Integer, IClassTier> tier : clazz.getTiers()) {
 			if (!(tier.getValue() instanceof ClassTier))
@@ -135,7 +134,7 @@ public class InnerClassMenu extends CoreBox {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	protected InnerClassMenu clone() {
 		return new InnerClassMenu(getPlayer(), getPlayerClass(), this.getBackButton());
 	}
 

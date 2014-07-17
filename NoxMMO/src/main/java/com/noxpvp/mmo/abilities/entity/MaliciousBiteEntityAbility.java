@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
@@ -31,10 +30,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class MaliciousBiteEntityAbility extends BaseEntityAbility implements IPassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
 

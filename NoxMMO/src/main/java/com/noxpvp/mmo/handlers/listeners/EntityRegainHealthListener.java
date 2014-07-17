@@ -43,4 +43,3 @@ public class EntityRegainHealthListener extends GenericMMOListener<EntityRegainH
 		onEventMonitor(event);
 	}
 }
-

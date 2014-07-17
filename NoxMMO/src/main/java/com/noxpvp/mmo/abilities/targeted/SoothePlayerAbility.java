@@ -26,8 +26,8 @@ package com.noxpvp.mmo.abilities.targeted;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class SoothePlayerAbility extends BaseTargetedPlayerAbility {
 

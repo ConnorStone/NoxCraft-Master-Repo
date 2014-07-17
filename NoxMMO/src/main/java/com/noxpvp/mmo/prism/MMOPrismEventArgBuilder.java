@@ -23,17 +23,16 @@
 
 package com.noxpvp.mmo.prism;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.noxpvp.core.external.prism.NoxPrismEventArgBuilder;
+import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.core.external.prism.NoxPrismEventArgBuilder;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.Ability;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MMOPrismEventArgBuilder extends NoxPrismEventArgBuilder {
 	public static final String ABILITY_ARG = "ability";
@@ -50,7 +49,7 @@ public class MMOPrismEventArgBuilder extends NoxPrismEventArgBuilder {
 		String tName;
 		
 		if (target instanceof Player)
-			tName = MMOPlayerManager.getInstance().getPlayer((Player) target).getFullName();
+			tName = MMOPlayerManager.getInstance().getPlayer((Player) target).getNoxPlayer().getFullName();
 		else tName = target.getType().name().toLowerCase();
 		
 		withArg(TARGET_ARG, tName);
@@ -71,7 +70,7 @@ public class MMOPrismEventArgBuilder extends NoxPrismEventArgBuilder {
 			String name;
 			
 			if (e instanceof Player)
-				name = MMOPlayerManager.getInstance().getPlayer((Player) e).getFullName();
+				name = MMOPlayerManager.getInstance().getPlayer((Player) e).getNoxPlayer().getFullName();
 			else name = e.getType().name().toLowerCase();
 			
 			if (name != null && !name.isEmpty())

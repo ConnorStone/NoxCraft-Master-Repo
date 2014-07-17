@@ -21,28 +21,17 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.events;
+package com.noxpvp.mmo.abilities;
 
-import com.noxpvp.core.data.OldNoxPlayerAdapter;
-import org.bukkit.event.HandlerList;
+import java.util.Collection;
+import java.util.Map;
 
-@Deprecated
-public class PlayerDataSaveEvent extends NoxPlayerDataEvent {
-	@Deprecated
-	private static final HandlerList handlers = new HandlerList();
+public interface AbilityContainer <T extends Ability> {
+	public T getAbility(String identity);
 
-	@Deprecated
-	public PlayerDataSaveEvent(OldNoxPlayerAdapter player, boolean honorCore) {
-		super(player, honorCore);
-	}
+	public boolean hasAbility(String identity);
 
-	@Deprecated
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-
-	@Deprecated
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+	public Collection<T> getAbilities();
+	
+	public Map<String, T> getAbilitiesMap();
 }

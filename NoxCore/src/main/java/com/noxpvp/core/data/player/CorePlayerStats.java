@@ -25,6 +25,7 @@ package com.noxpvp.core.data.player;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.bergerkiller.bukkit.common.conversion.Conversion;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.data.NoxPlayer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -133,10 +134,10 @@ public class CorePlayerStats extends PlayerStats {
 		else return null;
 	}
 
-	public void addLastIGN(Player player) {
+	public void addLastIGN(OfflinePlayer player) {
 		Validate.isTrue(getPersistentID().equals(player.getUniqueId()), "Player does not match the ID of this stats handler. This is not the same player!");
 
-		addLastIGN(player.getName());
+		if (!LogicUtil.nullOrEmpty(player.getName())) addLastIGN(player.getName());
 	}
 
 	protected void addLastIGN(String name) {

@@ -21,19 +21,17 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.party;
+package com.noxpvp.mmo.party.old;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Party implements IParty {
 
@@ -52,9 +50,9 @@ public class Party implements IParty {
 	public Party(Player owner, @Nullable String name, @Nullable String pass) {
 		this.owner = owner.getName();
 
-		OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(owner);
+		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(owner);
 
-		partyData = player.getPersistantData().getNode("party");
+//		partyData = player.getPersistantData().getNode("party");
 
 		this.name = name != null ? name : partyData.get("name", "Party");
 

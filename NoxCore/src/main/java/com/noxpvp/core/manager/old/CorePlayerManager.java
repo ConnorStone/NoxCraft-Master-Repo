@@ -23,31 +23,26 @@
 
 package com.noxpvp.core.manager.old;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-
+import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.noxpvp.core.ManuelPersistent;
+import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.utils.BukkitUtil;
+import com.noxpvp.core.utils.UUIDUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.util.FileUtil;
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.bergerkiller.bukkit.common.config.FileConfiguration;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.OldNoxPlayerAdapter;
-import com.noxpvp.core.utils.UUIDUtil;
+import java.io.File;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 
 public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implements ManuelPersistent {
 	//FIXME: need to add ways to detect if uuid was changed (From null to none null to auto change file names)
 
-	private volatile static CorePlayerManager instance;
+	private static volatile CorePlayerManager instance;
 	private static List<IPlayerManager<?>> managers = new ArrayList<IPlayerManager<?>>();
 	protected FileConfiguration config;
 	private NoxCore plugin;
@@ -134,6 +129,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	 * @return list of player names.
 	 * @deprecated Uses old file names... This will break.. Use " MISSING METHOD " instead.
 	 */
+	@Deprecated
 	public List<String> getAllPlayerNames() {
 		List<String> ret = new ArrayList<String>();
 		if (isMultiFile()) {
@@ -169,6 +165,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	 * @return player param
 	 * @deprecated returns the param that was given.
 	 */
+	@Deprecated
 	public OldNoxPlayer getPlayer(OldNoxPlayer player) {
 		return player;
 	}
@@ -378,6 +375,7 @@ public class CorePlayerManager extends BasePlayerManager<OldNoxPlayer> implement
 	 *
 	 * @deprecated returns the specified argument..
 	 */
+	@Deprecated
 	protected OldNoxPlayer craftNew(OldNoxPlayer adapter) {
 		return adapter;
 	}

@@ -23,17 +23,17 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP
@@ -119,7 +119,7 @@ public class BackStabPlayerAbility extends BasePlayerAbility implements IPassive
 		if (!(pYaw <= (tYaw + accuracy)) && (pYaw >= (tYaw - accuracy)))
 			return new AbilityResult(this, false);
 
-		OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
+		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
 		if (player == null)
 			return new AbilityResult(this, false);
 

@@ -28,12 +28,13 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 
@@ -107,11 +108,12 @@ public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 			if (pl == p)
 				continue;
 
-			OldMMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(pl);
-			dLoc = mmop.getLastDeathLocation();
+			MMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(pl);
+			NoxPlayer np = mmop.getNoxPlayer();
+			dLoc = np.getStats().getLastDeath().getDeathLocation();
 
 			if (dLoc == null || dLoc.distance(pLoc) > getRange()) continue;
-			if (((ct - mmop.getLastDeathTS()) / 1000) > timeLimit) continue;
+			if (((ct - np.getStats().getLastDeath().getDeathStamp() / 1000) > timeLimit)) continue; //FIXME: Verify the timings.
 
 			target = pl;
 			break;
@@ -124,8 +126,8 @@ public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 		dLoc.getWorld().playSound(dLoc, Sound.ENDERMAN_TELEPORT, 3, 1);
 
 		target.teleport(dLoc);
-		return new AbilityResult(this, true, MMOLocale.ABIL_USE_TARGET.get(getName(), target instanceof Player?
-				MMOPlayerManager.getInstance().getPlayer((Player) target).getFullName() : target.getType().name().toLowerCase()));
+		return new AbilityResult(this, true, MMOLocale.ABIL_USE_TARGET.get(getName(), target instanceof Player ?
+				MMOPlayerManager.getInstance().getPlayer(target).getNoxPlayer().getFullName() : target.getType().name().toLowerCase()));
 	}
 
 }

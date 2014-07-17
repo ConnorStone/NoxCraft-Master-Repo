@@ -23,15 +23,14 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
 import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author NoxPVP

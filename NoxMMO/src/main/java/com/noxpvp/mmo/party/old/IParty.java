@@ -21,7 +21,7 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.party;
+package com.noxpvp.mmo.party.old;
 
 import java.util.List;
 

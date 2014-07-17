@@ -23,20 +23,22 @@
 
 package com.noxpvp.mmo.classes.tiers;
 
+import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.abilities.player.CriticalHitPlayerAbility;
+import com.noxpvp.mmo.abilities.player.LeapPlayerAbility;
+import com.noxpvp.mmo.classes.internal.ClassTier;
+import com.noxpvp.mmo.classes.internal.ExperienceType;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.abilities.player.CriticalHitPlayerAbility;
-import com.noxpvp.mmo.abilities.player.LeapPlayerAbility;
-import com.noxpvp.mmo.classes.internal.*;
-
 public class AxesBasherClassTier extends ClassTier {
 
 	public static final String TIER_NAME = "Basher";
-	private volatile static String dName = "Basher";
+	private static volatile String dName = "Basher";
 	private final double maxHealth;
 	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 

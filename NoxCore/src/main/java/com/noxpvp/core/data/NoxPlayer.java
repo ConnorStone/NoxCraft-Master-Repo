@@ -261,6 +261,11 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 		return Collections.unmodifiableList(cds);
 	}
 
+	public CoolDown getCoolDown(String name) {
+		if (hasCoolDown(name)) return cd_cache.get(name);
+		else return null;
+	}
+
 	/**
 	 * Tells whether or not the cooldown with the specified name is currently still active.
 	 *
@@ -405,4 +410,28 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	public String getLastFormattedName() {
 		return lastFormattedName;
 	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Deprecated Migratory Code.
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	@Deprecated
+	/**
+	 * @deprecated Please use {@link #isCooling(String)} instead.
+	 */
+	public boolean isCooldownActive(String name) {
+		return isCooling(name);
+	}
+
+	/**
+	 *
+	 * @deprecated Please use {@link #getCoolDown(String)} along with {@link com.noxpvp.core.gui.CoolDown#getReadableTimeLeft()}
+	 * @param name cooldown name
+	 * @return readable cooldown time.
+	 */
+	@Deprecated
+	public String getReadableRemainingCDTime(String name) {
+		return getCoolDown(name).getReadableTimeLeft();
+	}
+
 }

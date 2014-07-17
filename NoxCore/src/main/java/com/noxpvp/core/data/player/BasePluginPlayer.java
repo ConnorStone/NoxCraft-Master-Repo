@@ -79,6 +79,10 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPla
 		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
 	}
 
+	public final Player getPlayer() {
+		return getOfflinePlayer().getPlayer();
+	}
+
 	public final NoxPlayer getNoxPlayer() {
 		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID());
 	}
@@ -98,4 +102,6 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPla
 
 		return data;
 	}
+
+
 }

@@ -23,11 +23,11 @@
 
 package com.noxpvp.mmo.abilities;
 
-import java.util.List;
-
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.internal.IHeated;
 import org.bukkit.entity.Entity;
 
-import com.noxpvp.core.internal.IHeated;
+import java.util.List;
 
 public interface IEntityAbility extends Ability, IHeated {
 	
@@ -63,13 +63,13 @@ public interface IEntityAbility extends Ability, IHeated {
 	 * 
 	 * @return seconds
 	 */
-	public int getCD();
+	public CoolDown.Time getCD();
 	
 	/**
 	 * Sets the cooldown seconds variable to be used in this ability
 	 * 
 	 * @param cd
 	 */
-	public void setCD(int cd);
+	public void setCD(CoolDown.Time cd);
 	
 }

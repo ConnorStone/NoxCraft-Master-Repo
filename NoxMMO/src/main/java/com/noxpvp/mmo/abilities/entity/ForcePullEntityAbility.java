@@ -23,12 +23,12 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 public class ForcePullEntityAbility extends BaseEntityAbility implements PVPAbility {
 

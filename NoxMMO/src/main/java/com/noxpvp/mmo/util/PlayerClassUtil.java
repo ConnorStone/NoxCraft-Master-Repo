@@ -18,7 +18,7 @@
  *
  * For more information please refer to the license.md file in the root directory of repo.
  *
- * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright hers.
  */
 
 package com.noxpvp.mmo.util;
@@ -28,14 +28,12 @@ import com.bergerkiller.bukkit.common.reflection.SafeConstructor;
 import com.bergerkiller.bukkit.common.reflection.SafeField;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.collection.DualAccessStringMap;
-import com.noxpvp.core.utils.UUIDUtil;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.AxesPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.locale.MMOLocale;
-import org.bukkit.OfflinePlayer;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -60,11 +58,11 @@ public class PlayerClassUtil {
 	 * @param player the player to grab the class instance from.
 	 * @return PlayerClass object or null if none exist with the specified (name <b>OR</b> id)
 	 */
-	public static PlayerClass getClass(String clazz, OfflinePlayer player) {
+	public static PlayerClass getClass(String clazz, Player player) {
 		return getClass(clazz, MMOPlayerManager.getInstance().getPlayer(player));
 	}
 
-	public static PlayerClass getClass(String clazz, OldMMOPlayer player) {
+	public static PlayerClass getClass(String clazz, MMOPlayer player) {
 		if (!hasClass(clazz)) return null;
 
 		return constructUtil.safeConstructClass(clazz, player.getPlayer());
@@ -84,12 +82,12 @@ public class PlayerClassUtil {
 	 *
 	 * This will include any classes they do not have access to but have data stored in them.
 	 *
-	 * @see #getAllPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
+	 * @see #getAllPlayerClasses(com.noxpvp.mmo.MMOPlayer)
 	 *
 	 * @param player
 	 * @return List of classes
 	 */
-	public static List<PlayerClass> getAllPlayerClasses(OfflinePlayer player) {
+	public static List<PlayerClass> getAllPlayerClasses(Player player) {
 		return getAllPlayerClasses(MMOPlayerManager.getInstance().getPlayer(player));
 	}
 
@@ -98,14 +96,14 @@ public class PlayerClassUtil {
 	 *
 	 * This will include any classes they do not have access to but have data stored in them.
 	 *
-	 * @param player OldMMOPlayer object.
+	 * @param player MMOPlayer object.
 	 * @return List of classes or null if (player == null)
 	 */
-	public static List<PlayerClass> getAllPlayerClasses(OldMMOPlayer player) {
+	public static List<PlayerClass> getAllPlayerClasses(MMOPlayer player) {
 		if (player == null) return null;
-//		List<PlayerClass> ret = player.getClasses(); //Can be empty if they don't have any classes.
+//		List<PlayerClass> ret = player.getPlayerClasses(); //Can be empty if they don't have any classes.
 
-		return constructUtil.getAllClasses((LogicUtil.nullOrEmpty(player.getUID())?player.getName(): player.getUID()));
+		return constructUtil.getAllClasses(player.getPlayerUUID());
 
 	}
 
@@ -114,12 +112,12 @@ public class PlayerClassUtil {
 	 *
 	 * This will not include any classes they cannot access. Even if data is present for it.
 	 *
-	 * @see #getAllowedPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
+	 * @see #getAllowedPlayerClasses(com.noxpvp.mmo.MMOPlayer)
 	 *
 	 * @param player the player to grab the classes from.
 	 * @return List of classes or null if (player == null)
 	 */
-	public static List<PlayerClass> getAllowedPlayerClasses(OfflinePlayer player) {
+	public static List<PlayerClass> getAllowedPlayerClasses(Player player) {
 		return getAllowedPlayerClasses(MMOPlayerManager.getInstance().getPlayer(player));
 	}
 
@@ -133,7 +131,7 @@ public class PlayerClassUtil {
 	 * @param player the player to grab the classes from.
 	 * @return List of classes or null if (player == null)
 	 */
-	public static List<PlayerClass> getAllowedPlayerClasses(OldMMOPlayer player) {
+	public static List<PlayerClass> getAllowedPlayerClasses(MMOPlayer player) {
 		if (player == null) return null;
 		List<PlayerClass> ret = constructUtil.getAllClasses(player.getPlayer());
 		filterAllowedClasses(ret);
@@ -172,12 +170,12 @@ public class PlayerClassUtil {
 	/**
 	 * Retrieves all classes that may be saved to data.
 	 *
-	 * @see #getAllChangedPlayerClasses(com.noxpvp.mmo.OldMMOPlayer)
+	 * @see #getAllChangedPlayerClasses(com.noxpvp.mmo.MMOPlayer)
 	 *
 	 * @param player player to grab classes from
 	 * @return List of player class objects.
 	 */
-	public static List<PlayerClass> getAllChangedPlayerClasses(OfflinePlayer player) {
+	public static List<PlayerClass> getAllChangedPlayerClasses(Player player) {
 		return getAllChangedPlayerClasses(MMOPlayerManager.getInstance().getPlayer(player));
 	}
 
@@ -189,7 +187,7 @@ public class PlayerClassUtil {
 	 * @param player player to grab classes from
 	 * @return List of player class objects.
 	 */
-	public static List<PlayerClass> getAllChangedPlayerClasses(OldMMOPlayer player) {
+	public static List<PlayerClass> getAllChangedPlayerClasses(MMOPlayer player) {
 		List<PlayerClass> ret = getAllPlayerClasses(player);
 
 		filterChangedClasses(ret);
@@ -199,7 +197,7 @@ public class PlayerClassUtil {
 
 	/**
 	 * Classes must have the following constructors. (Each number represent a constructor with the following params.
-	 * Bold signifies that internal mechanisms depend heavily on and <b>MUST</b> be implemented.
+	 * B signifies that internal mechanisms depend heavily on and <b>MUST</b> be implemented.
 	 * <ol>
 	 * <li><b>(String playerName)</b></li>
 	 * </ol>
@@ -269,7 +267,7 @@ public class PlayerClassUtil {
 
 		/**
 		 * Classes must have the following constructors. (Each number represent a constructor with the following params.
-		 * Bold signifies that internal mechanisms depend heavily on and <b>MUST</b> be implemented.
+		 * B signifies that internal mechanisms depend heavily on and <b>MUST</b> be implemented.
 		 * <ol>
 		 * <li><b>(String playerName)</b></li>
 		 * </ol>
@@ -333,7 +331,7 @@ public class PlayerClassUtil {
 		}
 
 		@Deprecated
-		private List<PlayerClass> getAllClasses(String playerIdentifier) {
+		private List<PlayerClass> getAllClasses(UUID playerIdentifier) {
 			List<PlayerClass> ret = new ArrayList<PlayerClass>();
 			for (Class c : getPClasses()) {
 				PlayerClass p = safeConstructClass(c, playerIdentifier);
@@ -401,19 +399,19 @@ public class PlayerClassUtil {
 		}
 
 		private PlayerClass safeConstructClass(Class clazz, Player player) {
-			return safeConstructClass(clazz, UUIDUtil.compressUUID(player.getUniqueId()));
+			return safeConstructClass(clazz, player.getUniqueId());
 		}
 
-		private PlayerClass safeConstructClass(Class c, String playerIdentifier) {
+		private PlayerClass safeConstructClass(Class c, UUID playerIdentifier) {
 			String classID = getClassIDbyClass(c);
-			OldMMOPlayer player = MMOPlayerManager.getInstance().getPlayer(playerIdentifier);
+			MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(playerIdentifier);
 			Map<String, PlayerClass> classes = player.getClassMap();
 			if (classID != null) {
 				if (classes.containsKey(classID))
 					return classes.get(classID);
 			}
 
-			SafeConstructor sc = new SafeConstructor(c, String.class);
+			SafeConstructor sc = new SafeConstructor(c, UUID.class);
 
 			if (!sc.isValid())
 				return null;
@@ -438,10 +436,10 @@ public class PlayerClassUtil {
 		public PlayerClass safeConstructClass(String classId, Player player) {
 			if (player == null)
 				throw new IllegalArgumentException("Player cannot be null!");
-			return safeConstructClass(classId, player.getUniqueId().toString());
+			return safeConstructClass(classId, player.getUniqueId());
 		}
 
-		public PlayerClass safeConstructClass(String classId, String playerIdentifier) {
+		public PlayerClass safeConstructClass(String classId, UUID playerIdentifier) {
 			if (!pClasses.containsKeyLower(classId))
 				return null;
 
@@ -465,7 +463,7 @@ public class PlayerClassUtil {
 		 */
 		public PlayerClass safeConstructClass(Map<String, Object> data) {
 			final String uuid = data.get("class.uuid").toString();
-			final String playerIdent = data.get("player-ident").toString();
+			final UUID playerIdent = UUID.fromString(data.get("player-ident").toString());
 
 			PlayerClass ret = safeConstructClass(uuid, playerIdent);
 			if (ret != null) ret.onLoad(data);

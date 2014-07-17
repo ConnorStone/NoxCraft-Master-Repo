@@ -23,8 +23,7 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
-
+import com.noxpvp.core.gui.CoolDown;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -33,15 +32,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.effect.StaticEffects;
 import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
 
@@ -68,7 +69,7 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 	public RagePlayerAbility(Player player, double range) {
 		super(ABILITY_NAME, player, range);
 		
-		setCD(75);
+		setCD(new CoolDown.Time().seconds(75));
 
 		this.handler = new BaseMMOEventHandler<EntityDamageByEntityEvent>(
 				new StringBuilder().append(player.getName()).append(ABILITY_NAME).append("EntityDamageByEntityEvent").toString(),
@@ -108,9 +109,10 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 					StaticEffects.SkullBreak((LivingEntity) it);
 					
 					if (it instanceof Player) {
-						OldMMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(getPlayer());
+						MMOPlayer mp = MMOPlayerManager.getInstance().getPlayer(getPlayer());
+						NoxPlayer np = mp.getNoxPlayer();
 						MessageUtil.sendLocale((Player) it, MMOLocale.ABIL_HIT_ATTACKER_DAMAGED,
-								mp.getFullName(), getDisplayName(), String.format("%.2f", newDamage));
+								np.getFullName(), getDisplayName(), String.format("%.2f", newDamage));
 						
 					}
 					

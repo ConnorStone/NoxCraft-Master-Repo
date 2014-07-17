@@ -23,13 +23,8 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.projectiles.ProjectileSource;
 
 import com.noxpvp.core.NoxPlugin;
@@ -38,6 +33,7 @@ import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 /**
  * @author NoxPVP

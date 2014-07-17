@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.OldMMOPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -33,10 +32,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.IPassiveAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AutoToolPlayerAbilities {
 
@@ -56,7 +56,7 @@ public class AutoToolPlayerAbilities {
 			Player p = getPlayer();
 			Entity e = event.getEntity();
 
-			OldMMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
+			MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
 
 			int fireTicks = 50;
 

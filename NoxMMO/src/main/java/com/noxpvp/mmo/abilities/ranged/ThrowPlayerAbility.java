@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,6 +34,7 @@ import org.bukkit.entity.Player;
 import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
 import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 

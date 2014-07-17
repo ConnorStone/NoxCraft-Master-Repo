@@ -23,24 +23,23 @@
 
 package com.noxpvp.mmo.abilities;
 
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
+import com.noxpvp.core.VaultAdapter;
+import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.internal.IHeated;
+import com.noxpvp.core.manager.old.CorePlayerManager;
 import com.noxpvp.core.utils.UUIDUtil;
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.events.PlayerAbilityPreExecuteEvent;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.apache.commons.lang.IllegalClassException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.noxpvp.core.VaultAdapter;
-import com.noxpvp.core.data.OldNoxPlayer;
-import com.noxpvp.core.internal.IHeated;
-import com.noxpvp.core.manager.old.CorePlayerManager;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.events.PlayerAbilityPreExecuteEvent;
-import com.noxpvp.mmo.locale.MMOLocale;
 
 import java.util.logging.Level;
 
@@ -89,8 +88,8 @@ public abstract class BasePlayerAbility extends BaseEntityAbility implements IPl
 		if (player == null || !player.isOnline() || !hasPermission())
 			return false;
 		
-		OldMMOPlayer p;
-		if (this instanceof IHeated && (p = pm.getPlayer(player)).isCooldownActive(getName())) {
+		NoxPlayer p;
+		if (this instanceof IHeated && (p = pm.getPlayer(player).getNoxPlayer()).isCooldownActive(getName())) {
 			if (!(this instanceof SilentAbility))
 				MessageUtil.sendLocale(player, MMOLocale.ABIL_ON_COOLDOWN, getName(), p.getReadableRemainingCDTime(getName()));
 			

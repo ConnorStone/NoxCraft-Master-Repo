@@ -23,19 +23,18 @@
 
 package com.noxpvp.mmo.gui;
 
-import java.util.Arrays;
-
+import com.noxpvp.core.gui.CoreBox;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.noxpvp.core.gui.CoreBox;
+import java.util.Arrays;
 
 public class PartyManagerMenu extends CoreBox {
 	
-	public final static String MENU_NAME = "Party Manager";
-	public final static int size = 2;
+	public static final String MENU_NAME = "Party Manager";
+	public static final int size = 2;
 	
 	public PartyManagerMenu(Player p) {
 		this(p, null);
@@ -46,7 +45,7 @@ public class PartyManagerMenu extends CoreBox {
 	}
 	
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	protected PartyManagerMenu clone() {
 		return new PartyManagerMenu(getPlayer(), this.getBackButton());
 	}
 	

@@ -23,12 +23,6 @@
 
 package com.noxpvp.mmo;
 
-import java.util.logging.Level;
-
-import com.noxpvp.mmo.util.PlayerClassUtil;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.permissions.PermissionDefault;
-
 import com.bergerkiller.bukkit.common.Common;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.bergerkiller.bukkit.common.reflection.SafeConstructor;
@@ -38,14 +32,17 @@ import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.permissions.NoxPermission;
-import com.noxpvp.core.reloader.*;
+import com.noxpvp.core.reloader.BaseReloader;
+import com.noxpvp.core.reloader.Reloader;
 import com.noxpvp.core.utils.StaticCleaner;
 import com.noxpvp.mmo.abilities.entity.*;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoArmor;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoSword;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoTool;
 import com.noxpvp.mmo.abilities.player.*;
-import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.*;
 import com.noxpvp.mmo.abilities.ranged.*;
 import com.noxpvp.mmo.abilities.targeted.*;
-import com.noxpvp.mmo.classes.*;
+import com.noxpvp.mmo.classes.AxesPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.command.AbilityCommand;
 import com.noxpvp.mmo.command.ClassCommand;
@@ -53,6 +50,11 @@ import com.noxpvp.mmo.command.MMOCommand;
 import com.noxpvp.mmo.listeners.*;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.prism.MMOPrismUtil;
+import com.noxpvp.mmo.util.PlayerClassUtil;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.permissions.PermissionDefault;
+
+import java.util.logging.Level;
 
 
 public class NoxMMO extends NoxPlugin {
@@ -64,15 +66,15 @@ public class NoxMMO extends NoxPlugin {
 	HealListener healListener;
 	PlayerInteractListener playerTargetListener;
 	BlockListener blockListener;
+
 //	ExperienceListener experieneceListener;
+
 	private NoxCore core;
 	private PermissionHandler permHandler;
 	private FileConfiguration config;
 	private FileConfiguration experience;
 
 	private MasterListener masterListener;
-
-	private MMOPlayerManager playerManager = null;
 
 	private Class<Command>[] commands = (Class<Command>[]) new Class[]{ClassCommand.class, AbilityCommand.class, MMOCommand.class};
 	private Class<? extends ConfigurationSerializable>[] serializables = new Class[] {AbilityCycler.class, PlayerClass.class};
@@ -124,19 +126,16 @@ public class NoxMMO extends NoxPlugin {
 			setEnabled(false);
 			return;
 		}
+
 		setInstance(this);
 		Common.loadClasses("com.noxpvp.mmo.classes.internal.DummyClass");
 		MasterListener.init();
 		masterListener = new MasterListener();
 
-
-		getPlayerManager();
-
 		core = NoxCore.getInstance();
 
 		PlayerClassUtil.init();
 		PlayerClass.init();
-		
 
 		abilityListener = new AbilityListener(instance, core.isPrismActive());
 		damageListener = new DamageListener(instance);
@@ -219,7 +218,6 @@ public class NoxMMO extends NoxPlugin {
 	@Override
 	public void reloadConfig() {
 		config.load();
-
 	}
 
 	@Override
@@ -311,22 +309,6 @@ public class NoxMMO extends NoxPlugin {
 
 	public MasterListener getMasterListener() {
 		return masterListener;
-	}
-
-	/**
-	 * Gets the player manager.
-	 *
-	 * @return the player manager
-	 * @Deprecated Use {@link MMOPlayerManager#getInstance()} instead
-	 */
-	public MMOPlayerManager getPlayerManager() {
-		MMOPlayerManager c = MMOPlayerManager.getInstance();
-		if (playerManager == null)
-			playerManager = c;
-		else if (playerManager != c)
-			playerManager = c;
-
-		return playerManager;
 	}
 
 	@Override

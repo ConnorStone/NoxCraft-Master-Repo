@@ -23,12 +23,12 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class BoltPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
 

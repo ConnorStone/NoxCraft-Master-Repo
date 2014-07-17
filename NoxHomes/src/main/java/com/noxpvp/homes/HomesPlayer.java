@@ -169,7 +169,7 @@ public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesCont
 		final boolean hasPerm = VaultAdapter.permission.has(sender, perm);
 		final boolean exists = hasHome(home);
 		final boolean limitExceeded = getHomeLimit() != Short.MAX_VALUE && getHomeCount() >= getHomeLimit();
-		final HomeLocale successLocale = (isOwner) ? HomeLocale.SETHOME_OWN : HomeLocale.SETHOME_OTHERS, delHome = (isOwner) ? DELHOME_OWN : DELHOME_OTHERS;;
+		final HomeLocale successLocale = (isOwner) ? HomeLocale.SETHOME_OWN : HomeLocale.SETHOME_OTHERS, delHome = (isOwner) ? DELHOME_OWN : DELHOME_OTHERS;
 
 		if (!hasPerm) {
 			throw new NoPermissionException(sender, perm, new StringBuilder().append("Cannot create ").append((isOwner) ? "a " : "other's ").append(isDefaultHome ? "Default" : "Named").append(" Home").append((isOwner)?"!":"s!").toString());

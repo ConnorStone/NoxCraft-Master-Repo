@@ -34,10 +34,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.util.Vector;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;

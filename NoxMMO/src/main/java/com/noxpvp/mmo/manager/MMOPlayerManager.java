@@ -21,31 +21,41 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.manager;
+package com.noxpvp.mmo.manager;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.manager.BasePlayerManager;
+import com.noxpvp.mmo.MMOPlayer;
 import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
+public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 
-	//~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instance
-	//~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	public static CorePlayerManager getInstance() {
-		if (instance == null) instance = new CorePlayerManager();
+	private static MMOPlayerManager instance;
+
+	public static MMOPlayerManager getInstance() {
+		if (instance == null) instance = new MMOPlayerManager();
 		return instance;
 	}
 
-	private static CorePlayerManager instance; //Instance of manager.
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Constructors
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	//~~~~~~~~~~~~~~~~~~~~~~
+	private MMOPlayerManager() {
+		super(MMOPlayer.class, "playerdata");
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Logging
-	//~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	@Override
 	public ModuleLogger getModuleLogger(String... moduleName) { return super.getModuleLogger(moduleName);} //protected -> public
 
@@ -53,41 +63,20 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 		getLogger().log(level, msg);
 	}
 
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Constructors
-	//~~~~~~~~~~~~~~~~~~~~~~
-
-	private CorePlayerManager() {
-		super(NoxPlayer.class, "playerdata");
-
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced methods
-	//~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	@Override
-	public void unloadAndSave(UUID id) { //protected -> public
+	public void unloadAndSave(UUID id) {
 		super.unloadAndSave(id);
-	}
-
-	@Override
-	public NoxPlayer load(OfflinePlayer player) {
-		NoxPlayer ret = super.load(player);
-
-		ret.getStats().addLastIGN(player);
-
-		return ret;
-	}
+	} //protected -> public
 
 	@Override
 	public void save(OfflinePlayer player) {
-		NoxPlayer np = getIfLoaded(player.getUniqueId());
+		MMOPlayer np = getIfLoaded(player.getUniqueId());
 		if (np == null) return;
-
-		np.getStats().addLastIGN(player);
 
 		super.save(player);
 	}
-
 }

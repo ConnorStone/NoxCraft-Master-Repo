@@ -23,19 +23,19 @@
 
 package com.noxpvp.core.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-
-import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import org.bukkit.command.CommandSender;
-
 import com.bergerkiller.bukkit.common.collections.StringMap;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.utils.NoxMessageBuilder;
+import org.bukkit.command.CommandSender;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
 public abstract class BaseCommand implements Command {
 	private final boolean isPlayerOnly;
@@ -49,7 +49,7 @@ public abstract class BaseCommand implements Command {
 
 	protected static final String[] blankStringArray = new String[0];
 
-	protected BaseCommand(BaseCommand parent, String name, boolean isPlayerOnly) {
+	public BaseCommand(@Nullable BaseCommand parent, String name, boolean isPlayerOnly) {
 		isRoot = parent == null;
 
 		this.parent = parent;

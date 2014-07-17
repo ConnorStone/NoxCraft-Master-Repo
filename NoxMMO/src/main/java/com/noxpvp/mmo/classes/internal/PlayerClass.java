@@ -23,19 +23,23 @@
 
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.meta.When;
-
+import com.bergerkiller.bukkit.common.MessageBuilder;
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import com.bergerkiller.bukkit.common.config.FileConfiguration;
+import com.bergerkiller.bukkit.common.utils.ParseUtil;
+import com.bergerkiller.bukkit.common.utils.StringUtil;
+import com.noxpvp.core.annotation.Temporary;
+import com.noxpvp.core.gui.MenuItemRepresentable;
+import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.utils.UUIDUtil;
-
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.classes.DynamicClassTier;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,22 +50,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionDefault;
 
-import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.bergerkiller.bukkit.common.config.FileConfiguration;
-import com.bergerkiller.bukkit.common.utils.ParseUtil;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.noxpvp.core.annotation.Temporary;
-import com.noxpvp.core.gui.MenuItemRepresentable;
-import com.noxpvp.core.permissions.NoxPermission;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.OldMMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.classes.DynamicClassTier;
-import com.noxpvp.mmo.util.PlayerClassUtil;
+import javax.annotation.Nonnull;
+import javax.annotation.meta.When;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * When Implementing you must use all of the following constructors and params.
@@ -103,19 +95,19 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 	private ItemStack identifyingItem;
 	
 	//Player Data
-	private String playerIdentifier;
+	private UUID playerIdentifier;
 
 	public PlayerClass(String uid, @Nonnull String name, @Nonnull Player player) {
 		this(uid, name, null, player);
 	}
 
-	public PlayerClass(String uid, @Nonnull String name, @Nonnull String playerIdentifier) {
+	public PlayerClass(String uid, @Nonnull String name, @Nonnull UUID playerIdentifier) {
 		this(uid, name, playerIdentifier, null);
 	}
 
 	public PlayerClass(String uid,
 	                   @Nonnull String name,
-	                   @Nonnull(when = When.MAYBE) String playerIdentifier, @Nonnull(when = When.MAYBE) Player player) {
+	                   @Nonnull(when = When.MAYBE) UUID playerIdentifier, @Nonnull(when = When.MAYBE) Player player) {
 		Validate.notNull(name, "The name of class must not be null!");
 		Validate.notNull(uid, "The UID of class must not be null!");
 		Validate.isTrue((player != null || playerIdentifier != null), "Either the player or the playerIdentifier must not be null!");
@@ -123,12 +115,10 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 		this.uid = uid;
 		this.name = name;
 
-		if (playerIdentifier == null)
-			this.playerIdentifier = player.getName();
-		else
-			this.playerIdentifier = playerIdentifier;
+		if (playerIdentifier == null) this.playerIdentifier = player.getUniqueId();
+		else this.playerIdentifier = playerIdentifier;
 
-		log = pcLog.getModule(this.playerIdentifier);
+		log = pcLog.getModule(String.valueOf(this.playerIdentifier));
 
 		this.tiers = craftClassTiers();
 		this.tiers.putAll(craftDynamicTiers());
@@ -403,7 +393,7 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 		return identifyingItem.clone();
 	}
 
-	public final OldMMOPlayer getMMOPlayer() {
+	public final MMOPlayer getMMOPlayer() {
 		Player p = getPlayer();
 		if (p != null) return MMOPlayerManager.getInstance().getPlayer(p);
 		return MMOPlayerManager.getInstance().getPlayer(getPlayerIdentifier());
@@ -418,7 +408,7 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 		return UUIDUtil.isUUID(getPlayerIdentifier());
 	}
 
-	public final String getPlayerIdentifier() {
+	public final UUID getPlayerIdentifier() {
 		return playerIdentifier;
 	}
 
@@ -484,8 +474,8 @@ public abstract class PlayerClass implements IPlayerClass, MenuItemRepresentable
 	public void setCurrentTier(int tierLevel) {
 		cTierLevel = tierLevel;
 
-		OldMMOPlayer p = MMOPlayerManager.getInstance().getPlayer(getPlayer());
-		if (p.getPrimaryClass() == this)
+		MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(getPlayer());
+		if (p.getPrimaryClass() == this && p.isOnline())
 			p.getPlayer().setMaxHealth(getTier().getMaxHealth());
 
 	}

@@ -23,19 +23,18 @@
 
 package com.noxpvp.mmo.listeners;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class PlayerInteractListener extends NoxListener<NoxMMO> {

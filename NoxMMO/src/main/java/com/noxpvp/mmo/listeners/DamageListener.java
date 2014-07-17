@@ -34,6 +34,7 @@ import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.DamageUtil;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class DamageListener extends NoxListener<NoxMMO> {
 
@@ -64,7 +65,7 @@ public class DamageListener extends NoxListener<NoxMMO> {
 		if (playerAttacker != null) {
 
 			if (livingDamaged != null) {
-				com.noxpvp.mmo.MMOPlayerManager.getInstance().getPlayer(playerAttacker).setTarget(livingDamaged);
+				MMOPlayerManager.getInstance().getPlayer(playerAttacker).setTarget(livingDamaged);
 
 				if (event.getDamage() > 0) {
 					if (getPlugin().getMMOConfig().get("effect.damage.blood", Boolean.class, Boolean.TRUE)) {

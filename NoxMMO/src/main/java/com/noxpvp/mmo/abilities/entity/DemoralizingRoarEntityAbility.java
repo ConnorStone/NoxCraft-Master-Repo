@@ -25,13 +25,13 @@ package com.noxpvp.mmo.abilities.entity;
 
 import java.util.HashSet;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 /**
  * @author NoxPVP

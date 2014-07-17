@@ -23,22 +23,14 @@
 
 package com.noxpvp.core.utils;
 
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.bergerkiller.bukkit.common.AsyncTask;
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.google.common.collect.ImmutableList;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.annotation.Blocking;
+import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
+import com.noxpvp.core.events.uuid.NoxUUIDLostEvent;
+import com.noxpvp.core.listeners.NoxListener;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,20 +43,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.bergerkiller.bukkit.common.AsyncTask;
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.google.common.collect.ImmutableList;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.annotation.Blocking;
-import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
-import com.noxpvp.core.events.uuid.NoxUUIDLostEvent;
-import com.noxpvp.core.listeners.NoxListener;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UUIDUtil extends NoxListener<NoxCore> {
 	public static final UUID ZERO_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	public static final Pattern uuidPattern = Pattern.compile("(\\w{8})-?(\\w{4})-?(\\w{4})-?(\\w{4})-?(\\w{12})");
 	public static final String ZERO_UUID_COMPRESSED = UUIDUtil.compressUUID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-	private volatile static UUIDUtil instance;
+	private static volatile UUIDUtil instance;
 	private ConcurrentHashMap<String, UUID> name2UUID;
 
 	private UUIDUtil() {
@@ -107,7 +101,7 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	public static boolean isUUID(Object object) {
-		return (object != null)?uuidPattern.matcher(object.toString()).matches():false;
+		return (object != null) && uuidPattern.matcher(object.toString()).matches();
 	}
 
 	public static UUIDUtil getInstance() {
@@ -151,6 +145,9 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	private void mapID(String username, UUID id) {
+		Validate.notNull(id);
+		Validate.notNull(username);
+
 		if ((!name2UUID.containsKey(username) || name2UUID.get(username).equals(ZERO_UUID)) && !name2UUID.get(username).equals(id)) {
 			CommonUtil.callEvent(new NoxUUIDLostEvent(username, name2UUID.get(username)));
 			name2UUID.remove(username);

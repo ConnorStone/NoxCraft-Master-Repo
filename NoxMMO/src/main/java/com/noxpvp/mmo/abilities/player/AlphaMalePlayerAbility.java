@@ -23,19 +23,15 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Sound;
-import org.bukkit.entity.AnimalTamer;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
+import org.bukkit.entity.*;
 
 import com.bergerkiller.bukkit.common.controller.EntityController;
 import com.bergerkiller.bukkit.common.entity.type.CommonLivingEntity;
 import com.bergerkiller.bukkit.common.wrappers.DamageSource;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 
 public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbility {
 

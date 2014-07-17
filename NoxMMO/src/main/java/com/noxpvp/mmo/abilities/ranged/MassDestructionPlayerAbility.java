@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -36,6 +35,7 @@ import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
 import com.noxpvp.mmo.runnables.SetVelocityRunnable;

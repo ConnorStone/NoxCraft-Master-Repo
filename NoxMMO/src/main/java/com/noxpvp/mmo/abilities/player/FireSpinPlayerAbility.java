@@ -26,7 +26,6 @@ package com.noxpvp.mmo.abilities.player;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -45,6 +44,7 @@ import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
 public class FireSpinPlayerAbility extends BasePlayerAbility implements PVPAbility {

@@ -23,12 +23,13 @@
 
 package com.noxpvp.mmo.gui;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import com.noxpvp.mmo.OldMMOPlayer;
+import com.noxpvp.core.gui.CoreBox;
+import com.noxpvp.core.gui.CoreBoxItem;
+import com.noxpvp.core.gui.CoreBoxRegion;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,12 +40,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.core.gui.CoreBox;
-import com.noxpvp.core.gui.CoreBoxItem;
-import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.locale.MMOLocale;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClassChooseMenu extends CoreBox {
 
@@ -93,7 +91,7 @@ public class ClassChooseMenu extends CoreBox {
 
 						return true;
 					} else {
-						OldMMOPlayer mmoPlayer;
+						MMOPlayer mmoPlayer;
 						if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(getPlayer())) != null) {
 							mmoPlayer.setSecondaryClass(getPlayerClass());
 							hide();
@@ -125,7 +123,7 @@ public class ClassChooseMenu extends CoreBox {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	protected ClassChooseMenu clone() {
 		return new ClassChooseMenu(getPlayer(), null);
 
 	}
