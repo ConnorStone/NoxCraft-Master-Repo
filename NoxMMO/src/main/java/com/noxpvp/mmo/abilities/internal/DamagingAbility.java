@@ -21,55 +21,20 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.abilities.internal;
 
-import com.noxpvp.core.gui.CoolDown;
-import com.noxpvp.core.internal.IHeated;
-import org.bukkit.entity.Entity;
-
-import java.util.List;
-
-public interface IEntityAbility extends Ability, IHeated {
-	
-	/**
-	 * Retrieves the entity responsible for this ability.
-	 *
-	 * @return Entity object from bukkit.
-	 */
-	public Entity getEntity();
-
+public interface DamagingAbility extends Ability {
 	/**
 	 * Gets the damage variable stored in this ability, 0 if it has not been set
 	 *
 	 * @return {@link Double} damage amount
 	 */
-	public double getDamage();
+	double getDamage();
 
 	/**
 	 * Sets a damage variable to be used in this ability
 	 *
 	 * @param damage
 	 */
-	public void setDamage(double damage);
-	
-	public void addEffectedEntity(Entity e);
-	
-	public List<Entity> getEffectedEntities();
-	
-	public void clearEffected();
-	
-	/**
-	 * Gets the cooldown seconds variable to be used in this ability
-	 * 
-	 * @return seconds
-	 */
-	public CoolDown.Time getCD();
-	
-	/**
-	 * Sets the cooldown seconds variable to be used in this ability
-	 * 
-	 * @param cd
-	 */
-	public void setCD(CoolDown.Time cd);
-	
+	void setDamage(double damage);
 }

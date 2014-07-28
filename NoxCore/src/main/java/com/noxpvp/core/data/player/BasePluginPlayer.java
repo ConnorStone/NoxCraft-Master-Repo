@@ -54,7 +54,7 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPla
 		this.uuid = playerUUID;
 	}
 
-	public BasePluginPlayer(Player player) {
+	public BasePluginPlayer(OfflinePlayer player) {
 		this(player != null ? player.getUniqueId() : null);
 	}
 
@@ -70,6 +70,9 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPla
 
 	public final boolean isOnline() { return PlayerUtils.isOnline(getPlayerUUID()); }
 
+	public final String getFullName() {
+		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getFullName();
+	}
 
 	public final String getPlayerName() {
 		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getPlayerName();
@@ -98,7 +101,7 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPla
 	public Map<String, Object> serialize() {
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		data.put("uuid", getPlayerUUID());
+		data.put("uuid", getPlayerUUID().toString());
 
 		return data;
 	}

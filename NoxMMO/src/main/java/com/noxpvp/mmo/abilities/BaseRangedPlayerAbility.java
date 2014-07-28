@@ -23,16 +23,17 @@
 
 package com.noxpvp.mmo.abilities;
 
-import org.bukkit.entity.Player;
+import com.noxpvp.mmo.abilities.internal.RangedPlayerAbility;
+import org.bukkit.OfflinePlayer;
 
-public abstract class BaseRangedPlayerAbility extends BasePlayerAbility implements IRangedPlayerAbility {
+public abstract class BaseRangedPlayerAbility extends BasePlayerAbility implements RangedPlayerAbility {
 	private double range;
 
-	public BaseRangedPlayerAbility(String name, Player player) {
+	public BaseRangedPlayerAbility(String name, OfflinePlayer player) {
 		super(name, player);
 	}
 
-	public BaseRangedPlayerAbility(String name, Player player, double range) {
+	public BaseRangedPlayerAbility(String name, OfflinePlayer player, double range) {
 		super(name, player);
 
 		this.range = range;

@@ -31,6 +31,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,6 +40,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.*;
 import java.util.logging.Level;
 
+@SerializableAs("PlayerStats")
 public class CorePlayerStats extends PlayerStats {
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,11 +91,11 @@ public class CorePlayerStats extends PlayerStats {
 		if (data.containsKey(IPS_KEY)) loggedIps = (List<String>) Conversion.toList.convertSpecial(data.get(IPS_KEY), String.class, new ArrayList<String>());
 		if (data.containsKey(USED_IGN_KEY)) usedIGNs = (List<String>) Conversion.toList.convertSpecial(data.get(USED_IGN_KEY), String.class, new ArrayList<String>());
 
-		lastKillType = ((data.containsKey(LAST_KILL_TYPE_KEY)) ? EntityType.valueOf(data.get(LAST_KILL_TYPE_KEY).toString()) : null);
-		lastDeath = ((data.containsKey(LAST_DEATH_KEY)) ? (data.get(LAST_DEATH_KEY) instanceof DeathEntry ? (DeathEntry) data.get(LAST_DEATH_KEY) : null) : null);
-		lastKillUUID = ((data.containsKey(LAST_KILL_UUID_KEY)) ? UUID.fromString(data.get(LAST_KILL_UUID_KEY).toString()) : null);
-		lastWorldName = ((data.containsKey(LAST_WORLD_NAME_KEY)) ? data.get(LAST_WORLD_NAME_KEY).toString() : null);
-		lastWorldUUID = ((data.containsKey(LAST_WORLD_UUID_KEY)) ? UUID.fromString(data.get(LAST_WORLD_UUID_KEY).toString()) : null);
+		lastKillType = ((data.containsKey(LAST_KILL_TYPE_KEY) && data.get(LAST_KILL_TYPE_KEY) != null) ? EntityType.valueOf(data.get(LAST_KILL_TYPE_KEY).toString()) : null);
+		lastDeath = ((data.containsKey(LAST_DEATH_KEY) && data.get(LAST_DEATH_KEY) != null) ? (data.get(LAST_DEATH_KEY) instanceof DeathEntry ? (DeathEntry) data.get(LAST_DEATH_KEY) : null) : null);
+		lastKillUUID = ((data.containsKey(LAST_KILL_UUID_KEY) && data.get(LAST_KILL_UUID_KEY) != null) ? UUID.fromString(data.get(LAST_KILL_UUID_KEY).toString()) : null);
+		lastWorldName = ((data.containsKey(LAST_WORLD_NAME_KEY) && data.get(LAST_WORLD_NAME_KEY) != null) ? data.get(LAST_WORLD_NAME_KEY).toString() : null);
+		lastWorldUUID = ((data.containsKey(LAST_WORLD_UUID_KEY) && data.get(LAST_WORLD_UUID_KEY) != null) ? UUID.fromString(data.get(LAST_WORLD_UUID_KEY).toString()) : null);
 	}
 
 	public CorePlayerStats(Player player) {
@@ -112,15 +114,27 @@ public class CorePlayerStats extends PlayerStats {
 		return Collections.unmodifiableList(loggedIps);
 	}
 
-
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods: Last World Info
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public String getLastWorldName() {
 		//Self update.
-		if (isOnline()) this.lastWorldName = ((Player) getOfflinePlayer()).getWorld().getName();
+		if (isOnline()) updateWorld();
 		return this.lastWorldName;
+	}
+
+	public UUID getLastWorldUUID() {
+		if (isOnline()) updateWorld();
+		return this.lastWorldUUID;
+	}
+
+	private void updateWorld() {
+		Player p = getOfflinePlayer().getPlayer();
+		if (p != null) {
+			this.lastWorldName = p.getWorld().getName();
+			this.lastWorldUUID = p.getWorld().getUID();
+		}
 	}
 
 	//~~~~~~~~~~~~~~~~
@@ -134,9 +148,14 @@ public class CorePlayerStats extends PlayerStats {
 		else return null;
 	}
 
-	public void addLastIGN(OfflinePlayer player) {
+	public void updateLastPlayerInfo(OfflinePlayer player) { //TODO: Add function and move this code to it. updateLastConnectionData()
 		Validate.isTrue(getPersistentID().equals(player.getUniqueId()), "Player does not match the ID of this stats handler. This is not the same player!");
 
+		String ip = player.getPlayer().getAddress().getAddress().getHostAddress();
+		if (player.isOnline()) {
+			if (this.loggedIps.contains(ip)) this.loggedIps.remove(ip);
+			this.loggedIps.add(0, ip);
+		}
 		if (!LogicUtil.nullOrEmpty(player.getName())) addLastIGN(player.getName());
 	}
 
@@ -172,6 +191,10 @@ public class CorePlayerStats extends PlayerStats {
 		return lastDeath;
 	}
 
+	public void setLastDeath(PlayerDeathEvent e) {
+
+	}
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods: Helper Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,13 +208,9 @@ public class CorePlayerStats extends PlayerStats {
 	}
 
 	public World getLastWorld() {
-		World ret = null;
-		if (isOnline()) {
-			ret = ((Player) getOfflinePlayer()).getWorld();
-			this.lastWorldName = ret.getName();
-		} else ret = Bukkit.getWorld(getLastWorldName());
+		if (isOnline()) updateWorld();
 
-		return ret;
+		return (this.lastWorldUUID != null ? Bukkit.getWorld(this.lastWorldUUID) : Bukkit.getWorld(this.lastWorldName));
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -208,16 +227,13 @@ public class CorePlayerStats extends PlayerStats {
 		data.put(LAST_KILL_UUID_KEY, getLastKillUUID());
 		data.put(LAST_KILL_TYPE_KEY, getLastKillType());
 		data.put(LAST_WORLD_NAME_KEY, getLastWorldName());
+		data.put(LAST_WORLD_UUID_KEY, getLastWorldUUID().toString());
 
 		return data;
 	}
 
 	public String getType() {
 		return "Core";
-	}
-
-	public void setLastDeath(PlayerDeathEvent e) {
-
 	}
 
 }

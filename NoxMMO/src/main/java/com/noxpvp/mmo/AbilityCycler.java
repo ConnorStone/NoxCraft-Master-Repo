@@ -29,8 +29,8 @@ import com.google.common.collect.MapMaker;
 import com.noxpvp.core.data.Cycler;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.utils.UUIDUtil;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
 import com.noxpvp.mmo.renderers.ItemDisplayACRenderer;
@@ -234,11 +234,11 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 					if (cycler == null) return;
 
 					Ability a = cycler.current();
-					if (a instanceof IPassiveAbility) return;
+					if (a == null || a instanceof PassiveAbility) return;
 
 					//TODO: If complained about. Check if weapon to cancel event.
 
-					event.setCancelled(a.execute().getResult());
+					event.setCancelled(a.execute().isSuccessful());
 				}
 		};
 

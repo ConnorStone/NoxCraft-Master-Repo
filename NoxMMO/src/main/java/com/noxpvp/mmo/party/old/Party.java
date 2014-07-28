@@ -51,7 +51,7 @@ public class Party implements IParty {
 		this.owner = owner.getName();
 
 		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(owner);
-
+		partyData = new ConfigurationNode();
 //		partyData = player.getPersistantData().getNode("party");
 
 		this.name = name != null ? name : partyData.get("name", "Party");

@@ -24,6 +24,7 @@
 package com.noxpvp.core.manager;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.NoxPlayer;
 import org.bukkit.OfflinePlayer;
 
@@ -66,6 +67,11 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 	//Instanced methods
 	//~~~~~~~~~~~~~~~~~~~~~~
 
+
+	public NoxCore getPlugin() {
+		return NoxCore.getInstance();
+	}
+
 	@Override
 	public void unloadAndSave(UUID id) { //protected -> public
 		super.unloadAndSave(id);
@@ -75,7 +81,7 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 	public NoxPlayer load(OfflinePlayer player) {
 		NoxPlayer ret = super.load(player);
 
-		ret.getStats().addLastIGN(player);
+		ret.getStats().updateLastPlayerInfo(player);
 
 		return ret;
 	}
@@ -85,7 +91,7 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
 		NoxPlayer np = getIfLoaded(player.getUniqueId());
 		if (np == null) return;
 
-		np.getStats().addLastIGN(player);
+		np.getStats().updateLastPlayerInfo(player);
 
 		super.save(player);
 	}

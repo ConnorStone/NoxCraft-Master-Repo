@@ -23,10 +23,13 @@
 
 package com.noxpvp.core.utils.gui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.bergerkiller.bukkit.common.filtering.Filter;
+import com.bergerkiller.bukkit.common.localization.LocalizationEnum;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
+import com.bergerkiller.bukkit.common.utils.StringUtil;
+import com.bergerkiller.bukkit.common.utils.WorldUtil;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.core.internal.CommandSenderFilter;
 import com.noxpvp.core.internal.PlayerFilter;
 import com.noxpvp.core.utils.BukkitUtil;
@@ -37,13 +40,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.bergerkiller.bukkit.common.filtering.Filter;
-import com.bergerkiller.bukkit.common.localization.LocalizationEnum;
-import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.bergerkiller.bukkit.common.utils.WorldUtil;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.VaultAdapter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class MessageUtil {
 
@@ -106,6 +105,14 @@ public class MessageUtil {
 				StringUtil.replaceAll(msg, "%" + i + "%", LogicUtil.fixNull(args[i], "null"));
 			}
 		return msg.toString();
+	}
+
+
+	public static String[] parseColor(String[] messages) {
+		for (int i = 0; i < messages.length; i++)
+			messages[i] = parseColor(messages[i]);
+
+		return messages;
 	}
 
 	public static String parseColor(String message) {
@@ -209,7 +216,7 @@ public class MessageUtil {
 	}
 
 	public static void sendMessageToGroup(final String groupName, String message) {
-		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter() {
+		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter(Player.class) {
 			public boolean isFiltered(Player player) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.hasGroupSupport() && VaultAdapter.permission.playerInGroup(player.getWorld(), player.getName(), groupName))
 					return true;
@@ -225,7 +232,7 @@ public class MessageUtil {
 	}
 
 	public static void sendMessageToGroup(final String groupName, String... messages) {
-		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter() {
+		sendMessage(BukkitUtil.getOnlinePlayers(), new PlayerFilter(Player.class) {
 			public boolean isFiltered(Player player) {
 				if (VaultAdapter.isPermissionsLoaded() && VaultAdapter.permission.hasGroupSupport() && VaultAdapter.permission.playerInGroup(player.getWorld(), player.getName(), groupName))
 					return true;

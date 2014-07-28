@@ -94,8 +94,8 @@ public abstract class NoxPlugin extends PluginBase {
 				CommandResult result = cmd.executeCommand(context);
 
 				if (!result.success)
-					result.executer.displayHelp(context.getSender());
-				MessageUtil.sendMessage(context.getSender(), result.extraMessages);
+					result.executer.displayHelp(context);
+				MessageUtil.sendMessage(context.getSender(), MessageUtil.parseColor(result.extraMessages));
 
 				return true;
 			} catch (NoPermissionException e) {

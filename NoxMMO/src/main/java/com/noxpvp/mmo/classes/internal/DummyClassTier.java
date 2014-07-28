@@ -23,21 +23,20 @@
 
 package com.noxpvp.mmo.classes.internal;
 
+import com.noxpvp.mmo.abilities.internal.Ability;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.abilities.Ability;
-
 public class DummyClassTier extends ClassTier {
 
 	private final ExperienceType[] b = new ExperienceType[0];
 	private final List<String> b2 = new ArrayList<String>();
+	private final Map<String, Ability> abilities = Collections.emptyMap();
 
 	public DummyClassTier(PlayerClass retainer, int tierLevel) {
 		super(retainer, "DummyTier", tierLevel);
@@ -98,10 +97,6 @@ public class DummyClassTier extends ClassTier {
 		return b;
 	}
 
-	public Map<String, Ability> getAbilityMap() {
-		return Collections.emptyMap();
-	}
-
 	public ItemStack getIdentifiableItem() {
 		return new ItemStack(Material.STONE);
 	}
@@ -114,5 +109,21 @@ public class DummyClassTier extends ClassTier {
 	@Override
 	protected void load(Map<String, Object> data) {
 
+	}
+
+	protected void save(Map<String, Object> data) {
+
+	}
+
+	public Ability getAbility(String identity) {
+		return null;
+	}
+
+	public boolean hasAbility(String identity) {
+		return false;
+	}
+
+	public Map<String, Ability> getAbilitiesMap() {
+		return abilities;
 	}
 }

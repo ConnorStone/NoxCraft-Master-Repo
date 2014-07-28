@@ -25,7 +25,8 @@ package com.noxpvp.mmo.abilities.targeted;
 
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,12 +35,16 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 
-public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
+
+public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility, DamagingAbility {
 
 	public static final String ABILITY_NAME = "Mortal Wound";
 	public static final String PERM_NODE = "mortal-wound";
 	private int duration;
 	private int amplifier;
+	private double damage;
+
 	public MortalWoundPlayerAbility(Player player) {
 		this(player, 10);
 	}
@@ -99,9 +104,9 @@ public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implemen
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<MortalWoundPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<MortalWoundPlayerAbility>(this, false);
 
 		LivingEntity t = getTarget();
 		Player p = getPlayer();
@@ -111,7 +116,14 @@ public class MortalWoundPlayerAbility extends BaseTargetedPlayerAbility implemen
 				new PotionEffect(PotionEffectType.POISON, duration, amplifier),
 				new PotionEffect(PotionEffectType.SLOW, duration, amplifier)));
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<MortalWoundPlayerAbility>(this, true);
 	}
 
+	public double getDamage() {
+		return damage;
+	}
+
+	public void setDamage(double damage) {
+		this.damage = damage;
+	}
 }

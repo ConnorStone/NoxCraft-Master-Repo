@@ -21,25 +21,25 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.events.internal;
 
+import com.noxpvp.mmo.abilities.internal.TargetedAbility;
 import org.bukkit.entity.LivingEntity;
 
-public interface ITargetedEntityAbility extends IRangedEntityAbility {
+public interface ITargetedAbilityEvent<T extends TargetedAbility> {
+	/**
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.TargetedAbility} associated with this event
+	 *
+	 * @return {@link com.noxpvp.mmo.abilities.internal.TargetedAbility} The Ability
+	 */
+	public T getAbility();
 
 	/**
-	 * Gets the target involved in this targeted ability instance
+	 * Gets the target {@link org.bukkit.entity.LivingEntity} involved in this event
 	 *
-	 * @return LivingEntity The target entity
+	 * @return {@link org.bukkit.entity.LivingEntity} The target
 	 */
 	public LivingEntity getTarget();
-
-	/**
-	 * Sets the target involved in this targeted ability instance
-	 *
-	 * @param target The target living entity
-	 */
-	public void setTarget(LivingEntity target);
 
 	/**
 	 * Gets the distance from target to the entity involved in this instance

@@ -23,17 +23,15 @@
 
 package com.noxpvp.mmo.abilities;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-
+import com.noxpvp.mmo.abilities.internal.TargetedEntityAbility;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.noxpvp.mmo.events.EntityTargetedAbilityPreExecuteEvent;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 
-public abstract class BaseTargetedEntityAbility extends BaseRangedEntityAbility implements ITargetedEntityAbility {
+public abstract class BaseTargetedEntityAbility extends BaseRangedEntityAbility implements TargetedEntityAbility {
 	private Reference<LivingEntity> target_ref;
 
 	public BaseTargetedEntityAbility(String name, Entity entity, double range, LivingEntity target) {
@@ -84,8 +82,4 @@ public abstract class BaseTargetedEntityAbility extends BaseRangedEntityAbility 
 		return super.mayExecute() && (getTarget() != null && (getDistance() <= getRange()));
 	}
 
-	@Override
-	public boolean isCancelled() {
-		return CommonUtil.callEvent(new EntityTargetedAbilityPreExecuteEvent(getEntity(), this)).isCancelled();
-	}
 }

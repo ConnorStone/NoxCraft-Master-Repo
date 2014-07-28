@@ -33,8 +33,9 @@ import org.bukkit.potion.PotionEffectType;
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class WisdomEntityAbility extends BaseEntityAbility implements PVPAbility {
 
@@ -96,13 +97,13 @@ public class WisdomEntityAbility extends BaseEntityAbility implements PVPAbility
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<WisdomEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<WisdomEntityAbility>(this, false);
 
 		final LivingEntity e = (LivingEntity) (getEntity() instanceof LivingEntity ? getEntity() : null);
 
-		if (e == null) return new AbilityResult(this, false);
+		if (e == null) return new AbilityResult<WisdomEntityAbility>(this, false);
 
 		final Location loc = e.getLocation().clone();
 		e.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 45, -100), true);
@@ -122,7 +123,7 @@ public class WisdomEntityAbility extends BaseEntityAbility implements PVPAbility
 			}
 		}, 45);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<WisdomEntityAbility>(this, true);
 	}
 
 }

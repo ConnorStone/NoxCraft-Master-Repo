@@ -24,11 +24,22 @@
 package com.noxpvp.core.data;
 
 import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.Persistent;
 import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
-public interface PluginPlayer <T extends NoxPlugin> {
+/**
+ * When Implementing it is required to have the following constructors available.
+ * <br/>
+ * Bold represents required. Others are optional.
+ * <ul>
+ *     <li><b>{@link java.util.UUID}</b></li>
+ *     <li>{@link org.bukkit.OfflinePlayer}</li>
+ * </ul>
+ * @param <T>
+ */
+public interface PluginPlayer <T extends NoxPlugin> extends Persistent {
 	public T getPlugin();
 
 	public boolean isOnline();
@@ -44,4 +55,5 @@ public interface PluginPlayer <T extends NoxPlugin> {
 
 	public OfflinePlayer getOfflinePlayer();
 
+	public NoxPlayer getNoxPlayer();
 }

@@ -23,9 +23,11 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.runnables.DamageRunnable;
 
@@ -35,7 +37,7 @@ public class BandagePlayerAbility extends BasePlayerAbility {
 	public static final String PERM_NODE = "bandage";
 	private int delay;
 
-	public BandagePlayerAbility(Player p) {
+	public BandagePlayerAbility(OfflinePlayer p) {
 		super(ABILITY_NAME, p);
 
 		this.delay = 10 * 20;
@@ -50,9 +52,9 @@ public class BandagePlayerAbility extends BasePlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<BandagePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<BandagePlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
@@ -61,7 +63,7 @@ public class BandagePlayerAbility extends BasePlayerAbility {
 		DamageRunnable wearOff = new DamageRunnable(p, p, (p.getMaxHealth() / 10), 10);
 		wearOff.runTaskTimer(NoxMMO.getInstance(), delay, 15);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<BandagePlayerAbility>(this, true);
 	}
 
 }

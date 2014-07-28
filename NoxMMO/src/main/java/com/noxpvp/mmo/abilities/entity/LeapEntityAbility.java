@@ -29,6 +29,7 @@ import org.bukkit.util.Vector;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 
@@ -72,9 +73,9 @@ public class LeapEntityAbility extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<LeapEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<LeapEntityAbility>(this, false);
 
 		Entity e = getEntity();
 		Location eLoc = e.getLocation();
@@ -90,7 +91,7 @@ public class LeapEntityAbility extends BaseEntityAbility {
 		//reset fall distance on use
 		e.setFallDistance(0);
 		e.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<LeapEntityAbility>(this, true);
 	}
 
 }

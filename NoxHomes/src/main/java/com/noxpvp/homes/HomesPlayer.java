@@ -41,6 +41,7 @@ import com.noxpvp.homes.tp.BaseHome;
 import com.noxpvp.homes.tp.DefaultHome;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -50,6 +51,7 @@ import static com.noxpvp.core.localization.GlobalLocale.COMMAND_FAILED;
 import static com.noxpvp.homes.locale.HomeLocale.*;
 import static com.noxpvp.homes.permissions.HomePermission.*;
 
+@SerializableAs("HomesPlayer")
 public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesContainer, HomeLimitContainer {
 
 	//~~~~~~~~~~~~
@@ -77,6 +79,7 @@ public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesCont
 	//Primary Constructor
 	public HomesPlayer(UUID playerUUID) {
 		super(playerUUID);
+		homes = new ArrayList<BaseHome>();
 	}
 
 	public HomesPlayer(Player player) {
@@ -95,8 +98,6 @@ public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesCont
 			} else if (e instanceof NullPointerException) {
 				log(Level.FINE, "There is no Homes for the player \"" + getPlayerUUID() + "\". Not entirely sure if data corruption is the cause.");
 			}
-
-			this.homes = new ArrayList<BaseHome>(); //Always makes a new list just in case the list is completely non existent.
 		}
 
 		updateCache();
@@ -271,7 +272,7 @@ public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesCont
 	}
 
 	public int getHomeCount() {
-		return getHomes().size();
+		return homes.size();
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -302,9 +303,8 @@ public class HomesPlayer extends BasePluginPlayer<NoxHomes> implements HomesCont
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public Map<String, Object> serialize() {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = super.serialize();
 		
-		data.put("uuid", getPlayerUUID());
 		data.put("homes", getHomes());
 
 		return data;

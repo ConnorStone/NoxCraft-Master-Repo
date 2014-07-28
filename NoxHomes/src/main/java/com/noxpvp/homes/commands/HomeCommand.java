@@ -94,7 +94,7 @@ public class HomeCommand extends BaseCommand {
 		BaseHome home = hPlayer.getHome(homeName);
 
 
-		boolean own = sender.getName().equals(player);
+		boolean own = sender.getName().equals(player.getName());
 		boolean isDefault = home instanceof DefaultHome;
 
 		String perm = (own ? (isDefault ? WARP_OWN_DEFAULT : WARP_OWN_NAMED) : (isDefault ? WARP_OTHER_DEFAULT : WARP_OTHER_NAMED)).getName();

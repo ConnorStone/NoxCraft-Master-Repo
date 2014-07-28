@@ -23,6 +23,7 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
+import com.noxpvp.mmo.abilities.internal.Ability;
 import org.bukkit.ChatColor;
 
 import com.noxpvp.core.commands.BaseCommand;
@@ -31,7 +32,6 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.utils.NoxMessageBuilder;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityListCommand extends BaseCommand {

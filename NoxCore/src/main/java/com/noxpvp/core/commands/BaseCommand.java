@@ -83,18 +83,24 @@ public abstract class BaseCommand implements Command {
 		return containsSubCommand(command.getName());
 	}
 
-	public void displayHelp(CommandSender sender) {
+	public void displayHelp(ICommandContext context) {
+		final CommandSender sender = context.getSender();
 		StringMap<BaseCommand> cmds = getSubCommandMap();
 
-		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin(), true);
+		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin(), false);
+
+		mb.commandHeader(getName(), true);
+
+		NoxMessageBuilder onPre = onPreDisplayMessage(mb, context);
+		if (onPre != null) mb = onPre;
 
 		for (BaseCommand cmd : cmds.values())
 			mb.withCommand(cmd, true);
 
-		mb = onDisplayHelp(mb);
+		NoxMessageBuilder onPost = onPostDisplayHelp(mb, context);
+		if (onPost != null) mb = onPost;
 
 		mb.headerClose(false).send(sender);
-
 	}
 
 	/**
@@ -115,15 +121,34 @@ public abstract class BaseCommand implements Command {
 		return subCommandAliases.containsKeyLower(alias);
 	}
 
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message) {
+	/**
+	 * Called before display list of sub commands.
+	 * @param message NoxMessageBuilder
+	 * @param context command context
+	 * @return original message builder
+	 */
+	public NoxMessageBuilder onPreDisplayMessage(NoxMessageBuilder message, ICommandContext context) {
+		return message;
+	}
+
+	/**
+	 * Called after display list of sub commands.
+	 * @param message NoxMessageBuilder
+	 * @param context command context
+	 * @return original message builder
+	 */
+	public NoxMessageBuilder onPostDisplayHelp(NoxMessageBuilder message, ICommandContext context) {
 		return message;
 	}
 
 	public abstract CommandResult execute(CommandContext context) throws NoPermissionException;
 
 	public final CommandResult executeCommand(CommandContext context) throws NoPermissionException {
-		if (!hasSubCommands() || context.getArgumentCount() == 0)
-			return execute(context);
+		if (!hasSubCommands() || context.getArgumentCount() == 0) {
+			if (context.hasFlag("h") || context.hasFlag("help") || context.hasFlag("?")) {
+				return new CommandResult(this, false);
+			} else return execute(context);
+		}
 
 		String[] args = context.getArguments();
 
@@ -195,6 +220,14 @@ public abstract class BaseCommand implements Command {
 
 	protected StringMap<BaseCommand> getSubCommandMap() {
 		return subCommands;
+	}
+
+	public int getMinArguments() {
+		return 0;
+	}
+
+	public int getMaxArguments() {
+		return -1;
 	}
 
 	public boolean hasArgumentLimit() {

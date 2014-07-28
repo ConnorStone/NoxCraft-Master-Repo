@@ -53,7 +53,7 @@ public class Cycler<E> implements ListIterator<E> {
 	 * @return the current object.
 	 */
 	public E current() {
-		return data.get(currentIndex());
+		return data.isEmpty() ? null : data.get(currentIndex());
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class Cycler<E> implements ListIterator<E> {
 	 * @see java.util.ListIterator#hasNext()
 	 */
 	public boolean hasNext() {
-		return true;
+		return !data.isEmpty();
 	}
 
 	/*
@@ -90,10 +90,11 @@ public class Cycler<E> implements ListIterator<E> {
 	 * @see java.util.ListIterator#hasPrevious()
 	 */
 	public boolean hasPrevious() {
-		return true;
+		return !data.isEmpty();
 	}
 
 	public E next() {
+		if (data.isEmpty()) return null;
 		index = nextIndex();
 		return data.get(currentIndex());
 	}
@@ -111,6 +112,7 @@ public class Cycler<E> implements ListIterator<E> {
 	}
 
 	public E previous() {
+		if (data.isEmpty()) return null;
 		index = previousIndex();
 		return data.get(currentIndex());
 	}

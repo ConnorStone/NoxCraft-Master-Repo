@@ -28,9 +28,16 @@ import com.noxpvp.core.gui.CoolDown;
 public interface IHeated {
 
 	/**
-	 * Return the time in seconds this instance needs to cooldown
+	 * Sets the cooldown variable to be used in this ability
 	 *
-	 * @return {@link Integer} Seconds
+	 * @param coolDown
+	 */
+	void setCD(CoolDown.Time coolDown);
+
+	/**
+	 * Gets the cooldown variable to be used in this ability
+	 *
+	 * @return Time entry
 	 */
 	public CoolDown.Time getCD();
 }

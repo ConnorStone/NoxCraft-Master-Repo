@@ -23,7 +23,19 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
+import com.noxpvp.mmo.runnables.SetVelocityRunnable;
+import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -31,20 +43,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
-import com.noxpvp.mmo.runnables.SetVelocityRunnable;
-import com.noxpvp.mmo.runnables.ShockWaveAnimation;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 /**
  * @author NoxPVP
  */
-public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
+public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implements PVPAbility, DamagingAbility {
 
 	public static final String ABILITY_NAME = "Mass Destruction";
 	public static final String PERM_NODE = "mass-destruction";
@@ -52,20 +56,21 @@ public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implem
 	private BaseMMOEventHandler<EntityDamageEvent> handler;
 	private double hVelo = 1.5;
 	private boolean isActive;
+	private double damage;
 
-	public MassDestructionPlayerAbility(Player p) {
+	public MassDestructionPlayerAbility(OfflinePlayer p) {
 		this(p, 10);
 	}
 
 	/**
 	 * @param p The Player type user for this instance
 	 */
-	public MassDestructionPlayerAbility(Player p, double range) {
+	public MassDestructionPlayerAbility(OfflinePlayer p, double range) {
 		super(ABILITY_NAME, p, range);
 		
 		this.isActive = false;
 		setDamage(5);
-		setCD(45);
+		setCD(new CoolDown.Time().seconds(45));
 
 		handler = new BaseMMOEventHandler<EntityDamageEvent>(
 				new StringBuilder().append(p.getName()).append(ABILITY_NAME).append("EntityDamageEvent").toString(),
@@ -133,9 +138,9 @@ public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implem
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public RangedAbilityResult<MassDestructionPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<MassDestructionPlayerAbility>(this, false);
 
 		NoxMMO instance = NoxMMO.getInstance();
 
@@ -146,15 +151,15 @@ public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implem
 		Vector down = p.getLocation().getDirection();
 		down.setY(-gethVelo() * 2);
 
-		SetVelocityRunnable shootUp = new SetVelocityRunnable(getEntity(), up);
-		SetVelocityRunnable shootDown = new SetVelocityRunnable(getEntity(), down);
+		SetVelocityRunnable shootUp = new SetVelocityRunnable(getPlayer(), up);
+		SetVelocityRunnable shootDown = new SetVelocityRunnable(getPlayer(), down);
 
 		shootUp.runTask(instance);
 		shootDown.runTaskLater(instance, 20);
 
 		setActive(true);
 
-		return new AbilityResult(this, true);
+		return new RangedAbilityResult<MassDestructionPlayerAbility>(this, true);
 	}
 
 	public void eventExecute(double d) {
@@ -172,4 +177,11 @@ public class MassDestructionPlayerAbility extends BaseRangedPlayerAbility implem
 
 	}
 
+	public double getDamage() {
+		return this.damage;
+	}
+
+	public void setDamage(double damage) {
+		this.damage = damage;
+	}
 }

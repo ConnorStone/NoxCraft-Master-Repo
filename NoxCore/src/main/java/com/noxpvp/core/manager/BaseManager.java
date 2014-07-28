@@ -43,13 +43,14 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	private ModuleLogger logger;
+
 	private Class<T> typeClass;
 
 	protected final String saveFolder;
 	private final boolean useNoxFolder;
 	protected File folder;
 
-	protected Map<UUID, T> loadedCache;
+	protected Map<UUID, T> loadedCache = new HashMap<UUID, T>();
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Constructors
@@ -63,7 +64,6 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		this.typeClass = type;
 		this.saveFolder = saveFolderPath;
 		this.useNoxFolder = useNoxFolder;
-		this.loadedCache = new HashMap<UUID, T>();
 
 		logger = new ModuleLogger(getPlugin(), getClass().getSimpleName());
 	}
@@ -147,6 +147,10 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instance Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public Class<T> getTypeClass() {
+		return typeClass;
+	}
 
 	public File getFile() {
 		if (folder == null) {

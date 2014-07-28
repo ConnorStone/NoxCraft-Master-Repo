@@ -23,21 +23,23 @@
 
 package com.noxpvp.core.commands;
 
-import org.bukkit.command.CommandSender;
-
 import com.noxpvp.core.utils.NoxMessageBuilder;
 
 public interface Command {
 
 	public String[] getAliases();
 
-	public void displayHelp(CommandSender sender);
+	public void displayHelp(ICommandContext sender);
 
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message);
+	public NoxMessageBuilder onPreDisplayMessage(NoxMessageBuilder message, ICommandContext context);
+
+	public NoxMessageBuilder onPostDisplayHelp(NoxMessageBuilder message, ICommandContext context);
 
 	public CommandResult executeCommand(CommandContext context) throws NoPermissionException;
 
 	public String[] getFlags();
+
+	public int getMinArguments();
 
 	public int getMaxArguments();
 

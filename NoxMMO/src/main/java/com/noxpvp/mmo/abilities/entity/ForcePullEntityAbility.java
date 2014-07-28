@@ -27,8 +27,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class ForcePullEntityAbility extends BaseEntityAbility implements PVPAbility {
 
@@ -63,9 +64,9 @@ public class ForcePullEntityAbility extends BaseEntityAbility implements PVPAbil
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ForcePullEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ForcePullEntityAbility>(this, false);
 
 		Entity e = getEntity();
 
@@ -81,7 +82,7 @@ public class ForcePullEntityAbility extends BaseEntityAbility implements PVPAbil
 				break;
 		}
 		
-		return new AbilityResult(this, i > 0);
+		return new AbilityResult<ForcePullEntityAbility>(this, i > 0);
 	}
 
 }

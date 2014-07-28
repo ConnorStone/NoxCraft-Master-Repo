@@ -23,13 +23,14 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import java.util.Collections;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
-
-import javax.annotation.Nullable;
-
+import com.bergerkiller.bukkit.common.protocol.CommonPacket;
+import com.bergerkiller.bukkit.common.protocol.PacketType;
+import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOutEntityEquipment;
+import com.bergerkiller.bukkit.common.utils.PacketUtil;
+import com.noxpvp.core.data.Cycler;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BaseEntityAbility;
 import org.bukkit.Color;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -38,13 +39,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.bergerkiller.bukkit.common.protocol.CommonPacket;
-import com.bergerkiller.bukkit.common.protocol.PacketType;
-import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOutEntityEquipment;
-import com.bergerkiller.bukkit.common.utils.PacketUtil;
-import com.noxpvp.core.data.Cycler;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.WeakHashMap;
 
 public class DreamCoatEntityAbililty extends BaseEntityAbility {
 
@@ -89,9 +88,9 @@ public class DreamCoatEntityAbililty extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<DreamCoatEntityAbililty> execute() {
 		if (!(getEntity() instanceof LivingEntity))
-			return new AbilityResult(this, false);
+			return new AbilityResult<DreamCoatEntityAbililty>(this, false);
 
 		LivingEntity a = (LivingEntity) getEntity();
 
@@ -102,7 +101,7 @@ public class DreamCoatEntityAbililty extends BaseEntityAbility {
 			}
 			sendFakeArmor(a, null);
 
-			return new AbilityResult(this, false, "&e" + getName() + " &6has been deactivated");
+			return new AbilityResult<DreamCoatEntityAbililty>(this, false, "&e" + getName() + " &6has been deactivated");
 		}
 
 		System.out.println("starting");
@@ -110,7 +109,7 @@ public class DreamCoatEntityAbililty extends BaseEntityAbility {
 		runnables.put(a, b);
 
 		b.runTaskTimer(NoxMMO.getInstance(), 0, 1);
-		return new AbilityResult(this, true);
+		return new AbilityResult<DreamCoatEntityAbililty>(this, true);
 	}
 
 	public void sendFakeArmor(LivingEntity e, @Nullable Color color) {

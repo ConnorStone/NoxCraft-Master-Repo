@@ -23,9 +23,10 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.runnables.VanishPlayerRunnable;
 
@@ -41,7 +42,7 @@ public class VanishPlayerAbility extends BasePlayerAbility {
 	/**
 	 * @param player The user of the ability instance
 	 */
-	public VanishPlayerAbility(Player player) {
+	public VanishPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.range = 75;

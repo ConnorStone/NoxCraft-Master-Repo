@@ -23,7 +23,10 @@
 
 package com.noxpvp.mmo.abilities;
 
-public abstract class BaseRangedAbility extends BaseAbility implements IRangedAbility {
+import com.noxpvp.mmo.abilities.internal.RangedAbility;
+import com.noxpvp.mmo.abilities.player.TrackingPlayerAbility;
+
+public abstract class BaseRangedAbility extends BaseAbility implements RangedAbility {
 
 	private double range;
 
@@ -43,6 +46,32 @@ public abstract class BaseRangedAbility extends BaseAbility implements IRangedAb
 
 	public void setRange(double range) {
 		this.range = range;
+	}
+
+	public static class RangedAbilityResult<T extends RangedAbility> extends AbilityResult<T> {
+
+		private final double range;
+
+		public RangedAbilityResult(T ability, double range, boolean success) {
+			this(ability, range, success, null);
+		}
+
+		public RangedAbilityResult(T ability, double range,  boolean success, String... messages) {
+			super(ability, success, messages);
+			this.range = range;
+		}
+
+		public RangedAbilityResult(T ability, boolean success) {
+			this(ability, ability.getRange(), success);
+		}
+
+		public RangedAbilityResult(T ability, boolean success, String... messages) {
+			this(ability, ability.getRange(), success, messages);
+		}
+
+		public double getRange() {
+			return range;
+		}
 	}
 
 }

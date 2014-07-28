@@ -77,7 +77,11 @@ public class NoxMMO extends NoxPlugin {
 	private MasterListener masterListener;
 
 	private Class<Command>[] commands = (Class<Command>[]) new Class[]{ClassCommand.class, AbilityCommand.class, MMOCommand.class};
-	private Class<? extends ConfigurationSerializable>[] serializables = new Class[] {AbilityCycler.class, PlayerClass.class};
+
+	private Class<? extends ConfigurationSerializable>[] serializables = new Class[] {
+			AbilityCycler.class, PlayerClass.class,
+			AxesPlayerClass.class
+	};
 
 	public static NoxMMO getInstance() {
 		return instance;
@@ -183,7 +187,7 @@ public class NoxMMO extends NoxPlugin {
 		});
 
 		registerAllCommands();
-		
+
 		//Setup Prism stuff
 		try {
 			if (core.isPrismActive()) {

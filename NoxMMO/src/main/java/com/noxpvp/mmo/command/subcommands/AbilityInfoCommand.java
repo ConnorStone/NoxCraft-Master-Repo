@@ -31,7 +31,7 @@ import com.noxpvp.core.commands.SafeNullPointerException;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.abilities.internal.Ability;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 

@@ -21,36 +21,40 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability.post;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.entity.EntityEvent;
 
-import com.noxpvp.mmo.abilities.BaseAbility;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.events.internal.IAbilityEvent;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.events.internal.IPlayerAbilityEvent;
 
-public abstract class EntityAbilityEvent extends EntityEvent implements IAbilityEvent {
-	private static final HandlerList handlers = new HandlerList();
-	protected BaseEntityAbility ability;
+public class PostPlayerAbilityEvent<T extends PlayerAbility> extends PostAbilityEvent<T> implements IPlayerAbilityEvent<T> {
 
-	public EntityAbilityEvent(Entity what, BaseEntityAbility ability) {
-		super(what);
+	private static HandlerList handlers = new HandlerList();
+	private Player player;
 
-		this.ability = ability;
+	public PostPlayerAbilityEvent(T ability, AbilityResult<T> result, Player player) {
+		super(ability, result);
+		this.player = player;
+	}
+
+	public Player getPlayer() {
+		return player;
 	}
 
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 
-	public BaseAbility getAbility() {
-		return ability;
-	}
-
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 
+	@Override
+	public T getAbility() {
+		return super.getAbility();
+	}
 }

@@ -23,15 +23,17 @@
 
 package com.noxpvp.mmo.abilities;
 
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.utils.TownyUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MasterListener;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.events.EntityAbilityPreExcuteEvent;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.abilities.internal.EntityAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.MMOEventHandler;
+import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
 import com.noxpvp.mmo.locale.MMOLocale;
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -39,25 +41,20 @@ import org.bukkit.event.Event;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
-public abstract class BaseEntityAbility extends BaseAbility implements IEntityAbility {
+public abstract class BaseEntityAbility extends BaseAbility implements EntityAbility, IMMOHandlerHolder {
 	private Reference<Entity> entityRef;
 	private MasterListener masterListener;
 	
 	private CoolDown.Time cd;
-	private double damage;
-	private List<Entity> effectedEntities;
 
 	public BaseEntityAbility(final String name, Entity ref) {
 		super(name);
+		Validate.notNull(ref);
 		entityRef = new WeakReference<Entity>(ref);
 
 		this.masterListener = NoxMMO.getInstance().getMasterListener();
 		this.cd = new CoolDown.Time().seconds(5);
-		this.damage = 0;
-		this.effectedEntities = new ArrayList<Entity>();
 	}
 	
 	public void fixEntityRef(Entity e) {
@@ -92,31 +89,18 @@ public abstract class BaseEntityAbility extends BaseAbility implements IEntityAb
 		return super.mayExecute();
 	}
 
-	public boolean isCancelled() {
-		return CommonUtil.callEvent(new EntityAbilityPreExcuteEvent(getEntity(), this)).isCancelled();
-	}
-
 	public MasterListener getMasterListener() {
 		return masterListener;
 	}
 
-	public void registerHandler(BaseMMOEventHandler<? extends Event> handler) {
+	public void registerHandler(MMOEventHandler<? extends Event> handler) {
 		masterListener.registerHandler(handler);
 	}
 
-	public void unregisterHandler(BaseMMOEventHandler<? extends Event> handler) {
+	public void unregisterHandler(MMOEventHandler<? extends Event> handler) {
 		masterListener.unregisterHandler(handler);
-
 	}
 
-	public double getDamage() {
-		return damage;
-	}
-
-	public void setDamage(double damage) {
-		this.damage = damage;
-	}
-	
 	public CoolDown.Time getCD() {
 		return cd;
 	}
@@ -133,17 +117,4 @@ public abstract class BaseEntityAbility extends BaseAbility implements IEntityAb
 	public void setCD(int i) {
 		setCD(new CoolDown.Time().seconds(i));
 	}
-	
-	public void addEffectedEntity(Entity e) {
-		effectedEntities.add(e);
-	}
-	
-	public List<Entity> getEffectedEntities() {
-		return effectedEntities;
-	}
-	
-	public void clearEffected() {
-		effectedEntities.clear();
-	}
-
 }

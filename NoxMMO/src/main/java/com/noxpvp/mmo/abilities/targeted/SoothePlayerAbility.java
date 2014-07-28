@@ -23,11 +23,12 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 public class SoothePlayerAbility extends BaseTargetedPlayerAbility {
 
@@ -67,16 +68,16 @@ public class SoothePlayerAbility extends BaseTargetedPlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<SoothePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<SoothePlayerAbility>(this, false);
 
 		LivingEntity t = getTarget();
 		double ha = t.getHealth() + getHealAmount();
 
 		t.setHealth(ha > t.getMaxHealth() ? t.getMaxHealth() : ha);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<SoothePlayerAbility>(this, true);
 	}
 
 }

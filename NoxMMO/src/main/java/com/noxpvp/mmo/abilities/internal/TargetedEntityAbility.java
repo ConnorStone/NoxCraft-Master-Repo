@@ -21,23 +21,15 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.core.listeners;
+package com.noxpvp.mmo.abilities.internal;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerQuitEvent;
+public interface TargetedEntityAbility extends RangedEntityAbility, TargetedAbility {
 
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.manager.CorePlayerManager;
+	/**
+	 * Gets the distance from target to the entity involved in this instance
+	 *
+	 * @return double The distance. Will return -1 if the target is null
+	 */
+	public double getDistance();
 
-public class OnLogoutSaveListener extends NoxListener<NoxCore> {
-
-	public OnLogoutSaveListener(NoxCore plugin) {
-		super(plugin);
-	}
-
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onLogoutEvent(PlayerQuitEvent event) {
-		CorePlayerManager.getInstance().unloadAndSave(event.getPlayer().getUniqueId());
-	}
 }

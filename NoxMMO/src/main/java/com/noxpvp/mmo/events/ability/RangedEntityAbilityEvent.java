@@ -21,38 +21,37 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability;
 
-import org.bukkit.event.Event;
+import com.noxpvp.mmo.abilities.internal.RangedEntityAbility;
+import com.noxpvp.mmo.events.internal.IRangedEntityAbilityEvent;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
 
-import com.noxpvp.mmo.abilities.BaseAbility;
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.events.internal.IAbilityEvent;
+public class RangedEntityAbilityEvent<T extends RangedEntityAbility> extends EntityAbilityEvent<T> implements IRangedEntityAbilityEvent<T> {
 
-public class AbilityEvent extends Event implements IAbilityEvent {
+	private static HandlerList handlers = new HandlerList();
+	private double range;
 
-	private static final HandlerList handlers = new HandlerList();
-	private final AbilityResult result;
-
-	public AbilityEvent(AbilityResult result) {
-		this.result = result;
+	public RangedEntityAbilityEvent(T ability, Entity entity) {
+		super(ability, entity);
 	}
 
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 
-	public BaseAbility getAbility() {
-		return (BaseAbility) result.getExecuter();
-	}
-	
-	public AbilityResult getResult() {
-		return result;
-	}
-
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
+	}
+
+	public double getRange() {
+		return range;
+	}
+
+	public void setRange(double range) {
+		this.range = range;
 	}
 
 }

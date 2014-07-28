@@ -24,14 +24,13 @@
 
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.Collection;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.AbilityContainer;
+
 import java.util.List;
 import java.util.Map;
 
-import com.noxpvp.core.annotation.Temporary;
-import com.noxpvp.mmo.abilities.Ability;
-
-public interface IClassTier {
+public interface IClassTier extends AbilityContainer<Ability> {
 
 	public int getTierLevel();
 
@@ -88,12 +87,6 @@ public interface IClassTier {
 
 	public void removeExp(int amount);
 
-	@Temporary
-	public Map<String, Ability> getAbilityMap();
-
-	@Temporary
-	public Collection<Ability> getAbilities();
-
 	public ExperienceType[] getExpTypes();
 
 	/**
@@ -112,4 +105,6 @@ public interface IClassTier {
 	public void update();
 
 	String getPermission();
+
+	public void onSave(Map<String, Object> tier);
 }

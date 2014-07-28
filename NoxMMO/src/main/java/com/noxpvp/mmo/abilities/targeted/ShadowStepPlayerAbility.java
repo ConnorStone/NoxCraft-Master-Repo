@@ -23,15 +23,16 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -49,9 +50,9 @@ public class ShadowStepPlayerAbility extends BaseTargetedPlayerAbility implement
 
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<ShadowStepPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<ShadowStepPlayerAbility>(this, false);
 
 		Location targetLoc = getTarget().getLocation();
 		Vector facing = targetLoc.getDirection().setY(0).multiply(-1);
@@ -62,12 +63,12 @@ public class ShadowStepPlayerAbility extends BaseTargetedPlayerAbility implement
 
 		Block b = loc.getBlock();
 		if (!(!b.getType().isSolid() || b.getRelative(BlockFace.UP).getType().isSolid())) {
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<ShadowStepPlayerAbility>(this, false);
 		}
 
 		getPlayer().teleport(loc);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<ShadowStepPlayerAbility>(this, true);
 	}
 
 }

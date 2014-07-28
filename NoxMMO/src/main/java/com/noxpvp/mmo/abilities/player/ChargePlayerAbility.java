@@ -23,11 +23,14 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 
 public class ChargePlayerAbility extends BasePlayerAbility {
@@ -37,11 +40,11 @@ public class ChargePlayerAbility extends BasePlayerAbility {
 	
 	private double forwardMultiplier;
 
-	public ChargePlayerAbility(Player p, double forwardMultiplier) {
+	public ChargePlayerAbility(OfflinePlayer p, double forwardMultiplier) {
 		super(ABILITY_NAME, p);
 		this.forwardMultiplier = forwardMultiplier;
 		
-		setCD(15);
+		setCD(new CoolDown.Time().seconds(15));
 	}
 
 	public ChargePlayerAbility(Player p) {
@@ -73,9 +76,9 @@ public class ChargePlayerAbility extends BasePlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ChargePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ChargePlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
@@ -86,7 +89,7 @@ public class ChargePlayerAbility extends BasePlayerAbility {
 		new ParticleRunner(ParticleType.largesmoke, p, true, 0, 6, 10).start(0, 1);
 
 		p.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<ChargePlayerAbility>(this, true);
 	}
 
 }

@@ -36,7 +36,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SerializableAs("PlayerClass")
 @DelegateDeserialization(PlayerClass.class)
 public class AxesPlayerClass extends PlayerClass {
 
@@ -51,16 +52,8 @@ public class AxesPlayerClass extends PlayerClass {
 
 	public static final String uniqueID = "f8c26f34fc36427ab92e94090b146db1";    //RANDOMLY GENERATED DO NOT CHANGE!
 
-	public AxesPlayerClass(Player player) {
-		super(uniqueID, className, player);
-	}
-
-	public AxesPlayerClass(UUID playerIdentifier, Player player) {
-		super(uniqueID, className, playerIdentifier, player);
-	}
-
-	public AxesPlayerClass(UUID playerIdentifier) {
-		super(uniqueID, className, playerIdentifier);
+	public AxesPlayerClass(UUID playerUUID) {
+		super(uniqueID, className, playerUUID);
 	}
 
 	public String getDescription() {

@@ -23,21 +23,21 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExplosiveArrowPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -49,7 +49,7 @@ public class ExplosiveArrowPlayerAbility extends BasePlayerAbility implements PV
 	private boolean isActive, isFiring, isSingleShotMode;
 	private float power;
 
-	public ExplosiveArrowPlayerAbility(Player player) {
+	public ExplosiveArrowPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		hitHandler = new BaseMMOEventHandler<ProjectileHitEvent>(
@@ -191,15 +191,15 @@ public class ExplosiveArrowPlayerAbility extends BasePlayerAbility implements PV
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ExplosiveArrowPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ExplosiveArrowPlayerAbility>(this, false);
 
 		if (!isActive() && !isFiring()) {
 			setFiring(true);
-			return new AbilityResult(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
+			return new AbilityResult<ExplosiveArrowPlayerAbility>(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
 		} else {
-			return new AbilityResult(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
+			return new AbilityResult<ExplosiveArrowPlayerAbility>(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
 		}
 	}
 

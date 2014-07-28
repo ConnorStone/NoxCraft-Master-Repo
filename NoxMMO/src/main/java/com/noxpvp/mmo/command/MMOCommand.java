@@ -41,10 +41,6 @@ public class MMOCommand extends BaseCommand {
 		return blankStringArray;
 	}
 
-	public int getMaxArguments() {
-		return 0;
-	}
-
 	@Override
 	public CommandResult execute(CommandContext context) {
 		new NoxMMOMenu(context.getPlayer()).show();

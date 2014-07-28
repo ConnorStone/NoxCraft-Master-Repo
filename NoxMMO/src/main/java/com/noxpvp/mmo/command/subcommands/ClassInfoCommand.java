@@ -26,8 +26,11 @@ package com.noxpvp.mmo.command.subcommands;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
+import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
@@ -50,29 +53,46 @@ public class ClassInfoCommand extends BaseCommand {
 	@Override
 	public CommandResult execute(CommandContext context) throws NoPermissionException {
 
-		if (!context.hasArgument(0))
+		String className = null;
+		if (context.hasArgument(0)) className = context.getArgument(0).toLowerCase();
+
+		IPlayerClass clazz = null;
+
+		if (className != null && !PlayerClassUtil.hasClass(className)) {
 			return new CommandResult(this, false);
+		}
 
-		String className = context.getArgument(0).toLowerCase();
+		if (className != null) {
+			for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context.getPlayer()))
+				if (c.getName().equalsIgnoreCase(className)) {
+					clazz = c;
+					break;
+				}
+		}
 
-		if (!PlayerClassUtil.hasClass(className))
-			return new CommandResult(this, false);
-
-		PlayerClass clazz = null;
-		for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context.getPlayer()))
-			if (c.getName().equalsIgnoreCase(className)) {
-				clazz = c;
-				break;
-			}
-
-		if (clazz == null)
-			return new CommandResult(this, false);
 
 		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin());
-		mb.commandHeader(clazz.getDisplayName() + " Class", true);
 
-		mb.withClassInfo(clazz).headerClose(true);
-		mb.send(context.getSender());
+		if (clazz != null) {
+			mb.commandHeader(clazz.getDisplayName() + " Class", true);
+
+			mb.withClassInfo(clazz).headerClose(true);
+			mb.send(context.getSender());
+		} else {
+			MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
+
+			mb.commandHeader(p.getPrimaryClass().getDisplayName() + " Class", true);
+
+			mb.withClassInfo(p.getPrimaryClass()).headerClose(true);
+			mb.headerClose();
+			mb.newLine();
+			mb.commandHeader(p.getSecondaryClass().getDisplayName() + " Class", true);
+
+			mb.withClassInfo(p.getSecondaryClass()).headerClose(true);
+			mb.headerClose();
+
+			mb.send(context.getSender());
+		}
 
 		return new CommandResult(this, true);
 	}

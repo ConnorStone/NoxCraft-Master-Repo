@@ -28,6 +28,7 @@ import org.bukkit.util.Vector;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 
 public class ChargeEntityAbility extends BaseEntityAbility {
@@ -70,9 +71,9 @@ public class ChargeEntityAbility extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ChargeEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ChargeEntityAbility>(this, false);
 
 		Entity e = getEntity();
 
@@ -83,7 +84,7 @@ public class ChargeEntityAbility extends BaseEntityAbility {
 		new ParticleRunner(ParticleType.largesmoke, e, true, 0, 6, 10).start(0, 1);
 
 		e.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<ChargeEntityAbility>(this, true);
 	}
 
 }

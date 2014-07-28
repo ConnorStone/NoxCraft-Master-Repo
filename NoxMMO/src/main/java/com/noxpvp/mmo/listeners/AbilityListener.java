@@ -23,6 +23,7 @@
 
 package com.noxpvp.mmo.listeners;
 
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,11 +34,12 @@ import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.SilentAbility;
-import com.noxpvp.mmo.events.*;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.abilities.internal.SilentAbility;
+import com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility;
+import com.noxpvp.mmo.events.ability.post.PostPlayerAbilityEvent;
+import com.noxpvp.mmo.events.ability.post.PostTargettedPlayerAbilityEvent;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.prism.AbilityUsePrismEvent;
@@ -60,36 +62,21 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 	//TODO finish
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onEntityAbilityPreExecute(EntityAbilityPreExcuteEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onEntityAbilityExecuted(EntityAbilityExecutedEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onPlayerAbilityPreExecute(PlayerAbilityPreExecuteEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onPlayerAbilityExecuted(PlayerAbilityExecutedEvent event) {
-		if (event instanceof PlayerTargetedAbilityExecutedEvent)
+	public void onPlayerAbilityExecuted(PostPlayerAbilityEvent event) {
+		if (event instanceof PostTargettedPlayerAbilityEvent) //Ignore Event.
 			return;
 		
 		Player p = event.getPlayer();
 		MMOPlayer mp = pm.getPlayer(p);
 		NoxPlayer np = mp.getNoxPlayer();
-		BaseEntityAbility ab = event.getAbility();
+		PlayerAbility ab = event.getAbility();
 		AbilityResult result = event.getResult();
 		
-		boolean hasMessages = result.getMessages().length != 0;
+		boolean hasMessages = result.hasMessages();
 		boolean silent = (ab instanceof SilentAbility);
 		boolean hasCD = ab.getCD().toStamp() > 0;
 		
-		if (result.getResult()) {
+		if (result.isSuccessful()) {
 			
 			if (isPrismActive)
 				AbilityUsePrismEvent.trigger(p, result);
@@ -100,40 +87,24 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 		
 		if (!silent)
 			if (!hasMessages) {
-				if (result.getResult())
+				if (result.isSuccessful())
 					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE, ab.getName());
 			} else
 				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result.getMessages())));		
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onEntityTargetedAbilityPreExecute(EntityTargetedAbilityPreExecuteEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onEntityTargetedAbilityExecuted(EntityTargetedAbilityExecutedEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onPlayerTargetedAbilityPreExecute(PlayerTargetedAbilityPreExecuteEvent event) {
-		return;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onPlayerTargetedAbilityExecuted(PlayerTargetedAbilityExecutedEvent event) {
+	public void onPlayerTargetedAbilityExecuted(PostTargettedPlayerAbilityEvent event) {
 		Player p = event.getPlayer();
 		MMOPlayer mp = pm.getPlayer(p);
 		NoxPlayer np = mp.getNoxPlayer();
-		BaseTargetedPlayerAbility ab = event.getAbility();
+		TargetedPlayerAbility ab = event.getAbility();
 		AbilityResult result = event.getResult();
 		
-		boolean hasMessages = result.getMessages().length != 0;
+		boolean hasMessages = result.hasMessages();
 		boolean silent = (ab instanceof SilentAbility);
 		boolean hasCD = ab.getCD().toStamp() > 0;
 		
-		if (result.getResult()) {
+		if (result.isSuccessful()) {
 			
 			if (isPrismActive)
 				AbilityUsePrismEvent.trigger(p, result);
@@ -149,12 +120,15 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 		if (!silent) {
 			if (hasMessages) {
 				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result.getMessages())));
-			} else if (ab.getDamage() > 0 && result.getResult()) {
-				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab.getName(), target, String.format("%.2f", ab.getDamage()));
-					
-				if (ab.getTarget() instanceof Player)
-					MessageUtil.sendLocale((Player) ab.getTarget(), MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np.getFullName(), ab.getName(), String.format("%.2f", ab.getDamage()));
-			} else if (result.getResult()) {
+			} else if (ab instanceof DamagingAbility) {
+				DamagingAbility dab = (DamagingAbility) ab;
+				if (dab.getDamage() > 0 && result.isSuccessful()) {
+					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab.getName(), target, String.format("%.2f", dab.getDamage()));
+
+					if (ab.getTarget() instanceof Player)
+						MessageUtil.sendLocale((Player) ab.getTarget(), MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np.getFullName(), ab.getName(), String.format("%.2f", dab.getDamage()));
+				}
+			} else if (result.isSuccessful()) {
 				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET, ab.getName(), target);
 				
 				if (ab.getTarget() instanceof Player)

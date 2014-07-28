@@ -21,27 +21,10 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.abilities.internal;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-
-public class PlayerAbilityPreExecuteEvent extends PlayerAbilityEvent implements Cancellable {
-	private boolean cancelled;
-
-	public PlayerAbilityPreExecuteEvent(Player who, BasePlayerAbility ability) {
-		super(who, ability);
-
-		this.cancelled = false;
-	}
-
-	public boolean isCancelled() {
-		return cancelled;
-	}
-
-	public void setCancelled(boolean cancel) {
-		this.cancelled = cancel;
-	}
+/**
+ * This is a marker interface. No extra methods are provided here.
+ */
+public interface PVPAbility extends Ability {
 }

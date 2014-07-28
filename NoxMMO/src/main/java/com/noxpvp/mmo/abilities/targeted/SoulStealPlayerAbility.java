@@ -23,13 +23,14 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -66,13 +67,13 @@ public class SoulStealPlayerAbility extends BaseTargetedPlayerAbility implements
 	/**
 	 * @return Boolean If the ability has successfully executed
 	 */
-	public AbilityResult execute() {
+	public TargetedAbilityResult<SoulStealPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<SoulStealPlayerAbility>(this, false);
 
 		getTarget().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, 1));
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<SoulStealPlayerAbility>(this, true);
 	}
 
 }

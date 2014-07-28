@@ -40,6 +40,8 @@ import com.noxpvp.core.commands.NoxCommand;
 import com.noxpvp.core.commands.ReloadCommand;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
+import com.noxpvp.core.data.player.CorePlayerStats;
+import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.internal.CooldownHandler;
 import com.noxpvp.core.internal.PermissionHandler;
@@ -51,6 +53,7 @@ import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.BaseReloader;
 import com.noxpvp.core.reloader.Reloader;
 import com.noxpvp.core.utils.StaticCleaner;
+import com.noxpvp.core.utils.UUIDUtil;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.command.TownyAdminCommand;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -77,6 +80,10 @@ public class NoxCore extends NoxPlugin {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	private static NoxCore instance;
+	private Class<? extends ConfigurationSerializable>[] serializables = new Class[]{
+			SafeLocation.class, CoolDown.class,
+			PlayerStats.class, CorePlayerStats.class
+	};
 
 	public static NoxCore getInstance() {
 		return instance;
@@ -104,7 +111,6 @@ public class NoxCore extends NoxPlugin {
 	private ChatPingListener chatPingListener;
 	private DeathListener deathListener;
 	private LoginListener loginListener;
-	private OnLogoutSaveListener saveListener;
 	private ServerPingListener pingListener;
 	private VoteListener voteListener = null;
 
@@ -197,6 +203,7 @@ public class NoxCore extends NoxPlugin {
 		permHandler = new PermissionHandler(this);
 
 		getMasterReloader();
+		UUIDUtil.getInstance();
 
 		Conversion.register(new BasicConverter<OldNoxPlayer>(OldNoxPlayer.class) {
 			@Override
@@ -220,7 +227,6 @@ public class NoxCore extends NoxPlugin {
 		voteListener = new VoteListener();
 		deathListener = new DeathListener();
 		loginListener = new LoginListener();
-		saveListener = new OnLogoutSaveListener(this);
 		pingListener = new ServerPingListener(this);
 
 		chatPingListener.register();
@@ -228,7 +234,6 @@ public class NoxCore extends NoxPlugin {
 		if (CommonUtil.isPluginEnabled("Votifier")) //Fixes console error message.
 			voteListener.register();
 
-		saveListener.register();
 		deathListener.register();
 		loginListener.register();
 		pingListener.register();
@@ -450,7 +455,7 @@ public class NoxCore extends NoxPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<? extends ConfigurationSerializable>[] getSerialiables() {
-		return new Class[]{SafeLocation.class, CoolDown.class};
+		return serializables;
 	}
 
 	@Override

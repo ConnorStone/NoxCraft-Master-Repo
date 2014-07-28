@@ -24,14 +24,14 @@
 package com.noxpvp.mmo.events.internal;
 
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.IRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.RangedPlayerAbility;
 
-public interface IRangedPlayerAbilityEvent extends IPlayerAbilityEvent {
+public interface IRangedPlayerAbilityEvent<T extends RangedPlayerAbility> extends IPlayerAbilityEvent<T>, IRangedAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link IRangedPlayerAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.RangedPlayerAbility} associated with this event
 	 *
 	 * @return {@link BaseRangedPlayerAbility} The ability
 	 */
-	public BaseRangedPlayerAbility getAbility();
+	public T getAbility();
 }

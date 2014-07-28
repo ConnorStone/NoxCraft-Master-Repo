@@ -23,11 +23,13 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.runnables.HealRunnable;
 
 /**
@@ -47,7 +49,7 @@ public class RejuvenationPlayerAbility extends BasePlayerAbility implements PVPA
 	 *
 	 * @param player The Player type user for this ability instance
 	 */
-	public RejuvenationPlayerAbility(Player player) {
+	public RejuvenationPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.healthPerHeal = 2;
@@ -103,15 +105,15 @@ public class RejuvenationPlayerAbility extends BasePlayerAbility implements PVPA
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<RejuvenationPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<RejuvenationPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
 		new HealRunnable(p, healthPerHeal, heals).runTaskTimer(NoxMMO.getInstance(), 0, delayBetweenHeals);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<RejuvenationPlayerAbility>(this, true);
 	}
 
 }

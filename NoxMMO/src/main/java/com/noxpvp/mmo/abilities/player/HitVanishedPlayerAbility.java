@@ -24,12 +24,14 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.core.data.Vector3D;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -43,7 +45,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 	 * @param player The Player type user for this ability instance
 	 * @author Comphenix @ bukkit forums
 	 */
-	public HitVanishedPlayerAbility(Player player) {
+	public HitVanishedPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.range = 3.8;
@@ -65,9 +67,9 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<HitVanishedPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<HitVanishedPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
@@ -80,7 +82,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 			break;
 		}
 		if (this.e == null)
-			return new AbilityResult(this, false);
+			return new AbilityResult<HitVanishedPlayerAbility>(this, false);
 
 		Location observerPos = p.getEyeLocation();
 		Vector3D observerDir = new Vector3D(observerPos.getDirection());
@@ -97,7 +99,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 			e.damage(1, p);
 		}
 
-		return new AbilityResult(this, false, "");
+		return new AbilityResult<HitVanishedPlayerAbility>(this, false, "");
 	}
 
 	private boolean hasIntersection(Vector3D p1, Vector3D p2, Vector3D min, Vector3D max) {

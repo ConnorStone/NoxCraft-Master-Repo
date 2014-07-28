@@ -24,11 +24,14 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 
@@ -38,14 +41,14 @@ public class LeapPlayerAbility extends BasePlayerAbility {
 	public static final String PERM_NODE = "leap";
 	private double multiplier;
 
-	public LeapPlayerAbility(Player p, double multiplier) {
+	public LeapPlayerAbility(OfflinePlayer p, double multiplier) {
 		super(ABILITY_NAME, p);
 		this.multiplier = multiplier;
 		
-		setCD(5);
+		setCD(new CoolDown.Time().seconds(5));
 	}
 
-	public LeapPlayerAbility(Player p) {
+	public LeapPlayerAbility(OfflinePlayer p) {
 		this(p, 2D);
 	}
 
@@ -74,9 +77,9 @@ public class LeapPlayerAbility extends BasePlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<LeapPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<LeapPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		Location pLoc = p.getLocation();
@@ -92,7 +95,7 @@ public class LeapPlayerAbility extends BasePlayerAbility {
 		//reset fall distance on use
 		p.setFallDistance(0);
 		p.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<LeapPlayerAbility>(this, true);
 	}
 
 }

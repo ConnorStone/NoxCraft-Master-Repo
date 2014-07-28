@@ -23,18 +23,14 @@
 
 package com.noxpvp.mmo.classes.tiers;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.abilities.entity.ChargeEntityAbility;
 import com.noxpvp.mmo.abilities.player.ChargePlayerAbility;
 import com.noxpvp.mmo.classes.internal.ClassTier;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AxesBerserkerClassTier extends ClassTier {
 
@@ -42,13 +38,12 @@ public class AxesBerserkerClassTier extends ClassTier {
 
 	private static volatile String dName = "Berserker";
 	private final double maxHealth;
-	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 
 	public AxesBerserkerClassTier(PlayerClass retainer) {
 		super(retainer, TIER_NAME, 3);
 
-		abilities.putAll(retainer.getTier(getTierLevel() - 1).getAbilityMap());
-		abilities.put(ChargePlayerAbility.ABILITY_NAME.toLowerCase(), new ChargePlayerAbility(getPlayer(), 3));
+		abilities.putAll(retainer.getTier(getTierLevel() - 1).getAbilitiesMap());
+		abilities.put(ChargePlayerAbility.ABILITY_NAME.toLowerCase(), new ChargePlayerAbility(retainer.getOfflinePlayer(), 3));
 
 		this.maxHealth = 26;
 	}
@@ -109,10 +104,6 @@ public class AxesBerserkerClassTier extends ClassTier {
 
 	}
 
-	public Map<String, Ability> getAbilityMap() {
-		return Collections.unmodifiableMap(abilities);
-	}
-
 	public ExperienceType[] getExpTypes() {
 		return ExperienceType.COMBAT;
 	}
@@ -123,4 +114,7 @@ public class AxesBerserkerClassTier extends ClassTier {
 		
 	}
 
+	protected void save(Map<String, Object> data) {
+
+	}
 }

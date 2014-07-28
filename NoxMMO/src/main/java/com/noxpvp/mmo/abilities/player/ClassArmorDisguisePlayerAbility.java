@@ -24,13 +24,14 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import com.bergerkiller.bukkit.common.protocol.CommonPacket;
 import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOutEntityEquipment;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
@@ -42,13 +43,13 @@ public class ClassArmorDisguisePlayerAbility extends BasePlayerAbility {
 
 	private CommonPacket packet;
 
-	public ClassArmorDisguisePlayerAbility(Player p, CommonPacket packet) {
+	public ClassArmorDisguisePlayerAbility(OfflinePlayer p, CommonPacket packet) {
 		super(ABILITY_NAME, p);
 
 		this.packet = packet;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ClassArmorDisguisePlayerAbility> execute() {
 		NMSPacketPlayOutEntityEquipment nms = new NMSPacketPlayOutEntityEquipment();
 
 		ItemStack stack = packet.read(nms.item);
@@ -75,7 +76,7 @@ public class ClassArmorDisguisePlayerAbility extends BasePlayerAbility {
 
 				IPlayerClass clazz = MMOPlayerManager.getInstance().getPlayer(getPlayer()).getPrimaryClass();
 				if (clazz == null)
-					return new AbilityResult(this, false);
+					return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
 
 				LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
 
@@ -88,10 +89,10 @@ public class ClassArmorDisguisePlayerAbility extends BasePlayerAbility {
 				stack.setItemMeta(meta);
 				packet.write(nms.item, stack);
 
-			} else return new AbilityResult(this, false);
-		} else return new AbilityResult(this, false);
+			} else return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
+		} else return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, true);
 
 	}
 

@@ -24,6 +24,7 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -35,11 +36,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.packet.NoxPacketUtil;
 import com.noxpvp.core.utils.DamageUtil;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
 public class HammerOfThorPlayerAbility extends BasePlayerAbility implements PVPAbility {
@@ -57,10 +60,10 @@ public class HammerOfThorPlayerAbility extends BasePlayerAbility implements PVPA
 	/**
 	 * @param player The user of this ability instance
 	 */
-	public HammerOfThorPlayerAbility(Player player) {
+	public HammerOfThorPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
-		setCD(5);
+		setCD(new CoolDown.Time().seconds(5));
 
 		this.distanceVelo = 1.5;
 		this.damageMultiplier = 4;
@@ -182,9 +185,9 @@ public class HammerOfThorPlayerAbility extends BasePlayerAbility implements PVPA
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<HammerOfThorPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<HammerOfThorPlayerAbility>(this, false);
 
 		final Player p = getPlayer();
 
@@ -200,7 +203,7 @@ public class HammerOfThorPlayerAbility extends BasePlayerAbility implements PVPA
 		NoxPacketUtil.disguiseArrow(a, hammer);
 
 		setActive(true);
-		return new AbilityResult(this, true);
+		return new AbilityResult<HammerOfThorPlayerAbility>(this, true);
 	}
 
 }

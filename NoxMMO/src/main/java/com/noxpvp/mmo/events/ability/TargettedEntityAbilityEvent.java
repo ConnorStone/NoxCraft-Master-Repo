@@ -21,29 +21,24 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability;
 
+import com.noxpvp.mmo.abilities.internal.TargetedEntityAbility;
+import com.noxpvp.mmo.events.internal.ITargetedEntityAbiltyEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.abilities.BaseTargetedEntityAbility;
-import com.noxpvp.mmo.events.internal.ITargetedEntityAbiltyEvent;
+public class TargettedEntityAbilityEvent<T extends TargetedEntityAbility> extends RangedEntityAbilityEvent<T> implements ITargetedEntityAbiltyEvent<T> {
 
-public class EntityTargetedAbilityExecutedEvent extends EntityAbilityExecutedEvent implements ITargetedEntityAbiltyEvent {
-	
-	public EntityTargetedAbilityExecutedEvent(Entity what, AbilityResult result) {
-		super(what, result);
-
+	public TargettedEntityAbilityEvent(T ability, Entity entity) {
+		super(ability, entity);
 	}
 
-	@Override
-	public BaseTargetedEntityAbility getAbility() {
-		return (BaseTargetedEntityAbility) super.getAbility();
-	}
-
-	public LivingEntity getTarget() {
+	public final LivingEntity getTarget() {
 		return getAbility().getTarget();
 	}
 
+	public double getDistance() {
+		return getTarget().getLocation().distance(getEntity().getLocation());
+	}
 }

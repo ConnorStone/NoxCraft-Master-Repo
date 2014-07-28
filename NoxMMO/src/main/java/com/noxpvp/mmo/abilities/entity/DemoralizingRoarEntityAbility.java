@@ -23,15 +23,15 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import java.util.HashSet;
-
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import java.util.HashSet;
 
 /**
  * @author NoxPVP
@@ -52,9 +52,9 @@ public class DemoralizingRoarEntityAbility extends BaseEntityAbility implements 
 		creatures = new HashSet<Creature>();
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<DemoralizingRoarEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<DemoralizingRoarEntityAbility>(this, false);
 
 		Entity e = getEntity();
 
@@ -76,7 +76,7 @@ public class DemoralizingRoarEntityAbility extends BaseEntityAbility implements 
 			}
 		}
 		
-		return new AbilityResult(this, !creatures.isEmpty());
+		return new AbilityResult<DemoralizingRoarEntityAbility>(this, !creatures.isEmpty());
 
 	}
 

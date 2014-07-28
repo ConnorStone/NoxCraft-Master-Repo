@@ -23,17 +23,18 @@
 
 package com.noxpvp.mmo.abilities.targeted;
 
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.gui.CoolDown;
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
 
@@ -94,9 +95,9 @@ public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVP
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<CursePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<CursePlayerAbility>(this, false);
 
 		LivingEntity t = getTarget();
 
@@ -105,6 +106,6 @@ public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVP
 
 		new ParticleRunner(ParticleType.angryVillager, t, false, 0, 1, 1).start(0);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<CursePlayerAbility>(this, true);
 	}
 }

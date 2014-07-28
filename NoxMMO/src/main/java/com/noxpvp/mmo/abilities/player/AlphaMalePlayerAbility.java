@@ -24,14 +24,19 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Wolf;
 
 import com.bergerkiller.bukkit.common.controller.EntityController;
 import com.bergerkiller.bukkit.common.entity.type.CommonLivingEntity;
 import com.bergerkiller.bukkit.common.wrappers.DamageSource;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -40,7 +45,7 @@ public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbil
 	private CommonLivingEntity<Wolf> wolf;
 	private WolfController wolfController = new WolfController();
 
-	public AlphaMalePlayerAbility(Player player) {
+	public AlphaMalePlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 	}
 
@@ -53,8 +58,8 @@ public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbil
 		this.wolf.setController(wolfController);
 	}
 
-	public AbilityResult execute() {
-		return new AbilityResult(this, false);
+	public AbilityResult<AlphaMalePlayerAbility> execute() {
+		return new AbilityResult<AlphaMalePlayerAbility>(this, false);
 	}
 
 	public WolfController getWolfController() {

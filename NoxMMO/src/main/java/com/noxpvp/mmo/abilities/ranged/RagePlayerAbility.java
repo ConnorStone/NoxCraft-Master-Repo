@@ -23,8 +23,20 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
+import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.effect.StaticEffects;
 import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -32,17 +44,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.effect.StaticEffects;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import javax.annotation.Nonnull;
+
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
 
@@ -66,7 +70,7 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 	/**
 	 * @param player The user of the ability instance
 	 */
-	public RagePlayerAbility(Player player, double range) {
+	public RagePlayerAbility(@Nonnull OfflinePlayer player, double range) {
 		super(ABILITY_NAME, player, range);
 		
 		setCD(new CoolDown.Time().seconds(75));
@@ -122,7 +126,7 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 
 	}
 
-	public RagePlayerAbility(Player player) {
+	public RagePlayerAbility(@Nonnull OfflinePlayer player) {
 		this(player, 5);
 	}
 
@@ -132,9 +136,9 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 				+ "damage to all enemies surrounding anything you hit";
 	}
 
-	public AbilityResult execute() {
+	public RangedAbilityResult<RagePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<RagePlayerAbility>(this, false);
 
 		IPlayerClass pClass = MMOPlayerManager.getInstance().getPlayer(getPlayer()).getPrimaryClass();
 
@@ -149,7 +153,7 @@ public class RagePlayerAbility extends BaseRangedPlayerAbility implements PVPAbi
 			}
 		}, length);
 
-		return new AbilityResult(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
+		return new RangedAbilityResult<RagePlayerAbility>(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
 	}
 
 }

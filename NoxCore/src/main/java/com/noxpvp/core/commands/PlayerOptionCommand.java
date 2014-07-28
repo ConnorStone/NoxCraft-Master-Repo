@@ -47,8 +47,4 @@ public class PlayerOptionCommand extends BaseCommand {
 	public String[] getFlags() {
 		return flags;
 	}
-
-	public int getMaxArguments() {
-		return -1;
-	}
 }

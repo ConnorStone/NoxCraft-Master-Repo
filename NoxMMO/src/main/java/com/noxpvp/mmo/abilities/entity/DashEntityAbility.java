@@ -27,6 +27,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 
 /**
@@ -75,13 +76,13 @@ public class DashEntityAbility extends BaseEntityAbility {
 		this.d = d;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<DashEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<DashEntityAbility>(this, false);
 
 		((LivingEntity) getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, d, s, true));
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<DashEntityAbility>(this, true);
 	}
 
 }

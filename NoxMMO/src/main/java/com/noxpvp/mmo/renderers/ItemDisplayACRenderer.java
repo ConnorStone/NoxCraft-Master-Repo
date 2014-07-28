@@ -23,6 +23,7 @@
 
 package com.noxpvp.mmo.renderers;
 
+import com.noxpvp.mmo.abilities.internal.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +32,6 @@ import com.comphenix.attribute.NbtFactory;
 import com.comphenix.attribute.NbtFactory.NbtCompound;
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import com.noxpvp.mmo.AbilityCycler;
-import com.noxpvp.mmo.abilities.Ability;
 
 public class ItemDisplayACRenderer extends BaseAbilityCyclerRenderer {
 

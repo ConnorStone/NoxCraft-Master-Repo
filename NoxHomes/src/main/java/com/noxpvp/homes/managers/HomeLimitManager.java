@@ -166,11 +166,13 @@ public class HomeLimitManager extends BaseManager<HomeLimit> {
 		}
 
 		/*
+		 * If base == null return ret no matter what.
+		 *
 		 * If cumulative plus base is below 0 than result to base if base is above 0.
 		 *
 		 * If the base value equals -1 than return Short.MAX_VALUE as a fake infinity.
-		 *
 		 */
+		if (base == null) return ret;
 		if (ret + base.getLimit() < 0) return (base.getLimit() == -1) ? Short.MAX_VALUE : base.getLimit();
 
 		return ret + base.getLimit();

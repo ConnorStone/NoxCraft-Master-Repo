@@ -24,6 +24,7 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.protocol.CommonPacket;
@@ -31,6 +32,7 @@ import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.bergerkiller.bukkit.common.utils.PlayerUtil;
 import com.noxpvp.core.VaultAdapter;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 
 public class SilentWalkingPlayerAbility extends BasePlayerAbility {
@@ -40,18 +42,18 @@ public class SilentWalkingPlayerAbility extends BasePlayerAbility {
 
 	private CommonPacket packet;
 
-	public SilentWalkingPlayerAbility(Player p, CommonPacket packet) {
+	public SilentWalkingPlayerAbility(OfflinePlayer p, CommonPacket packet) {
 		super(ABILITY_NAME, p);
 
 		this.packet = packet;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<SilentWalkingPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<SilentWalkingPlayerAbility>(this, false);
 
 		if (!packet.read(PacketType.OUT_NAMED_SOUND_EFFECT.soundName).contains("step."))
-			return new AbilityResult(this, false);
+			return new AbilityResult<SilentWalkingPlayerAbility>(this, false);
 
 		Player hearing = getPlayer();
 		Location loc = new Location(hearing.getWorld(),
@@ -73,10 +75,10 @@ public class SilentWalkingPlayerAbility extends BasePlayerAbility {
 		}
 
 		if (closest == null || lowestDistance > 1) {
-			return new AbilityResult(this, false);
+			return new AbilityResult<SilentWalkingPlayerAbility>(this, false);
 		}
 
-		return new AbilityResult(this, VaultAdapter.permission.has(closest, NoxMMO.PERM_NODE + ".ability." + SilentWalkingPlayerAbility.PERM_NODE));
+		return new AbilityResult<SilentWalkingPlayerAbility>(this, VaultAdapter.permission.has(closest, NoxMMO.PERM_NODE + ".ability." + SilentWalkingPlayerAbility.PERM_NODE));
 
 	}
 

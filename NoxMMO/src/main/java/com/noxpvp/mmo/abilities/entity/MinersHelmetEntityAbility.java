@@ -36,6 +36,7 @@ import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOu
 import com.bergerkiller.bukkit.common.utils.PacketUtil;
 import com.comphenix.packetwrapper.BlockChangeArray;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 
 public class MinersHelmetEntityAbility extends BaseEntityAbility {
@@ -93,13 +94,13 @@ public class MinersHelmetEntityAbility extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<MinersHelmetEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<MinersHelmetEntityAbility>(this, false);
 
 		new MinersHelmet(getEntity(), duration * (20 / speed)).runTaskTimer(NoxMMO.getInstance(), 0, speed);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<MinersHelmetEntityAbility>(this, true);
 	}
 
 	private class MinersHelmet extends BukkitRunnable {

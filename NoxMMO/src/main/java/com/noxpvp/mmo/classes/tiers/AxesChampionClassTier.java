@@ -23,17 +23,14 @@
 
 package com.noxpvp.mmo.classes.tiers;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.abilities.ranged.RagePlayerAbility;
 import com.noxpvp.mmo.classes.internal.ClassTier;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AxesChampionClassTier extends ClassTier {
 
@@ -41,13 +38,12 @@ public class AxesChampionClassTier extends ClassTier {
 
 	private static volatile String dName = "Champion";
 	private final double maxHealth;
-	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 
 	public AxesChampionClassTier(PlayerClass retainer) {
 		super(retainer, TIER_NAME, 2);
 
-		abilities.putAll(getRetainingClass().getTier(getTierLevel() - 1).getAbilityMap());
-		abilities.put(RagePlayerAbility.ABILITY_NAME.toLowerCase(), new RagePlayerAbility(getPlayer()));
+		abilities.putAll(getRetainingClass().getTier(getTierLevel() - 1).getAbilitiesMap());
+		abilities.put(RagePlayerAbility.ABILITY_NAME.toLowerCase(), new RagePlayerAbility(retainer.getOfflinePlayer()));
 
 		this.maxHealth = 24;
 	}
@@ -108,10 +104,6 @@ public class AxesChampionClassTier extends ClassTier {
 
 	}
 
-	public Map<String, Ability> getAbilityMap() {
-		return Collections.unmodifiableMap(abilities);
-	}
-
 	public ExperienceType[] getExpTypes() {
 		return ExperienceType.COMBAT;
 	}
@@ -120,6 +112,10 @@ public class AxesChampionClassTier extends ClassTier {
 	protected void load(Map<String, Object> data) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	protected void save(Map<String, Object> data) {
+
 	}
 
 }

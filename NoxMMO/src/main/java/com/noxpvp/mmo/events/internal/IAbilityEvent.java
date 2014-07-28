@@ -23,16 +23,15 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.abilities.BaseAbility;
+import com.noxpvp.mmo.abilities.internal.Ability;
 
-public interface IAbilityEvent {
+public interface IAbilityEvent<T extends Ability> {
 
 	/**
-	 * Get the {@link Ability} associated with this event
+	 * Get the {@link com.noxpvp.mmo.abilities.internal.Ability} associated with this event
 	 *
-	 * @return {@link BaseAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.Ability} The ability
 	 */
-	public BaseAbility getAbility();
+	public T getAbility();
 
 }

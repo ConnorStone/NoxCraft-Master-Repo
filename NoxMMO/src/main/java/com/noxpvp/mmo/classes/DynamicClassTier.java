@@ -23,26 +23,20 @@
 
 package com.noxpvp.mmo.classes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.bukkit.entity.Player;
-
 import com.bergerkiller.bukkit.common.collections.InterpolatedMap;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.bergerkiller.bukkit.common.utils.MathUtil;
 import com.bergerkiller.bukkit.common.utils.ParseUtil;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.abilities.internal.Ability;
 import com.noxpvp.mmo.classes.internal.ClassTier;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
+import org.bukkit.entity.Player;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class DynamicClassTier extends ClassTier {
 
@@ -101,6 +95,10 @@ public class DynamicClassTier extends ClassTier {
 	 */
 	@Override
 	protected void load(Map<String, Object> data) {
+
+	}
+
+	protected void save(Map<String, Object> data) {
 
 	}
 
@@ -191,18 +189,15 @@ public class DynamicClassTier extends ClassTier {
 
 	public void setExp(int amount) {
 		boolean maxed = amount > getMaxExp();
-		if (maxed)
+		if (maxed) {
 			amount -= getMaxExp();
+			expMap.put(getLevel(), getMaxExp());
+			setExp(amount);
+		}
 
-		if (amount < 0)
-			amount = 0;
-		expMap.put(getLevel(), getMaxExp());
-		setLevel(getLevel() + 1);
+		if (amount <= 0) return;
 
-		if (amount <= 0)
-			return;
-
-		setExp(amount);
+		expMap.put(getLevel(), amount);
 	}
 
 	public Map<String, Ability> getAbilityMap() {

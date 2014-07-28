@@ -26,6 +26,7 @@ package com.noxpvp.homes.managers;
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.manager.BasePlayerManager;
 import com.noxpvp.homes.HomesPlayer;
+import com.noxpvp.homes.NoxHomes;
 
 public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> {
 
@@ -46,6 +47,14 @@ public class HomesPlayerManager extends BasePlayerManager<HomesPlayer> {
 
 	private HomesPlayerManager() {
 		super(HomesPlayer.class, "playerdata");
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public NoxHomes getPlugin() {
+		return NoxHomes.getInstance();
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~

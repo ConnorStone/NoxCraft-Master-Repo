@@ -21,28 +21,32 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability;
 
+import com.noxpvp.mmo.abilities.internal.EntityAbility;
+import com.noxpvp.mmo.events.internal.IEntityAbilityEvent;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.HandlerList;
 
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
+public class EntityAbilityEvent<T extends EntityAbility> extends BaseAbilityEvent<T> implements IEntityAbilityEvent<T> {
 
-public class EntityAbilityExecutedEvent extends EntityAbilityEvent {
-	private AbilityResult result;
-	
-	public EntityAbilityExecutedEvent(Entity what, AbilityResult result) {
-		super(what, (BaseEntityAbility) result.getExecuter());
+	private static HandlerList handlers = new HandlerList();
+	private final Entity entity;
 
-		this.result = result;
+	public EntityAbilityEvent(T ability, Entity entity) {
+		super(ability);
+		this.entity = entity;
 	}
 
-	/**
-	 * Gets the result of the ability that caused this event
-	 * 
-	 * @return {@link AbilityResult} the result
-	 */
-	public AbilityResult getResult() {
-		return result;
+	public Entity getEntity() {
+		return entity;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 }

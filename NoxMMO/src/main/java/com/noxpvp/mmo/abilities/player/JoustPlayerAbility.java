@@ -24,11 +24,12 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 //FIXME not made yet
 
@@ -39,14 +40,13 @@ public class JoustPlayerAbility extends BasePlayerAbility implements PVPAbility 
 
 	private EntityDamageByEntityEvent event;
 
-	public JoustPlayerAbility(Player p, EntityDamageByEntityEvent event) {
+	public JoustPlayerAbility(OfflinePlayer p, EntityDamageByEntityEvent event) {
 		super(ABILITY_NAME, p);
 
 		this.event = event;
 	}
 
 	public AbilityResult execute() {
-
 		throw new NotImplementedException();
 
 //		MMOPlayer mmoP;

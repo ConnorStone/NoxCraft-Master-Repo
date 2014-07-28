@@ -23,15 +23,10 @@
 
 package com.noxpvp.core.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.noxpvp.core.commands.CommandContext;
 import org.bukkit.command.CommandSender;
 
-import com.noxpvp.core.commands.CommandContext;
+import java.util.*;
 
 public class CommandUtil {
 	private static final char escapeChar = '\\';
@@ -58,7 +53,7 @@ public class CommandUtil {
 
 		while (i < r.length) {
 //			if (((i - 1) >= 0) && r[i-1] == ' ') 
-			if (r[i] == flagChar && (((i - 1) >= 0) && r[i - 1] == ' ')) {
+			if (r[i] == flagChar && i+1 < r.length && ((((i - 1) >= 0) && r[i - 1] == ' ') || (i - 1 < 0))) {
 				isFlag = true;
 				if (r[i + 1] == flagChar) {
 					isLongFlag = true;

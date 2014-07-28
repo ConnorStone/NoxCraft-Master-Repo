@@ -23,20 +23,23 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
+import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.runnables.ExpandingDamageRunnable;
-import com.noxpvp.mmo.runnables.ShockWaveAnimation;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 public class ThrowPlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
 
@@ -49,11 +52,11 @@ public class ThrowPlayerAbility extends BaseRangedPlayerAbility implements PVPAb
 	/**
 	 * @param player The Player type user object for this ability instance
 	 */
-	public ThrowPlayerAbility(Player player) {
+	public ThrowPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		setRange(8);
-		setCD(15);
+		setCD(new CoolDown.Time().seconds(15));
 		this.maxTargets = 10;
 		this.pushDelay = 20;
 	}
@@ -95,12 +98,10 @@ public class ThrowPlayerAbility extends BaseRangedPlayerAbility implements PVPAb
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public RangedAbilityResult<ThrowPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<ThrowPlayerAbility>(this, false);
 
-		clearEffected();
-		
 		Player p = getPlayer();
 		final Location pLoc = p.getLocation();
 
@@ -119,7 +120,7 @@ public class ThrowPlayerAbility extends BaseRangedPlayerAbility implements PVPAb
 			final Damageable e = (Damageable) it;
 			final Location itLoc = it.getLocation();
 
-			addEffectedEntity(e);
+//			addEffectedEntity(e);
 			e.setVelocity((pLoc.toVector().subtract(itLoc.toVector()).multiply(0.4)));
 
 			Bukkit.getScheduler().runTaskLater(NoxMMO.getInstance(), new Runnable() {
@@ -134,9 +135,9 @@ public class ThrowPlayerAbility extends BaseRangedPlayerAbility implements PVPAb
 		if (i > 0) {
 			new ExpandingDamageRunnable(p, pLoc, 4, (int) range, 2).start(pushDelay);
 			new ShockWaveAnimation(pLoc, 2, (int) range, true).start(pushDelay);
-			return new AbilityResult(this, true);
+			return new RangedAbilityResult<ThrowPlayerAbility>(this, true);
 			
-		} else return new AbilityResult(this, false);
+		} else return new RangedAbilityResult<ThrowPlayerAbility>(this, false);
 	}
 
 }

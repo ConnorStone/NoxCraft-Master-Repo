@@ -23,8 +23,10 @@
 
 package com.noxpvp.mmo.abilities.entity;
 
-import java.util.HashSet;
-
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -34,9 +36,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import java.util.HashSet;
 
 /**
  * @author NoxPVP
@@ -131,17 +131,17 @@ public class FireNovaEntityAbility extends BaseEntityAbility implements PVPAbili
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<FireNovaEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<FireNovaEntityAbility>(this, false);
 
 		animation = new FirenovaAnimation();
 		animation.start();
 
-		return new AbilityResult(this, false);
+		return new AbilityResult<FireNovaEntityAbility>(this, false);
 	}
 
-	private class FirenovaAnimation extends BukkitRunnable {
+	private class FirenovaAnimation extends BukkitRunnable { //TODO: Convert to Task Object.
 		private Entity e;
 		private int i;
 		private Block center;

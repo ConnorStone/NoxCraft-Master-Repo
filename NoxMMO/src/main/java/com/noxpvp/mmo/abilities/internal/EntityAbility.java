@@ -21,10 +21,24 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.abilities.internal;
 
-/**
- * This is a marker interface. No extra methods are provided here.
- */
-public interface PVPAbility {
+import com.noxpvp.core.internal.IHeated;
+import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
+import org.bukkit.entity.Entity;
+
+public interface EntityAbility extends Ability, IHeated, IMMOHandlerHolder{
+	
+	/**
+	 * Retrieves the entity responsible for this ability.
+	 *
+	 * @return Entity object from bukkit.
+	 */
+	public Entity getEntity();
+
+//	public void addEffectedEntity(Entity e);
+//
+//	public List<Entity> getEffectedEntities();
+//
+//	public void clearEffected();
 }

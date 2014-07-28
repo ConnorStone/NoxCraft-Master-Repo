@@ -21,17 +21,24 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.events.ability.post;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.events.internal.IAbilityEvent;
 import org.bukkit.event.Event;
 
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
+public abstract class PostBaseAbilityEvent<T extends Ability> extends Event implements IAbilityEvent<T>{
+	private final T ability;
 
-/**
- * Currently this is no different from Ability. It only marks abilities that activate by themselves.
- *
- * @author Chris
- */
-public interface IPassiveAbility<T extends Event> extends Ability {
-	public AbilityResult execute(T event);
+	public PostBaseAbilityEvent(T ability) {
+		this.ability = ability;
+	}
+
+	@Override
+	public T getAbility() {
+		return ability;
+	}
+
+	public abstract AbilityResult<T> getResult();
 }

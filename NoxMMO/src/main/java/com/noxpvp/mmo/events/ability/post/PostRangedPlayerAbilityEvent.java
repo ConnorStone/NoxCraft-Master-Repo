@@ -21,27 +21,36 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability.post;
 
-import org.bukkit.entity.LivingEntity;
+import com.noxpvp.mmo.abilities.internal.RangedPlayerAbility;
 import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.events.internal.ITargetedPlayerAbilityEvent;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
-public class PlayerTargetedAbilityPreExecuteEvent extends PlayerAbilityPreExecuteEvent implements ITargetedPlayerAbilityEvent {
+public class PostRangedPlayerAbilityEvent<T extends RangedPlayerAbility> extends PostPlayerAbilityEvent<T> {
+	private double range;
 
-	public PlayerTargetedAbilityPreExecuteEvent(Player who, BaseTargetedPlayerAbility ability) {
-		super(who, ability);
+	public PostRangedPlayerAbilityEvent(T ability, RangedAbilityResult<T> result, Player player) {
+		super(ability, result, player);
+	}
+
+	public void setRange(double range) {
+		this.range = range;
+	}
+
+	public double getRange() {
+		return range;
 	}
 
 	@Override
-	public BaseTargetedPlayerAbility getAbility() {
-		return (BaseTargetedPlayerAbility) super.getAbility();
+	public T getAbility() {
+		return super.getAbility();
 	}
 
-	public LivingEntity getTarget() {
-		return ((BaseTargetedPlayerAbility) ability).getTarget();
+	@Override
+	public RangedAbilityResult<T> getResult() {
+		return (RangedAbilityResult<T>) super.getResult();
 	}
 
 }

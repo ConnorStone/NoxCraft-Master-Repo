@@ -28,8 +28,14 @@ import org.bukkit.entity.Player;
 
 public abstract class PlayerFilter<T extends Player> implements Filter {
 
+	private final Class<T> classType;
+
+	protected PlayerFilter(Class<T> classType) {
+		this.classType = classType;
+	}
+
 	public final boolean isFiltered(Object t) {
-		if (t instanceof Player) return isFiltered((Player) t);
+		if (classType.isInstance(t)) return isFiltered((T)t);
 		else return nonMatch();
 	}
 

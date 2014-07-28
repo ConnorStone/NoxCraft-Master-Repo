@@ -68,6 +68,7 @@ public class NoxHomes extends NoxPlugin {
 	private PermissionHandler permHandler;
 
 	private static final Class<? extends ConfigurationSerializable>[] serializables = new Class[]{
+			HomesPlayer.class,
 			BaseHome.class, NamedHome.class, DefaultHome.class, //Homes
 			BaseHomeLimit.class, BackupHomeLimit.class, GroupHomeLimit.class //Limits
 	};

@@ -21,29 +21,37 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability.post;
 
-import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.internal.Ability;
 
-public class PlayerAbilityExecutedEvent extends PlayerAbilityEvent {
-	private AbilityResult result;
+public class PostAbilityEvent<T extends Ability> extends PostBaseAbilityEvent<T> {
 
-	public PlayerAbilityExecutedEvent(Player who, AbilityResult result) {
-		super(who, (BasePlayerAbility) result.getExecuter());
-		
+	private static HandlerList handlers = new HandlerList();
+
+	private AbilityResult<T> result;
+
+	public PostAbilityEvent(T ability, AbilityResult<T> result) {
+		super(ability);
 		this.result = result;
 	}
 
-	/**
-	 * Gets the result of the ability that caused this event
-	 * 
-	 * @return {@link AbilityResult} the result
-	 */
-	public AbilityResult getResult() {
-		return result;
+	public T getAbility() {
+		return super.getAbility();
 	}
 
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public AbilityResult<T> getResult() {
+		return result;
+	}
 }

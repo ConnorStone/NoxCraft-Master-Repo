@@ -55,9 +55,6 @@ public class HomeListCommand extends BaseCommand {
 	}
 
 	public CommandResult execute(CommandContext context) {
-		if (context.hasFlag("h") || context.hasFlag("help"))
-			return new CommandResult(this, false);
-
 		CommandSender sender = context.getSender();
 		HomesPlayerManager manager = HomesPlayerManager.getInstance();
 

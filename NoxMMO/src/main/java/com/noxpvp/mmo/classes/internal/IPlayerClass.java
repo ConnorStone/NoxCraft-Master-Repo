@@ -24,21 +24,22 @@
 
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.Collection;
+import com.noxpvp.core.gui.MenuItemRepresentable;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.AbilityContainer;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
+public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerializable, AbilityContainer<Ability> {
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.core.gui.MenuItemRepresentable;
-import com.noxpvp.mmo.abilities.Ability;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-
-public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerializable {
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Identity
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
 	 * A unique id for classes. <br/><br/>
@@ -55,6 +56,19 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 */
 	public String getName();
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Descriptors
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	 * Gets the current display name of the class. <br/>
+	 * <br/>
+	 * Majority of time this will reflect whatever the current tier is.
+	 *
+	 * @return DisplayName String value of class that is displayed to the player.
+	 */
+	public String getDisplayName();
+
 	/**
 	 * Gets the name of this class, prefixed with the class color
 	 * 
@@ -69,6 +83,10 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 * @return {@link String} colored description
 	 */
 	public String getDescription(ChatColor color);
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Lores
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	/**
 	 * Returns a list of the {@link #getDescription()}
@@ -93,6 +111,10 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 * @return
 	 */
 	public List<String> getLore(ChatColor color, int lineLength);
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Informational
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	/**
 	 * Tells whether or not this is a primary class. Meaning the player sets this as their main display class. <br>
@@ -101,6 +123,8 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 * @return true if primary and false other wise.
 	 */
 	public boolean isPrimaryClass();
+
+	public ExperienceType[] getExpTypes();
 
 	/**
 	 * This defines the classes description and selection system.
@@ -117,52 +141,43 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 */
 	public ClassType[] getSubClassTypes();
 
-	/**
-	 * Returns all tiers that are possible to get even if locked from user.
-	 *
-	 * @return tiers A set of Entries of <Integer, IClassTier>
-	 */
-	public Set<Entry<Integer, IClassTier>> getTiers();
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Tiers
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
-	 * Retrieves the color used for coloring armour.
+	 * Retrieves the current tier level.
 	 *
-	 * @return Color armour color  object.
+	 * @return currentTierLevel int value
 	 */
-	public Color getRBGColor();
-
-	/**
-	 * Retrieves the unmodified unmerged coloring of the armour.
-	 *
-	 * @return Color armour color object.
-	 */
-	public Color getBaseArmourColor();
-
-	/**
-	 * Checks if player can use this class.
-	 *
-	 * @return
-	 */
-	public boolean canUseClass();
-
-	/**
-	 * Retrieves the color associated with chat and other chat related messages. (COLOR CODES RELATED)
-	 *
-	 * @return ChatColor
-	 */
-	public ChatColor getColor();
-
-	/**
-	 *
-	 * Returns the current tier selected.
-	 *
-	 * @return currentTier IClassTier object.
-	 */
-	public IClassTier getTier();
+	public int getCurrentTierLevel();
 
 	public void setCurrentTier(IClassTier tier); //FIXME: Javadocs
 
 	public void setCurrentTier(int tierLevel);
+
+	/**
+	 * Retrieves the tier number for the one without maxed out exp.
+	 *
+	 * @return highest tier without capped exp.
+	 */
+	public int getLatestTier();
+
+
+	/**
+	 * Tells the highest tier the player is allowed to use.
+	 *
+	 * @return highestTier
+	 */
+	public int getHighestAllowedTier();
+
+	/**
+	 * Retrieves the highest possible tier level for this class. <br/><br/>
+	 * This includes stuff not accesable to the specific player. This is interal max tier count checks.
+	 *
+	 * @return highestTier
+	 */
+	public int getHighestPossibleTier();
 
 	/**
 	 * Tells whether or not that tier level exists.
@@ -173,13 +188,12 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	public boolean hasTier(int level);
 
 	/**
-	 * Retrieves the current tier level.
 	 *
-	 * @return currentTierLevel int value
+	 * Returns the current tier selected.
+	 *
+	 * @return currentTier IClassTier object.
 	 */
-	public int getCurrentTierLevel();
-
-	public ExperienceType[] getExpTypes();
+	public IClassTier getTier();
 
 	/**
 	 * Grabs the specified tier object.
@@ -192,96 +206,16 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	public IClassTier getTier(int tier);
 
 	/**
-	 * Retrieves whether or not a player can use specified tier.
+	 * Returns all tiers that are possible to get even if locked from user.
 	 *
-	 * @param tier to check for permission
-	 * @return true if allowed and false otherwise.
+	 * @return tiers A set of Entries of <Integer, IClassTier>
 	 */
-	public boolean canUseTier(int tier);
+	public Set<Entry<Integer, IClassTier>> getTiers();
 
-	/**
-	 * Retrieves the tier number for the one without maxed out exp.
-	 *
-	 * @return highest tier without capped exp.
-	 */
-	public int getLatestTier();
 
-	/**
-	 * Retrieves the highest possible tier level for this class. <br/><br/>
-	 * This includes stuff not accesable to the specific player. This is interal max tier count checks.
-	 *
-	 * @return highestTier
-	 */
-	public int getHighestPossibleTier();
-
-	/**
-	 * Tells the highest tier the player is allowed to use.
-	 *
-	 * @return highestTier
-	 */
-	public int getHighestAllowedTier();
-
-	/**
-	 * Gets the current display name of the class. <br/>
-	 * <br/>
-	 * Majority of time this will reflect whatever the current tier is.
-	 *
-	 * @return DisplayName String value of class that is displayed to the player.
-	 */
-	public String getDisplayName();
-
-	/**
-	 * Retrieves the current tiers exp value.
-	 *
-	 * @return currentExp integer value of how much exp the tier has.
-	 */
-	public int getExp();
-
-	public void setExp(int amount);
-
-	/**
-	 * Retrieves the exp for the specified tier.
-	 *
-	 * @param tier to retrieve values from.
-	 * @return exp integer value of how much exp the tier has.
-	 */
-	public int getExp(int tier);
-	
-	/**
-	 * Gets the amount of exp needed to reach the next level in the current tier
-	 * 
-	 * @return exp Integer value needed to level
-	 */
-	public int getExpToLevel();
-
-	/**
-	 * Retrieves all exp from all tiers combined.
-	 *
-	 * @return
-	 */
-	public int getTotalExp();
-
-	/**
-	 * Retrieve the max experience allowed in the current tier.
-	 *
-	 * @return maxExp integer value of max experience allowed.
-	 */
-	public int getMaxExp();
-
-	/**
-	 * Retrieves the max experience allowed in the selected tier.
-	 *
-	 * @param tier to retrieve values from.
-	 * @return maxExp integer value of max experience allowed.
-	 */
-	public int getMaxExp(int tier);
-
-	//TODO: Should we use this?
-//	/**
-//	 * Sets the users current level on specified tier.
-//	 * @param level int object to set.
-//	 */
-//	public void setLevel(int level);
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Level Data
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
 	 * Retrieve the current level of the current tier of the class.
@@ -320,6 +254,10 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 	 */
 	public int getTotalLevel();
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//EXP Data
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	//TODO: Javadocs.
 	public void setExp(int tier, int amount);
 
@@ -331,9 +269,110 @@ public interface IPlayerClass extends MenuItemRepresentable, ConfigurationSerial
 
 	public void removeExp(int tier, int amount);
 
-	public Map<String, ? extends Ability> getAbilityMap();
+	/**
+	 * Retrieves the current tiers exp value.
+	 *
+	 * @return currentExp integer value of how much exp the tier has.
+	 */
+	public int getExp();
 
-	public Collection<? extends Ability> getAbilities();
+	public void setExp(int amount);
+
+	/**
+	 * Retrieves the exp for the specified tier.
+	 *
+	 * @param tier to retrieve values from.
+	 * @return exp integer value of how much exp the tier has.
+	 */
+	public int getExp(int tier);
+
+	/**
+	 * Gets the amount of exp needed to reach the next level in the current tier
+	 *
+	 * @return exp Integer value needed to level
+	 */
+	public int getExpToLevel();
+
+	/**
+	 * Retrieves all exp from all tiers combined.
+	 *
+	 * @return
+	 */
+	public int getTotalExp();
+
+	/**
+	 * Retrieve the max experience allowed in the current tier.
+	 *
+	 * @return maxExp integer value of max experience allowed.
+	 */
+	public int getMaxExp();
+
+	/**
+	 * Retrieves the max experience allowed in the selected tier.
+	 *
+	 * @param tier to retrieve values from.
+	 * @return maxExp integer value of max experience allowed.
+	 */
+	public int getMaxExp(int tier);
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Coloring
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	 * Retrieves the color associated with chat and other chat related messages. (COLOR CODES RELATED)
+	 *
+	 * @return ChatColor
+	 */
+	public ChatColor getColor();
+
+	/**
+	 * Retrieves the color used for coloring armour.
+	 *
+	 * @return Color armour color  object.
+	 */
+	public Color getRBGColor();
+
+
+
+	/**
+	 * Retrieves the unmodified unmerged coloring of the armour.
+	 *
+	 * @return Color armour color object.
+	 */
+	public Color getBaseArmourColor();
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Restrictions
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	 * Checks if player can use this class.
+	 *
+	 * @return
+	 */
+	public boolean canUseClass();
+
+	/**
+	 * Retrieves whether or not a player can use specified tier.
+	 *
+	 * @param tier to check for permission
+	 * @return true if allowed and false otherwise.
+	 */
+	public boolean canUseTier(int tier);
+
+
+
+	//TODO: Should we use this?
+//	/**
+//	 * Sets the users current level on specified tier.
+//	 * @param level int object to set.
+//	 */
+//	public void setLevel(int level);
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Special Color Blending techniques
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public static enum BLEND_MODE {
 		AVERAGE, ADDITIVE, SUBTRACTIVE, MULTIPLE, OVERRIDE, CANCEL;

@@ -79,7 +79,9 @@ public class HomeAdminWipeCommand extends BaseCommand {
 //		} else {
 //			MessageUtil.sendLocale(sender, GlobalLocale.COMMAND_FAILED, "Could not wipe data.");
 //		}
-		return new CommandResult(this, true, "This command is currently not implemented in this version.", "The new save system makes it a bit harder to wipe all data.", "To speed up the release this command is now disabled until further implementations are made."); //FIXME: Implement again.
+		return new CommandResult(this, true, "&4This command is currently not implemented in this version.",
+				"&4The new save system makes it a bit harder to wipe all data.",
+				"&4To speed up the release this command is now disabled until further implementations are made."); //FIXME: Implement again.
 	}
 
 	private String getNextKey() {

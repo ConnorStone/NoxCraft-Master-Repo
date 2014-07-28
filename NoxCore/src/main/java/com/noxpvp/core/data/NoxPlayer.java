@@ -39,6 +39,7 @@ import com.noxpvp.core.utils.PlayerUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
 import java.lang.ref.Reference;
@@ -46,6 +47,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.logging.Level;
 
+@SerializableAs("NoxPlayer")
 public class NoxPlayer implements PluginPlayer, Persistent {
 
 	//~~~~~~~~~~~
@@ -66,7 +68,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	//Instanced Fields
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	private final UUID playerUUID;
-	private WeakHashMap<String, CoolDown> cd_cache;
+	private WeakHashMap<String, CoolDown> cd_cache = new WeakHashMap<String, CoolDown>();
 	private List<CoolDown> cds;
 	private ConfigurationNode temp_data;
 	private CoreBar coreBar;
@@ -88,7 +90,6 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 
 		//Cool-Downs
 		cds = new ArrayList<CoolDown>();
-		cd_cache = new WeakHashMap<String, CoolDown>();
 
 		//Temp Data
 		temp_data = new ConfigurationNode();
@@ -174,6 +175,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 
 
 	public CorePlayerStats getStats() {
+		if (stats == null) stats = new CorePlayerStats(getPlayerUUID());
 		return stats;
 	}
 
@@ -220,6 +222,7 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	}
 
 	public CoreBar getCoreBar() {
+		if (coreBar == null) return (coreBar = new CoreBar(NoxCore.getInstance(), getPlayer()));
 		return coreBar;
 	}
 
@@ -368,6 +371,10 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
 	}
 
+	public NoxPlayer getNoxPlayer() {
+		return this;
+	}
+
 	public Player getPlayer() {
 		if (isOnline()) return (Player) getOfflinePlayer();
 		else return null;
@@ -431,7 +438,9 @@ public class NoxPlayer implements PluginPlayer, Persistent {
 	 */
 	@Deprecated
 	public String getReadableRemainingCDTime(String name) {
-		return getCoolDown(name).getReadableTimeLeft();
+		CoolDown cd = getCoolDown(name);
+		if (cd != null) return cd.getReadableTimeLeft();
+		return "";
 	}
 
 }

@@ -24,13 +24,15 @@
 package com.noxpvp.mmo.abilities.targeted;
 
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -50,13 +52,13 @@ public class DisarmPlayerAbility extends BaseTargetedPlayerAbility implements PV
 		super(ABILITY_NAME, player, range, MMOPlayerManager.getInstance().getPlayer(player).getTarget());
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<DisarmPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<DisarmPlayerAbility>(this, false);
 
 		disarmed.add(getTarget());
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<DisarmPlayerAbility>(this, true);
 	}
 
 }

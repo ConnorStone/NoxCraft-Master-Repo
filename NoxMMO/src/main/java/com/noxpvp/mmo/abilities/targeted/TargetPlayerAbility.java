@@ -29,8 +29,8 @@ import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.gui.corebar.LivingEntityTracker;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
-import com.noxpvp.mmo.abilities.SilentAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
+import com.noxpvp.mmo.abilities.internal.SilentAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Location;
@@ -42,7 +42,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 
-public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPassiveAbility<PlayerInteractEvent>, SilentAbility {
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
+
+public class TargetPlayerAbility extends BaseRangedPlayerAbility implements PassiveAbility<PlayerInteractEvent>, SilentAbility {
 
 	public static final String ABILITY_NAME = "Target";
 	public static final String PERM_NODE = "target";
@@ -61,13 +63,13 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 	/**
 	 * @return Boolean - PassiveAbililty, return true
 	 */
-	public AbilityResult execute() {
-		return new AbilityResult(this, true);
+	public RangedAbilityResult<TargetPlayerAbility> execute() {
+		return new RangedAbilityResult<TargetPlayerAbility>(this, true);
 	}
 
-	public AbilityResult execute(PlayerInteractEvent event) {
+	public RangedAbilityResult<TargetPlayerAbility> execute(PlayerInteractEvent event) {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		double range = getRange();
@@ -95,7 +97,7 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 				NoxPlayer itNP = mmoIt.getNoxPlayer();
 
 				if (mmoPlayer == null)
-					return new AbilityResult(this, false);
+					return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 
 				mmoPlayer.setTarget(target_ref.get());
 
@@ -114,13 +116,13 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 
 				new LivingEntityTracker(p, target_ref.get(), name);
 
-				return new AbilityResult(this, true);
+				return new RangedAbilityResult<TargetPlayerAbility>(this, true);
 			} else {
 				continue;
 			}
 		}
 
-		return new AbilityResult(this, false);
+		return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 	}
 
 	private boolean hasIntersection(Vector3D p1, Vector3D p2, Vector3D min, Vector3D max) {

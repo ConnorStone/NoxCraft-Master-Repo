@@ -59,7 +59,7 @@ public class HomeAdminImportCommand extends BaseCommand {
 		CommandSender sender = context.getSender();
 		String[] args = context.getArguments();
 
-		return new CommandResult(this, true, "This command is not implemented for this version of NoxHomes!");
+		return new CommandResult(this, true, "&4This command is not implemented for this version of NoxHomes!");
 	}
 
 	public String[] getHelp() {

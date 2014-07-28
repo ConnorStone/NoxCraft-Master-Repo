@@ -23,6 +23,8 @@
 
 package com.noxpvp.mmo.abilities;
 
+import com.noxpvp.mmo.abilities.internal.Ability;
+
 import java.util.Collection;
 import java.util.Map;
 

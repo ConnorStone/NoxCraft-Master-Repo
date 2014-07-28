@@ -23,23 +23,17 @@
 
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.bergerkiller.bukkit.common.MessageBuilder;
+import com.bergerkiller.bukkit.common.utils.StringUtil;
+import com.noxpvp.core.gui.MenuItemRepresentable;
+import com.noxpvp.mmo.abilities.internal.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.noxpvp.core.gui.MenuItemRepresentable;
-import com.noxpvp.mmo.abilities.Ability;
+import java.util.*;
 
 public abstract class ClassTier implements IClassTier, MenuItemRepresentable {
 
@@ -47,6 +41,7 @@ public abstract class ClassTier implements IClassTier, MenuItemRepresentable {
 	private final int tierLevel;
 	private PlayerClass retainer;
 	private ItemStack identifingItem;
+	protected Map<String, Ability> abilities = new HashMap<String, Ability>();
 
 	public ClassTier(PlayerClass retainer, String name, int tierLevel) {
 		this.name = name;
@@ -195,7 +190,7 @@ public abstract class ClassTier implements IClassTier, MenuItemRepresentable {
 	}
 
 	public final Collection<Ability> getAbilities() {
-		return Collections.unmodifiableCollection(getAbilityMap().values());
+		return Collections.unmodifiableCollection(getAbilitiesMap().values());
 	}
 
 	/**
@@ -210,15 +205,43 @@ public abstract class ClassTier implements IClassTier, MenuItemRepresentable {
 		
 		return ret;
 	}
-	
+
 	/**
 	 * Load custom data to configs.
 	 *
 	 * @param data map of serialized data.
 	 */
 	protected abstract void load(Map<String, Object> data);
+
+	/**
+	 * Save custom data to configs.
+	 *
+	 * @param data map of serialized data.
+	 */
+	protected abstract void save(Map<String, Object> data);
 	
 	public final void onLoad(Map<String, Object> data) {
 		setTotalExp((Integer) data.get("exp")); //Currently that is all there is needed! NO REALLY!
+		load(data);
+	}
+
+
+	public Ability getAbility(String identity) {
+		if (hasAbility(identity)) return getAbilitiesMap().get(identity);
+		return null;
+	}
+
+	public boolean hasAbility(String identity) {
+		return getAbilitiesMap().containsKey(identity);
+	}
+
+	public Map<String, Ability> getAbilitiesMap() {
+		return abilities;
+	}
+
+	public void onSave(Map<String, Object> data) {
+		save(data);
+		data.put("exp", getTotalExp());
+
 	}
 }

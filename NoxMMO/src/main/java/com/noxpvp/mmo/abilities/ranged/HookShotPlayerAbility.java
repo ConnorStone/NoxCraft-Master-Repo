@@ -23,8 +23,19 @@
 
 package com.noxpvp.mmo.abilities.ranged;
 
+import com.noxpvp.core.effect.StaticEffects;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.internal.IHeated;
+import com.noxpvp.core.packet.NoxPacketUtil;
+import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.runnables.BlockTimerRunnable;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -38,15 +49,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.noxpvp.core.effect.StaticEffects;
-import com.noxpvp.core.internal.IHeated;
-import com.noxpvp.core.packet.NoxPacketUtil;
-import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.runnables.BlockTimerRunnable;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -70,10 +73,10 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 	/**
 	 * @param player Player used for the ability
 	 */
-	public HookShotPlayerAbility(Player player, int cooldown, double range) {
+	public HookShotPlayerAbility(OfflinePlayer player, int cooldown, double range) {
 		super(ABILITY_NAME, player);
 
-		setCD(cooldown);
+		setCD(new CoolDown.Time().seconds(cooldown));
 		setRange(range);
 		this.blockTime = 20 * 10;
 		this.holdingBlockType = Material.GLASS;
@@ -173,9 +176,9 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public RangedAbilityResult<HookShotPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false);
 
 		if (active && arrow != null && arrow.isOnGround()) {
 			return eventExecute();
@@ -184,7 +187,7 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 			PlayerInventory inv = p.getInventory();
 
 			if (!inv.containsAtLeast(shootRegent, shootRegent.getAmount())) {
-				return new AbilityResult(this, false,
+				return new RangedAbilityResult<HookShotPlayerAbility>(this, false,
 						MMOLocale.ABIL_NOT_ENOUGH_REGENT.get(
 								Integer.toString(shootRegent.getAmount()), shootRegent.getType().name().toLowerCase()));
 			}
@@ -196,16 +199,15 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 			arrow.setVelocity(p.getLocation().getDirection().multiply(2));
 			setActive(true);
 
-			return new AbilityResult(this, false, "&6You throw your hook!");
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false, "&6You throw your hook!");
 		}
-
-		arrow.remove();
+		if (arrow != null) arrow.remove();
 		arrow = null;
 		setActive(false);
-		return new AbilityResult(this, false);
+		return new RangedAbilityResult<HookShotPlayerAbility>(this, false);
 	}
 
-	private AbilityResult eventExecute() {
+	private RangedAbilityResult eventExecute() {
 		Block hBlock = arrow.getLocation().getBlock();
 		Player p = getPlayer();
 		Inventory inv = p.getInventory();
@@ -216,21 +218,21 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 			arrow = null;
 			setActive(false);
 
-			return new AbilityResult(this, false, "&cYou have no hook to pull to!");
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false, "&cYou have no hook to pull to!");
 		}
 
 		Material typeSame = hBlock.getType(), typeAbove = hBlock.getRelative(BlockFace.UP).getType();
 		if (typeSame != Material.AIR || typeAbove != Material.AIR) {
 			arrow.remove();
 			setActive(false);
-			return new AbilityResult(this, false, "&cThe hook area didn't have enough space to pull!");
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false, "&cThe hook area didn't have enough space to pull!");
 		}
 
 		if (getDistance() > getRange()) {
 			arrow.remove();
 			setActive(false);
 
-			return new AbilityResult(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
 		}
 
 //		if (!hasLOS()) {
@@ -244,7 +246,7 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 			arrow.remove();
 			setActive(false);
 
-			return new AbilityResult(this, false,
+			return new RangedAbilityResult<HookShotPlayerAbility>(this, false,
 					MMOLocale.ABIL_NOT_ENOUGH_REGENT.get(
 							Integer.toString(pullRegent.getAmount()), pullRegent.getType().name().toLowerCase()));
 		}
@@ -263,7 +265,7 @@ public class HookShotPlayerAbility extends BaseRangedPlayerAbility implements IH
 		arrow.remove();
 
 		setActive(false);
-		return new AbilityResult(this, true, "&6You pull to the hook");
+		return new RangedAbilityResult<HookShotPlayerAbility>(this, true, "&6You pull to the hook");
 	}
 
 	public double getDistance() {

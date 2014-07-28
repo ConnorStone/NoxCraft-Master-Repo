@@ -50,10 +50,6 @@ public class ClassCommand extends BaseCommand {
 		return flags;
 	}
 
-	public int getMaxArguments() {
-		return -1;
-	}
-
 	@Override
 	public CommandResult execute(CommandContext context) throws NoPermissionException {
 		return new CommandResult(this, false);

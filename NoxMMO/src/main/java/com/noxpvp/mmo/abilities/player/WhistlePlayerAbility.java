@@ -23,10 +23,12 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 
 public class WhistlePlayerAbility extends BasePlayerAbility {
@@ -36,7 +38,7 @@ public class WhistlePlayerAbility extends BasePlayerAbility {
 
 	private int range;
 
-	public WhistlePlayerAbility(Player player) {
+	public WhistlePlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 		this.range = 15;
 	}

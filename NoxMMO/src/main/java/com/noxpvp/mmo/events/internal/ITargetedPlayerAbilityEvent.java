@@ -23,24 +23,15 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import org.bukkit.entity.LivingEntity;
+import com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.ITargetedPlayerAbility;
-
-public interface ITargetedPlayerAbilityEvent extends IRangedPlayerAbilityEvent {
+public interface ITargetedPlayerAbilityEvent<T extends TargetedPlayerAbility> extends IRangedPlayerAbilityEvent<T>, ITargetedAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link ITargetedPlayerAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility} associated with this event
 	 *
-	 * @return {@link BaseTargetedPlayerAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility} The ability
 	 */
-	public BaseTargetedPlayerAbility getAbility();
+	public T getAbility();
 
-	/**
-	 * Gets the target {@link LivingEntity} involved in this event
-	 *
-	 * @return {@link LivingEntity} The target
-	 */
-	public LivingEntity getTarget();
 }

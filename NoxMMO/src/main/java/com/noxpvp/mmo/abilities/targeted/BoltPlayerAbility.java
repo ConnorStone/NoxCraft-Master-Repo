@@ -27,13 +27,17 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
-public class BoltPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
+
+public class BoltPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility, DamagingAbility {
 
 	public static final String PERM_NODE = "bolt";
 	private static final String ABILITY_NAME = "Bolt";
+	private double damage;
 
 	/**
 	 * Constructs a new BoltAbility instance with the specified player as the ability user
@@ -56,9 +60,9 @@ public class BoltPlayerAbility extends BaseTargetedPlayerAbility implements PVPA
 		setDamage(8);
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<BoltPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<BoltPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		LivingEntity t = getTarget();
@@ -66,7 +70,14 @@ public class BoltPlayerAbility extends BaseTargetedPlayerAbility implements PVPA
 		t.getWorld().strikeLightningEffect(t.getLocation());
 		t.damage(getDamage(), p);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<BoltPlayerAbility>(this, true);
 	}
 
+	public void setDamage(double damage) {
+		this.damage = damage;
+	}
+
+	public double getDamage() {
+		return damage;
+	}
 }

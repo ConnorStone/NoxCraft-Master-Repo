@@ -23,8 +23,6 @@
 
 package com.noxpvp.mmo.command;
 
-import java.util.Map;
-
 import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
@@ -33,11 +31,13 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.commands.SafeNullPointerException;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.abilities.internal.Ability;
 import com.noxpvp.mmo.command.subcommands.AbilityBindCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityInfoCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityListCommand;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
+
+import java.util.Map;
 
 public class AbilityCommand extends BaseCommand {
 
@@ -54,10 +54,6 @@ public class AbilityCommand extends BaseCommand {
 
 	public String[] getFlags() {
 		return flags;
-	}
-
-	public int getMaxArguments() {
-		return 1;
 	}
 
 	@Override

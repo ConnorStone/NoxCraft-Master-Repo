@@ -23,20 +23,20 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.Set;
-
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerInteractEvent;
-
 import com.noxpvp.core.packet.NoxPacketUtil;
 import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.runnables.UnregisterMMOHandlerRunnable;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.Set;
 
 public class MeasuringTapePlayerAbility extends BasePlayerAbility {
 
@@ -49,7 +49,7 @@ public class MeasuringTapePlayerAbility extends BasePlayerAbility {
 	private Block b;
 	private boolean firstDone;
 
-	public MeasuringTapePlayerAbility(final Player player) {
+	public MeasuringTapePlayerAbility(final OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.handler = new BaseMMOEventHandler<PlayerInteractEvent>(
@@ -65,12 +65,12 @@ public class MeasuringTapePlayerAbility extends BasePlayerAbility {
 					unregisterHandler(this);
 					return;
 				}
-				if (!event.getPlayer().equals(player))
+				if (!event.getPlayer().equals(player.getPlayer()))
 					return;
 
 
 				if (!firstDone) {
-					b = LineOfSightUtil.getTargetBlock(player, 10, (Set<Material>) null);
+					b = LineOfSightUtil.getTargetBlock(event.getPlayer(), 10, (Set<Material>) null);
 					if (b == null)
 						return;
 
@@ -80,7 +80,7 @@ public class MeasuringTapePlayerAbility extends BasePlayerAbility {
 					firstDone = true;
 					return;
 				} else {
-					b = LineOfSightUtil.getTargetBlock(player, 10, (Set<Material>) null);
+					b = LineOfSightUtil.getTargetBlock(event.getPlayer(), 10, (Set<Material>) null);
 					if (b == null)
 						return;
 
@@ -106,13 +106,13 @@ public class MeasuringTapePlayerAbility extends BasePlayerAbility {
 		this.blocks = new Block[2];
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<MeasuringTapePlayerAbility> execute() {
 		if (!mayExecute())
-			new AbilityResult(this, false);
+			new AbilityResult<MeasuringTapePlayerAbility>(this, false);
 
 		registerHandler(handler);
 		new UnregisterMMOHandlerRunnable(handler).runTaskLater(NoxMMO.getInstance(), 20 * 120);
-		return new AbilityResult(this, true);
+		return new AbilityResult<MeasuringTapePlayerAbility>(this, true);
 
 	}
 

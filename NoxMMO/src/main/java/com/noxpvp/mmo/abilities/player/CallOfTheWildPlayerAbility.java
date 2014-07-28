@@ -23,8 +23,10 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.*;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 
 public class CallOfTheWildPlayerAbility extends BasePlayerAbility {
@@ -36,7 +38,7 @@ public class CallOfTheWildPlayerAbility extends BasePlayerAbility {
 	private boolean cancelIfNearby;
 	private EntityType spawnType;
 
-	public CallOfTheWildPlayerAbility(Player player) {
+	public CallOfTheWildPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.cancelIfNearby = true;
@@ -92,9 +94,9 @@ public class CallOfTheWildPlayerAbility extends BasePlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<CallOfTheWildPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<CallOfTheWildPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		boolean canSpawn = true;
@@ -109,14 +111,14 @@ public class CallOfTheWildPlayerAbility extends BasePlayerAbility {
 		}
 		
 		if (!canSpawn)
-			return new AbilityResult(this, false, "&cThere is already a wolf nearby!");
+			return new AbilityResult<CallOfTheWildPlayerAbility>(this, false, "&cThere is already a wolf nearby!");
 
 		Entity e = p.getWorld().spawnEntity(p.getLocation(), spawnType);
 
 		if (e instanceof Tameable)
 			((Tameable) e).setOwner(p);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<CallOfTheWildPlayerAbility>(this, true);
 	}
 
 }

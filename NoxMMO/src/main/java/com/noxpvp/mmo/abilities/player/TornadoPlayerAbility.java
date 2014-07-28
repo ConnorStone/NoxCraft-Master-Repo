@@ -23,13 +23,26 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.HashSet;
-
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.effect.vortex.BaseVortex;
+import com.noxpvp.core.effect.vortex.BaseVortexEntity;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.listeners.NoxPLPacketListener;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.locale.MMOLocale;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -41,21 +54,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.effect.vortex.BaseVortex;
-import com.noxpvp.core.effect.vortex.BaseVortexEntity;
-import com.noxpvp.core.listeners.NoxPLPacketListener;
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 public class TornadoPlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
 
@@ -63,10 +66,10 @@ public class TornadoPlayerAbility extends BaseRangedPlayerAbility implements PVP
 	public static final String PERM_NODE = "tornado";
 	private int time;
 	
-	public TornadoPlayerAbility(Player p, int range, int time) {
+	public TornadoPlayerAbility(OfflinePlayer p, int range, int time) {
 		super(ABILITY_NAME, p, range);
 
-		setCD(45);
+		setCD(new CoolDown.Time().seconds(45));
 		setRange(range);
 		this.time = time;
 	}
@@ -76,18 +79,18 @@ public class TornadoPlayerAbility extends BaseRangedPlayerAbility implements PVP
 		return "The Tornado Lord is capable of summoning a vast amount of high power wind abilities";
 	}
 
-	public AbilityResult execute() {
+	public RangedAbilityResult<TornadoPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<TornadoPlayerAbility>(this, false);
 
 		Location loc;
 		if ((loc = LineOfSightUtil.getTargetBlockLocation(getPlayer(), (int) getRange(), Material.AIR)) != null) {
 			new TornadoVortex(getPlayer(), loc, time).start();
 
-			return new AbilityResult(this, true);
+			return new RangedAbilityResult<TornadoPlayerAbility>(this, true);
 		}
 
-		return new AbilityResult(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
+		return new RangedAbilityResult<TornadoPlayerAbility>(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
 	}
 
 	private class TornadoVortex extends BaseVortex {

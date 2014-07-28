@@ -21,28 +21,24 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.events.ability;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.event.Cancellable;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import org.bukkit.event.HandlerList;
 
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
+public class AbilityEvent<T extends Ability> extends BaseAbilityEvent<T> {
 
-public class EntityAbilityPreExcuteEvent extends EntityAbilityEvent implements Cancellable {
-	private boolean cancelled;
+	private static HandlerList handlers = new HandlerList();
 
-	public EntityAbilityPreExcuteEvent(Entity what, BaseEntityAbility ability) {
-		super(what, ability);
-
-		this.cancelled = false;
+	public AbilityEvent(T ability) {
+		super(ability);
 	}
 
-	public boolean isCancelled() {
-		return cancelled;
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 
-	public void setCancelled(boolean cancel) {
-		this.cancelled = cancel;
+	public HandlerList getHandlers() {
+		return handlers;
 	}
-
 }

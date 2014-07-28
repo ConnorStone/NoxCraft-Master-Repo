@@ -23,26 +23,27 @@
 
 package com.noxpvp.core;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
+import com.bergerkiller.bukkit.common.scoreboards.CommonTeam;
+import com.bergerkiller.bukkit.common.scoreboards.CommonTeam.FriendlyFireType;
+import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.data.OldNoxPlayer;
+import com.noxpvp.core.data.PluginPlayer;
+import com.noxpvp.core.localization.CoreLocale;
+import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.BukkitUtil;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
-import com.bergerkiller.bukkit.common.scoreboards.CommonTeam;
-import com.bergerkiller.bukkit.common.scoreboards.CommonTeam.FriendlyFireType;
-import com.noxpvp.core.localization.CoreLocale;
-
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class VaultAdapter {
 	public static Chat chat = null;
@@ -194,10 +195,20 @@ public class VaultAdapter {
 			return p.hasPermission(perm);
 		}
 
+		@Deprecated
 		public static boolean hasPermission(OldNoxPlayer p, String string) {
 			if (p.isOnline())
 				return hasPermission(p.getLastWorld(), p.getPlayer(), string);
 			return hasPermission(p.getLastWorldName(), p.getPlayerName(), string);
+		}
+
+		public static boolean hasPermission(PluginPlayer<?> p, String string) {
+			return hasPermission(CorePlayerManager.getInstance().getPlayer(p), string);
+		}
+		
+		public static boolean hasPermission(NoxPlayer p, String string) {
+			if (p.getStats().getLastWorld() != null) return hasPermission(p.getStats().getLastWorld(), p.getPlayer(), string);
+			return hasPermission(p.getStats().getLastWorldName(), p.getPlayerName(), string);
 		}
 
 		public static boolean hasPermission(String world, String playerName, String perm) {

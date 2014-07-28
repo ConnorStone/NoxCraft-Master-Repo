@@ -21,8 +21,30 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.events.ability;
 
-public interface IRangedEntityAbility extends IEntityAbility, IRangedAbility {
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.events.internal.IAbilityEvent;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 
+public abstract class BaseAbilityEvent<T extends Ability> extends Event implements IAbilityEvent<T>, Cancellable {
+	private final T ability;
+	private boolean isCancelled;
+
+	public BaseAbilityEvent(T ability) {
+		this.ability = ability;
+	}
+
+	public T getAbility() {
+		return ability;
+	}
+
+	public void setCancelled(boolean cancel) {
+		this.isCancelled = cancel;
+	}
+
+	public boolean isCancelled() {
+		return isCancelled;
+	}
 }

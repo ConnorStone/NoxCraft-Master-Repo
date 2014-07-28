@@ -23,6 +23,13 @@
 
 package com.noxpvp.mmo.abilities.player;
 
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.runnables.DespawnRunnable;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
@@ -30,12 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.runnables.DespawnRunnable;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -54,7 +56,7 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 	/**
 	 * @param player The player that this tracker should be spawned from/ability user
 	 */
-	public TrackingPlayerAbility(Player player) {
+	public TrackingPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.duration = 100;
@@ -129,9 +131,9 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 	/**
 	 * @return Boolean If execution has ended successfully
 	 */
-	public AbilityResult execute() {
+	public RangedAbilityResult execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<TrackingPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		double radius = getRange();
@@ -144,7 +146,7 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 		}
 
 		if (it == null)
-			return new AbilityResult(this, false, MMOLocale.ABIL_NO_TARGET.get());
+			return new RangedAbilityResult<TrackingPlayerAbility>(this, false, MMOLocale.ABIL_NO_TARGET.get());
 
 		Monster tracker = (Monster) p.getWorld().spawnEntity(p.getLocation(), EntityType.ZOMBIE);
 
@@ -160,7 +162,7 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 		new ParticleRunner(ParticleType.flame, it, true, 0, 0, 4).start(0, 5);
 		new DespawnRunnable(tracker).runTaskLater(NoxMMO.getInstance(), duration);
 
-		return new AbilityResult(this, true);
+		return new RangedAbilityResult<TrackingPlayerAbility>(this, true);
 	}
 
 }

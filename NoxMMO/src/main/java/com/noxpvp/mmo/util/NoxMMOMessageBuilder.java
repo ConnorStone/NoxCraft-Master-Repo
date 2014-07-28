@@ -23,15 +23,14 @@
 
 package com.noxpvp.mmo.util;
 
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.bukkit.ChatColor;
-
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.utils.NoxMessageBuilder;
 import com.noxpvp.mmo.classes.internal.IClassTier;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import org.bukkit.ChatColor;
+
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class NoxMMOMessageBuilder extends NoxMessageBuilder {
 
@@ -43,7 +42,7 @@ public class NoxMMOMessageBuilder extends NoxMessageBuilder {
 		super(plugin, withHeader);
 	}
 
-	public NoxMMOMessageBuilder withClassInfo(PlayerClass clazz) {
+	public NoxMMOMessageBuilder withClassInfo(IPlayerClass clazz) {
 
 		gold(ChatColor.BOLD + "Name: ").append(clazz.getDisplayName()).newLine();
 		gold(ChatColor.BOLD + "About: ");

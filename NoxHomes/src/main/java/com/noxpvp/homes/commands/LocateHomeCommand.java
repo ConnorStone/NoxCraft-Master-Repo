@@ -51,10 +51,6 @@ public class LocateHomeCommand extends BaseCommand {
 		return new String[]{"h", "help", "p", "player"};
 	}
 
-	public int getMaxArguments() {
-		return 0;
-	}
-
 	@Override
 	public NoxPlugin getPlugin() {
 		return plugin;

@@ -21,7 +21,24 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.abilities;
+package com.noxpvp.mmo.events.ability;
 
-public interface IRangedPlayerAbility extends IRangedEntityAbility, IPlayerAbility {
+import com.noxpvp.mmo.abilities.internal.RangedPlayerAbility;
+import org.bukkit.entity.Player;
+
+public class RangedPlayerAbilityEvent<T extends RangedPlayerAbility> extends PlayerAbilityEvent<T> {
+
+	private double range;
+
+	public RangedPlayerAbilityEvent(T ability, Player player) {
+		super(ability, player);
+	}
+
+	public void setRange(double range) {
+		this.range = range;
+	}
+
+	public double getRange() {
+		return range;
+	}
 }

@@ -23,14 +23,16 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.BaseRangedEntityAbility;
+import com.noxpvp.mmo.abilities.internal.RangedEntityAbility;
 
-public interface IRangedEntityAbilityEvent extends IEntityAbilityEvent {
+public interface IRangedEntityAbilityEvent<T extends RangedEntityAbility> extends IEntityAbilityEvent<T>, IRangedAbilityEvent<T> {
 
 	/**
 	 * Gets the Ranged ability associated with this event
 	 *
-	 * @return {@link BaseRangedEntityAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.RangedEntityAbility} The ability
 	 */
-	public BaseRangedEntityAbility getAbility();
+	public T getAbility();
+
+
 }

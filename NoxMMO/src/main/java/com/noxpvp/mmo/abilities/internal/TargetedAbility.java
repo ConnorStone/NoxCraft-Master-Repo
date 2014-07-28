@@ -21,28 +21,33 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-package com.noxpvp.mmo.events;
+package com.noxpvp.mmo.abilities.internal;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
-import com.noxpvp.mmo.abilities.BaseAbility.AbilityResult;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.events.internal.ITargetedPlayerAbilityEvent;
+public interface TargetedAbility extends RangedAbility {
 
-public class PlayerTargetedAbilityExecutedEvent extends PlayerAbilityExecutedEvent implements ITargetedPlayerAbilityEvent {
+	/**
+	 * Gets the target involved in this targeted ability instance
+	 *
+	 * @return LivingEntity The target entity
+	 */
+	public LivingEntity getTarget();
 
-	public PlayerTargetedAbilityExecutedEvent(Player who, AbilityResult abilityResult) {
-		super(who, abilityResult);
-	}
+	/**
+	 * Sets the target involved in this targeted ability instance
+	 *
+	 * @param target The target living entity
+	 */
+	public void setTarget(LivingEntity target);
 
-	@Override
-	public BaseTargetedPlayerAbility getAbility() {
-		return (BaseTargetedPlayerAbility) super.getAbility();
-	}
 
-	public LivingEntity getTarget() {
-		return getAbility().getTarget();
-	}
+	/**
+	 * Gets the distance from target to the location provided
+	 *
+	 * @return double The distance. Will return -1 if the target is null
+	 */
+	public double getDistance(Location loc);
 
 }

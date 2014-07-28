@@ -24,12 +24,14 @@
 package com.noxpvp.mmo.abilities.player;
 
 import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -41,7 +43,7 @@ import java.util.List;
 /**
  * @author NoxPVP
  */
-public class ParryPlayerAbility extends BasePlayerAbility implements IPassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+public class ParryPlayerAbility extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
 
 	public static final String ABILITY_NAME = "Parry";
 	public static final String PERM_NODE = "parry";
@@ -54,7 +56,7 @@ public class ParryPlayerAbility extends BasePlayerAbility implements IPassiveAbi
 	/**
 	 * @param player The Player type user for this ability instance
 	 */
-	public ParryPlayerAbility(Player player) {
+	public ParryPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.mustBlock = false;
@@ -76,26 +78,26 @@ public class ParryPlayerAbility extends BasePlayerAbility implements IPassiveAbi
 		return this;
 	}
 
-	public AbilityResult execute() {
-		return new AbilityResult(this, true);
+	public AbilityResult<ParryPlayerAbility> execute() {
+		return new AbilityResult<ParryPlayerAbility>(this, true);
 	}
 
 
-	public AbilityResult execute(EntityDamageByEntityEvent event) {
+	public AbilityResult<ParryPlayerAbility> execute(EntityDamageByEntityEvent event) {
 		if (event.getEntity() != getPlayer() || !mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ParryPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
 		MMOPlayer mmoPlayer;
 
 		if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p)) == null || (mustBlock && (!parriedWeapons.contains(p.getItemInHand().getType()))))
-			return new AbilityResult(this, false);
+			return new AbilityResult<ParryPlayerAbility>(this, false);
 
 		float chance = mmoPlayer.getPrimaryClass().getTotalLevel() / 6;
 		percentChance = (chance <= 75) ? chance : 75;
 		if (RandomUtils.nextFloat() > percentChance)
-			return new AbilityResult(this, false);
+			return new AbilityResult<ParryPlayerAbility>(this, false);
 
 
 		Entity damager = event.getDamager();
@@ -103,7 +105,7 @@ public class ParryPlayerAbility extends BasePlayerAbility implements IPassiveAbi
 			((Damageable) damager).damage(event.getDamage() / .7, p);
 		}
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<ParryPlayerAbility>(this, true);
 	}
 
 }

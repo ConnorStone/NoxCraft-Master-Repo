@@ -45,7 +45,7 @@ public class ReloadCommand extends BaseCommand {
 	}
 
 	@Override
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message) {
+	public NoxMessageBuilder onPostDisplayHelp(NoxMessageBuilder message, ICommandContext context) {
 		message.withCommand(this, true);
 		message.aqua("Put * on the end of any module to also load all sub modules").newLine().append(' ').newLine();//Have to have something there or it wont NL a null line
 
@@ -123,10 +123,6 @@ public class ReloadCommand extends BaseCommand {
 
 	public String[] getFlags() {
 		return flags;
-	}
-
-	public int getMaxArguments() {
-		return -1;
 	}
 
 	public NoxCore getPlugin() {

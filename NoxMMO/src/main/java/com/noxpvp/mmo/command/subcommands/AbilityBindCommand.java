@@ -23,12 +23,6 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.bergerkiller.bukkit.common.Task;
 import com.dsh105.holoapi.util.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
@@ -39,11 +33,16 @@ import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.AbilityCycler;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
-import com.noxpvp.mmo.abilities.SilentAbility;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
+import com.noxpvp.mmo.abilities.internal.SilentAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbilityBindCommand extends BaseCommand {
 
@@ -98,7 +97,7 @@ public class AbilityBindCommand extends BaseCommand {
 					}
 				} else {
 					for (Ability a : mmoPlayer.getAbilities())
-						if (!(a instanceof SilentAbility) && !(a instanceof IPassiveAbility<?>)) {
+						if (!(a instanceof SilentAbility) && !(a instanceof PassiveAbility<?>)) {
 							abs.add(a);
 						}
 					
@@ -138,7 +137,4 @@ public class AbilityBindCommand extends BaseCommand {
 		return flags;
 	}
 	
-	public int getMaxArguments() {
-		return 0;
-	}
 }

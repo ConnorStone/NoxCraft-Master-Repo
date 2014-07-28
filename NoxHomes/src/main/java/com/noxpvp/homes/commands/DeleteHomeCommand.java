@@ -23,10 +23,11 @@
 
 package com.noxpvp.homes.commands;
 
-import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
+import com.noxpvp.core.commands.ICommandContext;
+import com.noxpvp.core.utils.NoxMessageBuilder;
 import com.noxpvp.core.utils.PlayerUtils;
 import com.noxpvp.homes.HomesPlayer;
 import com.noxpvp.homes.NoxHomes;
@@ -44,18 +45,7 @@ public class DeleteHomeCommand extends BaseCommand {
 
 
 	public CommandResult execute(CommandContext context) {
-		if (context.hasFlag("h") || context.hasFlag("help")) {
-			displayHelp(context.getSender());
-			if (!context.isPlayer())
-				return new CommandResult(this, false, "Use (-p | --player) to specify a player to use this on.");
-			else
-				return new CommandResult(this, false);
-		}
-
 		Player sender = context.getPlayer();
-
-		if (context.hasFlag("h") || context.hasFlag("help"))
-			return new CommandResult(this, false);
 
 		String playerString;
 
@@ -76,7 +66,9 @@ public class DeleteHomeCommand extends BaseCommand {
 		if (LogicUtil.nullOrEmpty(homeName)) homeName = null;
 
 		if (!playerString.equals(sender.getName()) && !PlayerUtils.isOnline(playerString))
-			return new CommandResult(this, true, "For safety we could not allow removing homes for offline players. ", " This feature will be made at a later time. ", " This is due to the UUID update.");
+			return new CommandResult(this, true,
+					"&cFor safety we could not allow removing homes for offline players. ", " This feature will be made at a later time. ",
+					"&aThis is due to the UUID update.");
 		else
 			player = Bukkit.getPlayer(playerString);
 
@@ -86,10 +78,10 @@ public class DeleteHomeCommand extends BaseCommand {
 		return new CommandResult(this, true);
 	}
 
-	public String[] getHelp() {
-		MessageBuilder mb = new MessageBuilder();
-		mb.gold("/").blue(COMMAND_NAME).aqua(" [").aqua("name]").newLine();
-		return mb.lines();
+	public NoxMessageBuilder onPreDisplayMessage(NoxMessageBuilder message, ICommandContext context) {
+		if (!context.isPlayer())
+			message.dark_red("Use (-p | --player) to specify a player to use this on.");
+		return message;
 	}
 
 	public String[] getFlags() {

@@ -23,9 +23,10 @@
 
 package com.noxpvp.mmo.abilities;
 
+import com.noxpvp.mmo.abilities.internal.RangedEntityAbility;
 import org.bukkit.entity.Entity;
 
-public abstract class BaseRangedEntityAbility extends BaseEntityAbility implements IRangedEntityAbility {
+public abstract class BaseRangedEntityAbility extends BaseEntityAbility implements RangedEntityAbility {
 	private double range;
 
 	public BaseRangedEntityAbility(String name, Entity ref) {

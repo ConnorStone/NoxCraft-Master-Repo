@@ -25,7 +25,6 @@
 package com.noxpvp.core.commands;
 
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.utils.NoxMessageBuilder;
 
 public class NoxCommand extends BaseCommand {
 	public static final String COMMAND_NAME = "nox";
@@ -42,18 +41,6 @@ public class NoxCommand extends BaseCommand {
 
 	public String[] getFlags() {
 		return flags;
-	}
-
-	@Override
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message) {
-		for (BaseCommand cmd : getSubCommandMap().values())
-			message.withCommand(cmd, true);
-
-		return message;
-	}
-
-	public int getMaxArguments() {
-		return -1;
 	}
 
 	@Override

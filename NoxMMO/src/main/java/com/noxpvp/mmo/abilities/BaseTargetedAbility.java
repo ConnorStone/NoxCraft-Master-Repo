@@ -23,13 +23,15 @@
 
 package com.noxpvp.mmo.abilities;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-
+import com.noxpvp.mmo.abilities.internal.TargetedAbility;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
-public abstract class BaseTargetedAbility extends BaseRangedAbility implements ITargetedAbility {
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+
+public abstract class BaseTargetedAbility extends BaseRangedAbility implements TargetedAbility {
 
 	private Reference<LivingEntity> target_ref;
 
@@ -80,5 +82,32 @@ public abstract class BaseTargetedAbility extends BaseRangedAbility implements I
 	 */
 	public boolean mayExecute() {
 		return getTarget() != null;
+	}
+
+	public static class TargetedAbilityResult<T extends TargetedAbility> extends RangedAbilityResult<T>{
+
+		private LivingEntity target;
+
+		public TargetedAbilityResult(T ability, double range, boolean success) {
+			this(ability, range, success, null);
+		}
+
+		public TargetedAbilityResult(T ability, double range, boolean success, String[] messages) {
+			this(ability, range, success, ability.getTarget(), messages);
+		}
+
+		public TargetedAbilityResult(T ability, double range, boolean success, LivingEntity target, String[] messages) {
+			super(ability, range, success, messages);
+			Validate.notNull(target, "Target cannot be null.");
+			this.target = target;
+		}
+
+		public TargetedAbilityResult(T ability, boolean success) {
+			this(ability, ability.getRange(), success, ability.getTarget(), null);
+		}
+
+		public LivingEntity getTarget() {
+			return target;
+		}
 	}
 }

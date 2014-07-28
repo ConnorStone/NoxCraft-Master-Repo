@@ -26,6 +26,7 @@ package com.noxpvp.mmo.manager;
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.manager.BasePlayerManager;
 import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.NoxMMO;
 import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
@@ -66,6 +67,10 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Instanced Methods
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public NoxMMO getPlugin() {
+		return NoxMMO.getInstance();
+	}
 
 	@Override
 	public void unloadAndSave(UUID id) {

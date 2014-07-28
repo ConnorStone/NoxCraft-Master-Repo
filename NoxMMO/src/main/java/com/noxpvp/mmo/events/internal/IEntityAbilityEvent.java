@@ -23,16 +23,21 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.IEntityAbility;
+import com.noxpvp.mmo.abilities.internal.EntityAbility;
+import org.bukkit.entity.Entity;
 
-public interface IEntityAbilityEvent extends IAbilityEvent {
+public interface IEntityAbilityEvent<T extends EntityAbility> extends IAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link IEntityAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.EntityAbility} associated with this event
 	 *
-	 * @return {@link BaseEntityAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.EntityAbility} The ability
 	 */
-	public BaseEntityAbility getAbility();
+	public T getAbility();
 
+	/**
+	 * Retrieves the entity associated with this event.
+	 * @return {@link Entity}
+	 */
+	public Entity getEntity();
 }

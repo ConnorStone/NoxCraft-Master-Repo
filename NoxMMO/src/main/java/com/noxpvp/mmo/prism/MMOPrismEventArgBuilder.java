@@ -24,7 +24,7 @@
 package com.noxpvp.mmo.prism;
 
 import com.noxpvp.core.external.prism.NoxPrismEventArgBuilder;
-import com.noxpvp.mmo.abilities.Ability;
+import com.noxpvp.mmo.abilities.internal.Ability;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -33,7 +33,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//FIXME: some kind of API addition for damage entities of a Map<LivingEntity, Double> of (DamagedEntities, DamageTaken)
 public class MMOPrismEventArgBuilder extends NoxPrismEventArgBuilder {
 	public static final String ABILITY_ARG = "ability";
 	public static final String TARGET_ARG = "target";

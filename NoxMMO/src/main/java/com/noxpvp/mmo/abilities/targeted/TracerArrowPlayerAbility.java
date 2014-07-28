@@ -26,7 +26,7 @@ package com.noxpvp.mmo.abilities.targeted;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Arrow;
@@ -37,6 +37,8 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 public class TracerArrowPlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
 
@@ -91,9 +93,9 @@ public class TracerArrowPlayerAbility extends BaseTargetedPlayerAbility implemen
 	/**
 	 * @return boolean - If the ability executed successfully
 	 */
-	public AbilityResult execute() {
+	public TargetedAbilityResult<TracerArrowPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<TracerArrowPlayerAbility>(this, false);
 
 		final String pName = getPlayer().getName();
 
@@ -108,7 +110,7 @@ public class TracerArrowPlayerAbility extends BaseTargetedPlayerAbility implemen
 			}
 		}, 120);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<TracerArrowPlayerAbility>(this, true);
 	}
 
 }

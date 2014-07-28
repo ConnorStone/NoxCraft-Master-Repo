@@ -148,12 +148,12 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 		Validate.notNull(id);
 		Validate.notNull(username);
 
-		if ((!name2UUID.containsKey(username) || name2UUID.get(username).equals(ZERO_UUID)) && !name2UUID.get(username).equals(id)) {
+		if ((!name2UUID.containsKey(username) || (ZERO_UUID.equals(name2UUID.get(username))) && !id.equals(name2UUID.get(username)))) {
 			CommonUtil.callEvent(new NoxUUIDLostEvent(username, name2UUID.get(username)));
 			name2UUID.remove(username);
 		}
 
-		if (!name2UUID.containsKey(username) || name2UUID.get(username).equals(ZERO_UUID)) {
+		if (!name2UUID.containsKey(username) || ZERO_UUID.equals(name2UUID.get(username))) {
 			name2UUID.put(username, id);
 			CommonUtil.callEvent(new NoxUUIDFoundEvent(username, id));
 		}
@@ -265,10 +265,12 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 		final Player p = event.getPlayer();
 		if (p.getUniqueId() != null) {
 			UUID uuid = tryGetID(p);
-			if (uuid != null && !uuid.equals(ZERO_UUID))
+			if (uuid != null && !uuid.equals(ZERO_UUID)) {
 				mapID(p.getName(), uuid);
+				return;
+			}
 		}
-		else ensurePlayerUUIDsByName(toList(p.getName()));
+		ensurePlayerUUIDsByName(toList(p.getName()));
 
 	}
 

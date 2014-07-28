@@ -24,16 +24,17 @@
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.*;
-import org.bukkit.projectiles.ProjectileSource;
 
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.effect.shaped.BaseHelix;
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 /**
  * @author NoxPVP
@@ -46,9 +47,9 @@ public class FireBallPlayerAbility extends BasePlayerAbility implements PVPAbili
 	private double power;
 
 	/**
-	 * @param e The Entity type user of this ability instance
+	 * @param p The Entity type user of this ability instance
 	 */
-	public FireBallPlayerAbility(Player p) {
+	public FireBallPlayerAbility(OfflinePlayer p) {
 		super(ABILITY_NAME, p);
 
 		this.power = 3;
@@ -71,20 +72,20 @@ public class FireBallPlayerAbility extends BasePlayerAbility implements PVPAbili
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<FireBallPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<FireBallPlayerAbility>(this, false);
 
-		Entity e = getEntity();
-		Location loc = (e instanceof LivingEntity) ? ((LivingEntity) e).getEyeLocation() : e.getLocation();
+		Player player = getPlayer();
+		Location loc = (player != null) ? player.getEyeLocation() : player.getLocation();
 		Projectile fireBall = (Projectile) loc.getWorld().spawnEntity(loc, EntityType.FIREBALL);
 
 		fireBall.setVelocity(loc.getDirection().normalize().multiply(getPower()));
-		fireBall.setShooter((ProjectileSource) e);
+		fireBall.setShooter(player);
 
-		new FireBallHelix(e, 60).render(250);
+		new FireBallHelix(player, 60).render(250);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<FireBallPlayerAbility>(this, true);
 	}
 
 	private class FireBallHelix extends BaseHelix {

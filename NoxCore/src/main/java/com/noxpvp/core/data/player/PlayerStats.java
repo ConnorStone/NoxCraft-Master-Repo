@@ -24,12 +24,14 @@
 package com.noxpvp.core.data.player;
 
 import com.noxpvp.core.Persistent;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SerializableAs("PlayerStats")
 public abstract class PlayerStats implements Persistent {
 
 	private final UUID uuid;
