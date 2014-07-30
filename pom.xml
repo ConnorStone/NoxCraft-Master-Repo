@@ -36,6 +36,9 @@
 
     <profiles>
         <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <id>Sk89q</id>
             <repositories>
                 <!-- WorldGuard , WorldEdit -->
@@ -81,7 +84,7 @@
 		<repository>
 			<id>comphenix-rep</id>
 			<name>Comphenix Repository</name>
-			<url>http://assets.comphenix.net/jenkins/plugin/repository/everything/</url>
+			<url>http://repo.comphenix.net/content/repositories/releases/</url>
 		</repository>
 
 		<!-- BKCommonLib -->
