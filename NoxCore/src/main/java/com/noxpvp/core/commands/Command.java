@@ -1,18 +1,45 @@
-package com.noxpvp.core.commands;
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
 
-import org.bukkit.command.CommandSender;
+package com.noxpvp.core.commands;
 
 import com.noxpvp.core.utils.NoxMessageBuilder;
 
 public interface Command {
 
-	public void displayHelp(CommandSender sender);
+	public String[] getAliases();
 
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message);
+	public void displayHelp(ICommandContext sender);
+
+	public NoxMessageBuilder onPreDisplayMessage(NoxMessageBuilder message, ICommandContext context);
+
+	public NoxMessageBuilder onPostDisplayHelp(NoxMessageBuilder message, ICommandContext context);
 
 	public CommandResult executeCommand(CommandContext context) throws NoPermissionException;
 
 	public String[] getFlags();
+
+	public int getMinArguments();
 
 	public int getMaxArguments();
 

@@ -1,202 +1,235 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.manager;
 
-import java.util.Map;
-
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.noxpvp.core.Persistent;
+import com.noxpvp.core.data.PluginPlayer;
+import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
+import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.core.reflection.NoxSafeConstructor;
+import com.noxpvp.core.utils.BukkitUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.data.NoxPlayerAdapter;
+import java.util.UUID;
+import java.util.logging.Level;
 
-public abstract class BasePlayerManager<T extends NoxPlayerAdapter> implements IPlayerManager<T> {
-	private Map<String, T> players;
+public abstract class BasePlayerManager<T extends PluginPlayer> extends BaseManager<T> {
 
-	private CorePlayerManager pm = null;
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Cached Constructors
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	private Class<T> typeClass;
+	private NoxSafeConstructor<T> uuidConstructor, offlinePlayerConstructor;
 
-	public BasePlayerManager(Class<T> t) {
-		this.typeClass = t;
-		this.players = craftNewStorage();
-		CorePlayerManager.addManager(this);
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Fields Automated
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	private PlayerManagerAutoSaver saver;
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Constructors
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	public BasePlayerManager(Class<T> type, String saveFolderPath) {
+		super(type, saveFolderPath);
+
+		uuidConstructor = new NoxSafeConstructor<T>(getTypeClass(), UUID.class);
+		offlinePlayerConstructor = new NoxSafeConstructor<T>(getTypeClass(), OfflinePlayer.class);
+
+		saver = new PlayerManagerAutoSaver();
+		saver.register();
 	}
 
-	protected T craftNew(NoxPlayerAdapter adapter) {
-		return craftNew(adapter.getNoxPlayer());
+	public BasePlayerManager(Class<T> type, String saveFolderPath, boolean useNoxFolder) {
+		super(type, saveFolderPath, useNoxFolder);
+
+		uuidConstructor = new NoxSafeConstructor<T>(getTypeClass(), UUID.class);
+		offlinePlayerConstructor = new NoxSafeConstructor<T>(getTypeClass(), OfflinePlayer.class);
+
+		saver = new PlayerManagerAutoSaver();
+		saver.register();
 	}
 
-	protected abstract T craftNew(NoxPlayer adapter);
-
-	/**
-	 * Required to grab objects.
-	 *
-	 * @param name of player.
-	 * @return Object.
-	 */
-	protected T craftNew(String name) {
-		return craftNew(getCorePlayerManager().getPlayer(name));
+	@Override
+	protected T get(UUID arg) { //An attempt at fixing generics dopiness
+		T it;
+		if ((it = loadedCache.get(arg)) != null)
+			return it;
+		else
+			return load(arg);
 	}
 
-	/**
-	 * Required to store player data.
-	 *
-	 * @return
-	 */
-	protected abstract Map<String, T> craftNewStorage();
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Internal Constructors
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	/**
-	 * Should never be called in the constructor of the core manager.
-	 *
-	 * @return PlayerManager from NoxCore
-	 */
-	protected CorePlayerManager getCorePlayerManager() {
-		if (pm == null)
-			pm = CorePlayerManager.getInstance();
-		return pm;
+	private T construct(UUID uuid) {
+		Validate.notNull(uuid);
+		if (uuidConstructor.isValid()) return uuidConstructor.newInstance(uuid);
+		return null;
 	}
 
-	public T[] getLoadedPlayers() {
-		return LogicUtil.toArray(players.values(), typeClass);
+	private T construct(OfflinePlayer player) {
+		Validate.notNull(player);
+		if (offlinePlayerConstructor.isValid()) return offlinePlayerConstructor.newInstance(player);
+		return construct(player.getUniqueId());
 	}
 
-	public T getPlayer(NoxPlayer noxPlayer) {
-		T player = null;
-		String name = noxPlayer.getPlayerName();
-		if (isLoaded(name))
-			player = players.get(name);
-		else {
-			player = craftNew(noxPlayer);
-			player.load();
-			players.put(name, player);
-		}
-		return player;
+	private void checkConstruct(T ret) {
+		if (ret == null) log(Level.SEVERE, "No constructors where found for the PluginPlayer. " +
+				"\nAny class using PluginPlayer must follow the guidelines set in javadoc!" +
+				"\n\n" + CommonUtil.getPluginByClass(this.getClass()).getName() + "Is not following the guidelines their implementation in: " +
+				"\n\t" + this.getClass().getName());
 	}
 
-	public T getPlayer(NoxPlayerAdapter adapt) { //TODO: remove duplicate code ID(gp1)
-		return getPlayer(adapt.getNoxPlayer());
+	//~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods
+	//~~~~~~~~~~~~~~~~~~~~~~~
+
+	public void save(OfflinePlayer player) {
+		super.save(player.getUniqueId());
 	}
 
-	public final T getPlayer(OfflinePlayer player) {
-		if (player == null)
-			return null;
-		return getPlayer(player.getName());
+	@Override
+	public void save(UUID id) {
+		if (Bukkit.getOfflinePlayer(id).isOnline()) save(Bukkit.getPlayer(id));
+		else super.save(id);
 	}
 
-	public final T getPlayer(String name) { //TODO: remove duplicate code ID(gp1)
-		Validate.notNull(name);
+	public T load(OfflinePlayer player) {
+		T ret = super.load(player.getUniqueId());
+		if (ret == null) return construct(player);
+		checkConstruct(ret);
 
-		T player = null;
-		if (isLoaded(name))
-			player = players.get(name);
-		else {
-			player = craftNew(name);
-			players.put(name, player);
-			loadPlayer(player);
-		}
-		return player;
+		if (ret != null)
+			loadedCache.put(ret.getPersistentID(), ret);
+
+		return ret;
 	}
 
-	protected Map<String, T> getPlayerMap() {
-		return this.players;
+	@Override
+	public T load(UUID playerID) {
+		T ret;
+		if (Bukkit.getOfflinePlayer(playerID).isOnline()) ret = load(Bukkit.getPlayer(playerID)); //If player is online. We would rather use player functions to auto update data.
+		else ret = super.load(playerID);
+
+		if (ret == null) ret = construct(playerID);
+		checkConstruct(ret);
+
+		if (ret != null)
+			loadedCache.put(ret.getPersistentID(), ret);
+
+		return ret;
 	}
 
-	public final boolean isLoaded(OfflinePlayer player) {
-		return isLoaded(player.getName());
-	}
-
-	public final boolean isLoaded(String name) {
-		return players.containsKey(name);
-	}
+	//~~~~~~~~~~~~~~~~~~~~~~~~
+	//Instanced Methods: Required Implementations
+	//~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public void load() {
-		for (Player p : Bukkit.getOnlinePlayers())
-			loadPlayer(p);
+		for (Player p : BukkitUtil.getOnlinePlayers())
+			load(p);
 	}
 
-	public void loadPlayer(OfflinePlayer player) {
-		loadPlayer(getPlayer(player));
+	public T getPlayer(UUID playerUID) { return get(playerUID); }
+
+	public T getPlayer(OfflinePlayer player) {
+		return get(player.getUniqueId());
 	}
 
-	public void loadPlayer(String name) {
-		loadPlayer(getPlayer(name));
-	}
+	//~~~~~~~~~~~~~~~~~~
+	//Instanced: Helpers
+	//~~~~~~~~~~~~~~~~~~
 
-	public void loadPlayer(T player) {
-		player.load();
-	}
+	public T loadPlayer(OfflinePlayer player) { return load(player); }
 
-	public void save() {
-		for (T p : getLoadedPlayers())
-			savePlayer(p);
-	}
+	public T loadPlayer(UUID playerUUID) { return load(playerUUID); }
 
-	public void savePlayer(NoxPlayer player) {
-		getPlayer(player).save();
-	}
+	public void savePlayer(UUID playerUUID) { save(playerUUID);}
 
-	public final void savePlayer(OfflinePlayer player) {
-		savePlayer(player.getName());
-	}
+	public void savePlayer(OfflinePlayer player) { save(player); }
 
-	public final void savePlayer(String name) {
-		if (isLoaded(name))
-			savePlayer(getPlayer(name));
-	}
-
-	public void savePlayer(T player) {
-		player.save();
-	}
+	//~~~~~~~~~~~~~~~~~~~~~~~
+	//Static Methods
+	//~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
-	 * Unload and save player.
+	 * Tells whether or not the player is online.
 	 *
-	 * @param player offlinePlayer object
-	 * @see #unloadAndSavePlayer(String)
-	 * @see #unloadPlayer(String)
-	 * @see #savePlayer(String)
+	 * <p><b>Warning this will accept any Persistent object however UUID's may not match.</b></p>
+	 * <p><b><i>It was intended to be used against any object that uses a player ID as its id!</i></b></p>
+	 * <p>Using anything other than those such objects may produce extremely undesirable behaviour</p>
+	 *
+	 * @see #isOnline(java.util.UUID)
+	 * @param object Used to grab the player by the specified object's UUID
+	 * @return true if online false otherwise.
 	 */
-	public final void unloadAndSavePlayer(OfflinePlayer player) {
-		unloadAndSavePlayer(player.getName());
-	}
+	public static boolean isOnline(Persistent object) { return isOnline(object.getPersistentID()); }
 
 	/**
-	 * Unload and save player.
+	 * Tells whether or not the player is online.
 	 *
-	 * @param name the name
-	 * @see #unloadPlayer(String)
-	 * @see #savePlayer(String)
-	 */
-	public final void unloadAndSavePlayer(String name) {
-		savePlayer(name);
-		unloadPlayer(name);
-	}
-
-	/**
-	 * Unload if player is offline.
-	 * <br/>
-	 * <b> WARNING IF THERE ARE PLUGINS THAT ARE IMPROPERLY CACHING THIS OBJECT. IT WILL NEVER TRUELY UNLOAD</b>
+	 * @see org.bukkit.Bukkit#getOfflinePlayer(java.util.UUID)
+	 * @see org.bukkit.OfflinePlayer#isOnline()
 	 *
-	 * @param name of the player
-	 * @return true, if it unloads the player from memory.
+	 * @param uuid uuid of the player being checked.
+	 * @return true if online false otherwise.
 	 */
-	public boolean unloadIfOffline(String name) {
-		if (isLoaded(name))
-			if (getPlayer(name).getPlayer() == null || !getPlayer(name).getPlayer().isOnline()) {
-				unloadAndSavePlayer(name);
-				return true;
-			}
-		return false;
+	public static boolean isOnline(UUID uuid) { return Bukkit.getOfflinePlayer(uuid).isOnline(); }
+
+	public PluginPlayer<?> getPlayer(PluginPlayer<?> p) {
+		return getPlayer(p.getPlayerUUID());
 	}
 
-	public final void unloadPlayer(OfflinePlayer player) {
-		unloadPlayer(player.getName());
-	}
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//Internal Classes
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	public void unloadPlayer(String name) {
-		if (isLoaded(name))
-			players.remove(name);
+	private class PlayerManagerAutoSaver extends NoxListener {
+		public PlayerManagerAutoSaver() {
+			super(BasePlayerManager.this.getPlugin());
+		}
+
+		//TODO: Add a timer that throws save events for players while online.
+
+		@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+		public void onLogoutEvent(PlayerQuitEvent event) {
+			BasePlayerManager.this.unloadAndSave(event.getPlayer().getUniqueId());
+		}
+
+		@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+		public void onSafeUUID(NoxUUIDFoundEvent event) {
+			BasePlayerManager.this.load(event.getUUID());
+		}
 	}
 }

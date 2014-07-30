@@ -1,14 +1,32 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.noxpvp.core.commands.CommandContext;
 import org.bukkit.command.CommandSender;
 
-import com.noxpvp.core.commands.CommandContext;
+import java.util.*;
 
 public class CommandUtil {
 	private static final char escapeChar = '\\';
@@ -35,7 +53,7 @@ public class CommandUtil {
 
 		while (i < r.length) {
 //			if (((i - 1) >= 0) && r[i-1] == ' ') 
-			if (r[i] == flagChar && (((i - 1) >= 0) && r[i - 1] == ' ')) {
+			if (r[i] == flagChar && i+1 < r.length && ((((i - 1) >= 0) && r[i - 1] == ' ') || (i - 1 < 0))) {
 				isFlag = true;
 				if (r[i + 1] == flagChar) {
 					isLongFlag = true;

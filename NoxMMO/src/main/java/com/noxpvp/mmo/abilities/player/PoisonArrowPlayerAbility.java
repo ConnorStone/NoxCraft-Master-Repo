@@ -1,9 +1,36 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.MasterListener;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -14,11 +41,8 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.mmo.MasterListener;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PoisonArrowPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -31,7 +55,7 @@ public class PoisonArrowPlayerAbility extends BasePlayerAbility implements PVPAb
 	private int duration;
 	private boolean isActive = false, isFiring = false, isSingleShotMode = true;
 
-	public PoisonArrowPlayerAbility(Player player) {
+	public PoisonArrowPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		hitHandler = new BaseMMOEventHandler<EntityDamageByEntityEvent>(
@@ -204,15 +228,15 @@ public class PoisonArrowPlayerAbility extends BasePlayerAbility implements PVPAb
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<PoisonArrowPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<PoisonArrowPlayerAbility>(this, false);
 
 		if (!isActive() && !isFiring()) {
 			setFiring(true);
-			return new AbilityResult(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
+			return new AbilityResult<PoisonArrowPlayerAbility>(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
 		} else {
-			return new AbilityResult(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
+			return new AbilityResult<PoisonArrowPlayerAbility>(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
 		}
 	}
 

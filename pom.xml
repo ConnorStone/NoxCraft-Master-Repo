@@ -1,5 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.noxpvp</groupId>
 	<artifactId>NoxCraft</artifactId>
@@ -13,12 +16,44 @@
 		We add all sorts of features. Specifically coded for our server in mind.
 	</description>
 	<version>1.0</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 	<modules>
 		<module>NoxCore</module>
 		<module>NoxHomes</module>
 		<module>NoxMMO</module>
 		<module>NoxChat</module>
-	</modules>
+        <module>NoxGuilds</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>noxpvp.com</id>
+            <url>ftp://noxpvp.com</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>Sk89q</id>
+            <repositories>
+                <!-- WorldGuard , WorldEdit -->
+                <repository>
+                    <id>sk89q</id>
+                    <url>http://maven.sk89q.com/artifactory/repo/</url>
+                </repository>
+            </repositories>
+        </profile>
+
+        <profile>
+            <id>NoSk89q</id>
+        </profile>
+
+    </profiles>
 	<repositories>
 		<!-- INTERNAL PROJECT -->
 		<repository>
@@ -39,28 +74,23 @@
 		</repository>
 
 		<!-- Bukkit -->
+        <!--
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
 		</repository>
-
+        -->
 		<!-- ProtocolLib -->
 		<repository>
 			<id>comphenix-rep</id>
 			<name>Comphenix Repository</name>
-			<url>http://assets.comphenix.net/jenkins/plugin/repository/everything/</url>
+			<url>http://repo.comphenix.net/content/repositories/releases/</url>
 		</repository>
 
 		<!-- BKCommonLib -->
 		<repository>
 			<id>dj-tcraft repository</id>
 			<url>http://ci.dj-tcraft.nl/plugin/repository/everything/</url>
-		</repository>
-
-		<!-- WorldGuard , WorldEdit -->
-		<repository>
-			<id>sk89q</id>
-			<url>http://maven.sk89q.com/artifactory/repo/</url>
 		</repository>
 
 		<!-- Vault -->
@@ -90,26 +120,47 @@
 	</repositories>
 	<dependencyManagement>
 		<dependencies>
-		    
+		    <!-- Core -->
+
+            <dependency>
+                <groupId>com.noxpvp</groupId>
+                <artifactId>NoxCore</artifactId>
+                <version>0.3-Snapshot</version>
+            </dependency>
+
 		    <!-- Prism -->
 			<dependency>
 				<groupId>me.botsko</groupId>
 				<artifactId>prism</artifactId>
 				<version>2.0</version>
 				<exclusions>
-				   <exclusion>
-				       <groupId>*</groupId>
-				       <artifactId>*</artifactId>
-				   </exclusion>
+                    <exclusion>
+                        <groupId>org.dthielke</groupId>
+                        <artifactId>Herochat</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>craftbukkit</artifactId>
+                        <groupId>org.bukkit</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>bukkit</artifactId>
+                        <groupId>org.bukkit</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>worldedit</artifactId>
+                        <groupId>com.sk89q</groupId>
+                    </exclusion>
 				</exclusions>
 			</dependency>
 			
 			<!-- AttributeStorage -->
-			<dependency>
-			    <groupId>com.comphenix.attribute</groupId>
-			    <artifactId>AttributeStorage</artifactId>
-			    <version>0.0.2-SNAPSHOT</version>
-			</dependency>
+            <dependency>
+                <groupId>com.comphenix.attribute</groupId>
+                <artifactId>AttributeStorage</artifactId>
+                <version>0.0.2-SNAPSHOT</version>
+                <exclusions>
+                </exclusions>
+            </dependency>
 			
 		    <!-- HoloAPI -->
 			<dependency>
@@ -118,8 +169,8 @@
 				<version>1.2.3</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>*</groupId>
+                        <artifactId>netty-all</artifactId>
+                        <groupId>io.netty</groupId>
                     </exclusion>
                 </exclusions>
 			</dependency>
@@ -130,12 +181,6 @@
 				<artifactId>BKCommonLib</artifactId>
 				<version>1.58-SNAPSHOT</version>
 				<scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>*</groupId>
-                    </exclusion>
-                </exclusions>
 			</dependency>
 			
 			<!-- ProtocolLib -->
@@ -146,17 +191,33 @@
 				<scope>provided</scope>
                 <exclusions>
                     <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>*</groupId>
+                        <artifactId>cglib-nodep</artifactId>
+                        <groupId>cglib</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>BukkitExecutors</artifactId>
+                        <groupId>com.comphenix.executors</groupId>
                     </exclusion>
                 </exclusions>
 			</dependency>
+
+            <dependency>
+                <groupId>com.comphenix.packetwrapper</groupId>
+                <artifactId>PacketWrapper</artifactId>
+                <version>1.7.2-R0.5</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>bukkit</artifactId>
+                        <groupId>org.bukkit</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 			
 			<!-- Vault -->
 			<dependency>
 				<groupId>net.milkbowl.vault</groupId>
-				<artifactId>Vault</artifactId>
-				<version>1.4.1</version>
+				<artifactId>VaultAPI</artifactId>
+				<version>1.4</version>
 				<scope>provided</scope>
 			</dependency>
 			
@@ -174,10 +235,6 @@
 				<artifactId>BarAPI</artifactId>
 				<version>3.1</version>
                 <exclusions>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>*</groupId>
-                    </exclusion>
                 </exclusions>
 			</dependency>
 			
@@ -195,13 +252,19 @@
 				<artifactId>worldguard</artifactId>
 				<scope>provided</scope>
 				<version>5.9</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sk89q</groupId>
+                        <artifactId>jchronic</artifactId>
+                    </exclusion>
+                </exclusions>
 			</dependency>
 			
 			<!-- Spigot -->
 			<dependency>
 				<groupId>org.spigotmc</groupId>
 				<artifactId>spigot-api</artifactId>
-				<version>1.7.9-R0.2-SNAPSHOT</version>
+				<version>1.7.9-R0.3-SNAPSHOT</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>
@@ -211,12 +274,6 @@
 			<groupId>com.bergerkiller.bukkit</groupId>
 			<artifactId>BKCommonLib</artifactId>
 			<scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
-                </exclusion>
-            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
@@ -225,7 +282,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
+			<artifactId>VaultAPI</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>me.confuser</groupId>
@@ -259,7 +316,13 @@
 		</resources>
 		<finalName>${project.artifactId}</finalName>
 		<defaultGoal>install</defaultGoal>
-
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
 	</build>
 
 </project>

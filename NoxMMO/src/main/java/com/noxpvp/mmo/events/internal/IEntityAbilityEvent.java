@@ -1,15 +1,43 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.BaseEntityAbility;
-import com.noxpvp.mmo.abilities.IEntityAbility;
+import com.noxpvp.mmo.abilities.internal.EntityAbility;
+import org.bukkit.entity.Entity;
 
-public interface IEntityAbilityEvent extends IAbilityEvent {
+public interface IEntityAbilityEvent<T extends EntityAbility> extends IAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link IEntityAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.EntityAbility} associated with this event
 	 *
-	 * @return {@link BaseEntityAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.EntityAbility} The ability
 	 */
-	public BaseEntityAbility getAbility();
+	public T getAbility();
 
+	/**
+	 * Retrieves the entity associated with this event.
+	 * @return {@link Entity}
+	 */
+	public Entity getEntity();
 }

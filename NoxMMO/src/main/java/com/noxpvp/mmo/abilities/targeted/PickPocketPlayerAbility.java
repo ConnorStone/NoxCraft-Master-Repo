@@ -1,5 +1,31 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.targeted;
 
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -8,9 +34,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 /**
  * @author NoxPVP
@@ -92,14 +116,14 @@ public class PickPocketPlayerAbility extends BaseTargetedPlayerAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<PickPocketPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<PickPocketPlayerAbility>(this, false);
 
 		LivingEntity target = getTarget();
 
 		if (!(target instanceof InventoryHolder))
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<PickPocketPlayerAbility>(this, false);
 
 		final Player p = getPlayer();
 
@@ -107,10 +131,10 @@ public class PickPocketPlayerAbility extends BaseTargetedPlayerAbility {
 		double pYaw = p.getLocation().getYaw();
 
 		if (!(pYaw <= (tYaw + 20)) && (pYaw >= (tYaw - 20)))//must be behind target
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<PickPocketPlayerAbility>(this, false);
 
 		if (!(p.isSneaking()))//and sneaking
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<PickPocketPlayerAbility>(this, false);
 
 //		if (Math.random() > getCalChance())//chance to pick
 //			return false;
@@ -129,7 +153,7 @@ public class PickPocketPlayerAbility extends BaseTargetedPlayerAbility {
 		}
 
 		if (item == null || item.getType() == Material.AIR)
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<PickPocketPlayerAbility>(this, false);
 
 		item.setAmount(getPocketamount());//set itemstack amount
 
@@ -142,7 +166,7 @@ public class PickPocketPlayerAbility extends BaseTargetedPlayerAbility {
 			}
 		});
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<PickPocketPlayerAbility>(this, true);
 	}
 
 }

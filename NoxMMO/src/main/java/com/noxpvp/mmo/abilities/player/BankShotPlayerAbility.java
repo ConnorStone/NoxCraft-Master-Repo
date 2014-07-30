@@ -1,29 +1,48 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.MasterListener;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
 import org.bukkit.Location;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.MasterListener;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author NoxPVP
@@ -43,7 +62,8 @@ public class BankShotPlayerAbility extends BasePlayerAbility implements PVPAbili
 	private boolean hitCreatures = true;
 	private boolean hitSelf = false;
 	private boolean singleShot = true;
-	public BankShotPlayerAbility(Player player) {
+
+	public BankShotPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		hitHandler = new BaseMMOEventHandler<ProjectileHitEvent>(
@@ -55,7 +75,7 @@ public class BankShotPlayerAbility extends BasePlayerAbility implements PVPAbili
 			}
 
 			public void execute(ProjectileHitEvent event) {
-				if (event.getEntity().equals(BankShotPlayerAbility.this.arrows))
+				if (event.getEntity() instanceof Arrow && BankShotPlayerAbility.this.arrows.contains((Arrow)event.getEntity()))
 					BankShotPlayerAbility.this.eventExecute((Arrow) event.getEntity());
 			}
 
@@ -307,16 +327,16 @@ public class BankShotPlayerAbility extends BasePlayerAbility implements PVPAbili
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<BankShotPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<BankShotPlayerAbility>(this, false);
 
 		if (!isFiring() && !isActive()) {
 			setFiring(true);
 
-			return new AbilityResult(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
+			return new AbilityResult<BankShotPlayerAbility>(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
 		} else {
-			return new AbilityResult(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
+			return new AbilityResult<BankShotPlayerAbility>(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
 		}
 	}
 

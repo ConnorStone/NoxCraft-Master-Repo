@@ -1,18 +1,42 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.apache.commons.lang.math.RandomUtils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 
 import com.bergerkiller.bukkit.common.controller.EntityController;
 import com.bergerkiller.bukkit.common.entity.type.CommonLivingEntity;
 import com.bergerkiller.bukkit.common.wrappers.DamageSource;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -21,7 +45,7 @@ public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbil
 	private CommonLivingEntity<Wolf> wolf;
 	private WolfController wolfController = new WolfController();
 
-	public AlphaMalePlayerAbility(Player player) {
+	public AlphaMalePlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 	}
 
@@ -34,8 +58,8 @@ public class AlphaMalePlayerAbility extends BasePlayerAbility implements PVPAbil
 		this.wolf.setController(wolfController);
 	}
 
-	public AbilityResult execute() {
-		return new AbilityResult(this, false);
+	public AbilityResult<AlphaMalePlayerAbility> execute() {
+		return new AbilityResult<AlphaMalePlayerAbility>(this, false);
 	}
 
 	public WolfController getWolfController() {

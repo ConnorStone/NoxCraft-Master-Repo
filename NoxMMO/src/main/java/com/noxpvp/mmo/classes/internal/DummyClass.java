@@ -1,21 +1,38 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.locale.MMOLocale;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class DummyClass implements IPlayerClass {
 
@@ -28,6 +45,7 @@ public class DummyClass implements IPlayerClass {
 	private final Map<Integer, IClassTier> tiers = new HashMap<Integer, IClassTier>();
 
 	private final boolean isPrimary;
+	private Map<String, Ability> abilities = Collections.emptyMap();
 
 	private DummyClass(boolean isPrimary) {
 		this.isPrimary = isPrimary;
@@ -152,6 +170,10 @@ public class DummyClass implements IPlayerClass {
 	public int getExp() {
 		return 0;
 	}
+	
+	public int getExpToLevel() {
+		return 0;
+	}
 
 	public void setExp(int amount) {
 	}
@@ -213,11 +235,23 @@ public class DummyClass implements IPlayerClass {
 	public void onSave(ConfigurationNode node) {
 	}
 
-	public Map<String, ? extends Ability> getAbilityMap() {
-		return new HashMap<String, Ability>();
+	public Ability getAbility(String identity) {
+		return null;
 	}
 
-	public Collection<? extends Ability> getAbilities() {
-		return new ArrayList<Ability>();
+	public boolean hasAbility(String identity) {
+		return false;
+	}
+
+	public Collection<Ability> getAbilities() {
+		return getAbilitiesMap().values();
+	}
+
+	public Map<String, Ability> getAbilitiesMap() {
+		return abilities;
+	}
+
+	public Map<String, Object> serialize() {
+		return null;
 	}
 }

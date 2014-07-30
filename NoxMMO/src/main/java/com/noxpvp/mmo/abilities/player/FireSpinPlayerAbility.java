@@ -1,11 +1,42 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
-
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.effect.vortex.BaseVortex;
+import com.noxpvp.core.effect.vortex.BaseVortexEntity;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
@@ -15,14 +46,8 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.effect.vortex.BaseVortex;
-import com.noxpvp.core.effect.vortex.BaseVortexEntity;
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import java.util.ArrayDeque;
+import java.util.HashSet;
 
 public class FireSpinPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -46,11 +71,11 @@ public class FireSpinPlayerAbility extends BasePlayerAbility implements PVPAbili
 		}
 	}
 
-	public FireSpinPlayerAbility(Player p) {
+	public FireSpinPlayerAbility(OfflinePlayer p) {
 		super(ABILITY_NAME, p);
 
 		this.time = 20 * 10;
-		setCD(25);
+		setCD(new CoolDown.Time().seconds(25));
 		
 		this.handler = new BaseMMOEventHandler<EntityChangeBlockEvent>(
 				new StringBuilder().append(getName()).append(p.getName()).append("EntityChangeBlockEvent").toString(),
@@ -83,9 +108,9 @@ public class FireSpinPlayerAbility extends BasePlayerAbility implements PVPAbili
 		return "Surrounds the user with a powerful ring of spinning fire, Scorching anyone in your path";
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<FireSpinPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<FireSpinPlayerAbility>(this, false);
 
 		setActive(true);
 		this.vortex = new FireSpinVortex(getPlayer(), time);
@@ -93,7 +118,7 @@ public class FireSpinPlayerAbility extends BasePlayerAbility implements PVPAbili
 		
 		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, time, 0, true));
 		
-		return new AbilityResult(this, true);
+		return new AbilityResult<FireSpinPlayerAbility>(this, true);
 
 	}
 

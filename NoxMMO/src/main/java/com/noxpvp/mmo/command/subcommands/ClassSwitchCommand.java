@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.command.subcommands;
 
 import com.bergerkiller.bukkit.common.MessageBuilder;
@@ -5,25 +28,27 @@ import com.bergerkiller.bukkit.common.utils.ParseUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.MMOPlayerManager;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.gui.ClassChooseMenu;
 import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassSwitchCommand extends BaseCommand {
 
 	public static final String COMMAND_NAME = "switch";
 
+	private static final String[] flags = new String[]{"h", "help", "nogui"};
+
 	public ClassSwitchCommand() {
 		super(COMMAND_NAME, true);
 	}
 
 	public String[] getFlags() {
-		return new String[]{"h", "help", "nogui"};
+		return flags;
 	}
 
 	public String[] getHelp() {
@@ -67,15 +92,12 @@ public class ClassSwitchCommand extends BaseCommand {
 
 		int tier = ParseUtil.parseInt(sTier, -1);
 
-		if (PlayerClassUtil.hasClassNameIgnoreCase(cName))
-			cName = PlayerClassUtil.getIdByClassName(cName);
-
-		if (!PlayerClassUtil.hasClassId(cName)) {
+		if (!PlayerClassUtil.hasClass(cName)) {
 			MMOLocale.CLASS_NONE_BY_NAME.message(context.getSender(), cName);
 			return new CommandResult(this, true);
 		}
 
-		PlayerClass c = PlayerClassUtil.safeConstructClass(cName, context.getPlayer());
+		PlayerClass c = PlayerClassUtil.getClass(cName, context.getPlayer());
 
 		MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 

@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.collection;
 
 import java.util.Collection;
@@ -25,6 +48,26 @@ public class DualAccessMap<K, V> implements Map<K, V> {
 
 	public boolean containsValue(Object value) {
 		return values.contains(value);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DualAccessMap that = (DualAccessMap) o;
+
+		if (!keys.equals(that.keys)) return false;
+		if (!values.equals(that.values)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = keys.hashCode();
+		result = 31 * result + values.hashCode();
+		return result;
 	}
 
 	/**

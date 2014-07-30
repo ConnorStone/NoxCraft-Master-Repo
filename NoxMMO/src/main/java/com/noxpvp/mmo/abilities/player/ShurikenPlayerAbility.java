@@ -1,7 +1,30 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -16,7 +39,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import com.noxpvp.core.packet.NoxPacketUtil;
 import com.noxpvp.core.utils.DamageUtil;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
 public class ShurikenPlayerAbility extends BasePlayerAbility implements PVPAbility {
@@ -34,7 +59,7 @@ public class ShurikenPlayerAbility extends BasePlayerAbility implements PVPAbili
 	 * @param player       The user of this ability instance
 	 * @param distanceVelo double multiplier of the users direction used as a velocity
 	 */
-	public ShurikenPlayerAbility(Player player, double distanceVelo, double damageMultiplier) {
+	public ShurikenPlayerAbility(OfflinePlayer player, double distanceVelo, double damageMultiplier) {
 		super(ABILITY_NAME, player);
 
 		this.distanceVelo = distanceVelo;
@@ -149,9 +174,9 @@ public class ShurikenPlayerAbility extends BasePlayerAbility implements PVPAbili
 	/**
 	 * @return boolean If this ability executed successfully
 	 */
-	public AbilityResult execute() {
+	public AbilityResult<ShurikenPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ShurikenPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
@@ -167,7 +192,7 @@ public class ShurikenPlayerAbility extends BasePlayerAbility implements PVPAbili
 		NoxPacketUtil.disguiseArrow(a, shuriken);
 
 		setActive(true);
-		return new AbilityResult(this, true);
+		return new AbilityResult<ShurikenPlayerAbility>(this, true);
 	}
 
 }

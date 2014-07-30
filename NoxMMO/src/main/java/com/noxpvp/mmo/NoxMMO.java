@@ -1,9 +1,27 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo;
-
-import java.util.logging.Level;
-
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.bergerkiller.bukkit.common.Common;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
@@ -14,16 +32,15 @@ import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.internal.PermissionHandler;
 import com.noxpvp.core.permissions.NoxPermission;
-import com.noxpvp.core.reloader.*;
-import com.noxpvp.core.utils.PrismUtil;
+import com.noxpvp.core.reloader.BaseReloader;
+import com.noxpvp.core.reloader.Reloader;
 import com.noxpvp.core.utils.StaticCleaner;
 import com.noxpvp.mmo.abilities.entity.*;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoArmor;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoSword;
+import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoTool;
 import com.noxpvp.mmo.abilities.player.*;
-import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.*;
-import com.noxpvp.mmo.abilities.ranged.HookShotPlayerAbility;
-import com.noxpvp.mmo.abilities.ranged.MassDestructionPlayerAbility;
-import com.noxpvp.mmo.abilities.ranged.SeveringStrikesPlayerAbility;
-import com.noxpvp.mmo.abilities.ranged.ThrowPlayerAbility;
+import com.noxpvp.mmo.abilities.ranged.*;
 import com.noxpvp.mmo.abilities.targeted.*;
 import com.noxpvp.mmo.classes.AxesPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
@@ -32,9 +49,12 @@ import com.noxpvp.mmo.command.ClassCommand;
 import com.noxpvp.mmo.command.MMOCommand;
 import com.noxpvp.mmo.listeners.*;
 import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.prism.AbilityUseAction;
-import com.noxpvp.mmo.prism.UsedAbilityActionType;
+import com.noxpvp.mmo.prism.MMOPrismUtil;
 import com.noxpvp.mmo.util.PlayerClassUtil;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.permissions.PermissionDefault;
+
+import java.util.logging.Level;
 
 
 public class NoxMMO extends NoxPlugin {
@@ -46,7 +66,9 @@ public class NoxMMO extends NoxPlugin {
 	HealListener healListener;
 	PlayerInteractListener playerTargetListener;
 	BlockListener blockListener;
+
 //	ExperienceListener experieneceListener;
+
 	private NoxCore core;
 	private PermissionHandler permHandler;
 	private FileConfiguration config;
@@ -54,9 +76,12 @@ public class NoxMMO extends NoxPlugin {
 
 	private MasterListener masterListener;
 
-	private MMOPlayerManager playerManager = null;
-
 	private Class<Command>[] commands = (Class<Command>[]) new Class[]{ClassCommand.class, AbilityCommand.class, MMOCommand.class};
+
+	private Class<? extends ConfigurationSerializable>[] serializables = new Class[] {
+			AbilityCycler.class, PlayerClass.class,
+			AxesPlayerClass.class
+	};
 
 	public static NoxMMO getInstance() {
 		return instance;
@@ -105,26 +130,18 @@ public class NoxMMO extends NoxPlugin {
 			setEnabled(false);
 			return;
 		}
+
 		setInstance(this);
 		Common.loadClasses("com.noxpvp.mmo.classes.internal.DummyClass");
 		MasterListener.init();
 		masterListener = new MasterListener();
 
-
-		getPlayerManager();
-
 		core = NoxCore.getInstance();
 
 		PlayerClassUtil.init();
 		PlayerClass.init();
-		
-		//Register action of using an ability into prism for logging
-		PrismUtil.registerActionType(instance, new UsedAbilityActionType());
-		
-		//Register custom handlers
-		PrismUtil.registerCustomActionHandler(instance, AbilityUseAction.class);
 
-		abilityListener = new AbilityListener(instance);
+		abilityListener = new AbilityListener(instance, core.isPrismActive());
 		damageListener = new DamageListener(instance);
 		healListener = new HealListener(instance);
 		playerTargetListener = new PlayerInteractListener(instance);
@@ -168,7 +185,17 @@ public class NoxMMO extends NoxPlugin {
 				return true;
 			}
 		});
+
 		registerAllCommands();
+
+		//Setup Prism stuff
+		try {
+			if (core.isPrismActive()) {
+				MMOPrismUtil.registerActionTypes();
+				MMOPrismUtil.registerCustomHandlers();
+			}
+		} catch (Exception e) {}
+		AbilityCycler.init();
 	}
 
 	private void registerAllCommands() {
@@ -195,7 +222,6 @@ public class NoxMMO extends NoxPlugin {
 	@Override
 	public void reloadConfig() {
 		config.load();
-
 	}
 
 	@Override
@@ -289,22 +315,6 @@ public class NoxMMO extends NoxPlugin {
 		return masterListener;
 	}
 
-	/**
-	 * Gets the player manager.
-	 *
-	 * @return the player manager
-	 * @Deprecated Use {@link MMOPlayerManager#getInstance()} instead
-	 */
-	public MMOPlayerManager getPlayerManager() {
-		MMOPlayerManager c = MMOPlayerManager.getInstance();
-		if (playerManager == null)
-			playerManager = c;
-		else if (playerManager != c)
-			playerManager = c;
-
-		return playerManager;
-	}
-
 	@Override
 	public NoxCore getCore() {
 		return core;
@@ -318,7 +328,7 @@ public class NoxMMO extends NoxPlugin {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Class<? extends ConfigurationSerializable>[] getSerialiables() {
-		return new Class[0];
+		return serializables;
 	}
 
 }

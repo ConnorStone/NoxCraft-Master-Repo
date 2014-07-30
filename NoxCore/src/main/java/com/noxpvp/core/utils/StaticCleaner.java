@@ -1,14 +1,16 @@
 package com.noxpvp.core.utils;
 
+import com.bergerkiller.bukkit.common.AsyncTask;
+import com.bergerkiller.bukkit.common.PluginBase;
+import com.noxpvp.core.reflection.FieldUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.plugin.Plugin;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.bergerkiller.bukkit.common.AsyncTask;
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.reflection.FieldUtils;
+import java.util.logging.Logger;
 
 
 /**
@@ -21,13 +23,17 @@ import com.noxpvp.core.reflection.FieldUtils;
  * @author Kristian
  */
 public class StaticCleaner {
-	private ModuleLogger log;
+	private Logger log;
 	private ClassLoader loader;
 	private String[] internalClasses;
 	private Class<?>[] publicClasses;
 
-	public StaticCleaner(NoxPlugin plugin, ClassLoader loader, String[] internals, Class<?>[] classes) {
-		log = plugin.getModuleLogger("Static Cleaner");
+	public StaticCleaner(Plugin plugin, ClassLoader loader, String[] internals, Class<?>[] classes) {
+		if (plugin instanceof PluginBase) log = ((PluginBase)plugin).getModuleLogger("Static Cleaner");
+		else log = plugin.getLogger();
+
+		Validate.notNull(log, "Plugin does not contain a logger. Plugin must have a logger!");
+
 		this.loader = loader;
 		this.internalClasses = internals;
 		this.publicClasses = classes;

@@ -1,32 +1,51 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.classes.tiers;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.mmo.abilities.Ability;
 import com.noxpvp.mmo.abilities.player.HammerOfThorPlayerAbility;
 import com.noxpvp.mmo.abilities.ranged.MassDestructionPlayerAbility;
 import com.noxpvp.mmo.classes.internal.ClassTier;
 import com.noxpvp.mmo.classes.internal.ExperienceType;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 public class AxesWarlordClassTier extends ClassTier {
 
 	public static final String TIER_NAME = "Warlord";
 
-	private volatile static String dName = "Warlord";
+	private static volatile String dName = "Warlord";
 	private final double maxHealth;
-	private Map<String, Ability> abilities = new HashMap<String, Ability>();
 
 	public AxesWarlordClassTier(PlayerClass retainer) {
 		super(retainer, TIER_NAME, 4);
 
-		abilities.putAll(retainer.getTier(getTierLevel() - 1).getAbilityMap());
-		abilities.put(HammerOfThorPlayerAbility.ABILITY_NAME.toLowerCase(), new HammerOfThorPlayerAbility(getPlayer()));
-		abilities.put(MassDestructionPlayerAbility.ABILITY_NAME.toLowerCase(), new MassDestructionPlayerAbility(getPlayer()));
+		abilities.putAll(retainer.getTier(getTierLevel() - 1).getAbilitiesMap());
+		abilities.put(HammerOfThorPlayerAbility.ABILITY_NAME.toLowerCase(), new HammerOfThorPlayerAbility(retainer.getOfflinePlayer()));
+		abilities.put(MassDestructionPlayerAbility.ABILITY_NAME.toLowerCase(), new MassDestructionPlayerAbility(retainer.getOfflinePlayer()));
 
 		this.maxHealth = 28;
 	}
@@ -87,24 +106,17 @@ public class AxesWarlordClassTier extends ClassTier {
 
 	}
 
-	public Map<String, Ability> getAbilityMap() {
-		return Collections.unmodifiableMap(abilities);
-	}
-
 	public ExperienceType[] getExpTypes() {
 		return ExperienceType.COMBAT;
 	}
 
 	@Override
-	public void load(ConfigurationNode node) {
+	protected void load(Map<String, Object> data) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
-	public void save(ConfigurationNode node) {
-		// TODO Auto-generated method stub
+	protected void save(Map<String, Object> data) {
 
 	}
-
 }

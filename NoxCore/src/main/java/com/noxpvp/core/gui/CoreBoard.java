@@ -1,32 +1,57 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
+
 package com.noxpvp.core.gui;
+
+import com.bergerkiller.bukkit.common.scoreboards.CommonObjective;
+import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
+import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard.Display;
+import com.google.common.collect.Lists;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.utils.TimeUtils;
+import com.noxpvp.core.utils.gui.MessageUtil;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.bergerkiller.bukkit.common.scoreboards.CommonObjective;
-import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard;
-import com.bergerkiller.bukkit.common.scoreboards.CommonScoreboard.Display;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.manager.CorePlayerManager;
-import com.noxpvp.core.utils.TimeUtils;
-import com.noxpvp.core.utils.gui.MessageUtil;
+import java.util.UUID;
 
 public class CoreBoard {
 	private static final int BOARD_MAX_ENTRIES = 15;
 	private static final int BOARD_OBJ_NAME_LENGTH_MAX = 28;
 	private static final int BOARD_SCORE_NAME_MAX_LENGTH = 16;
 	
-	private Player p;
-	private CorePlayerManager pm;
-	private Map<String, BoardEntry> entries;
+	private UUID player;
+	private Map<String, BaseBoardEntry> entries;
 	private List<Integer> takenSlots;
 	private Map<String, BoardScroller> scrollers;
 	private Map<String, BoardTimer> timers;
@@ -57,12 +82,11 @@ public class CoreBoard {
 
 		this.ob = sb.getObjective(Display.SIDEBAR);
 		this.ob.setDisplayName(SpaceOut(objName, BOARD_OBJ_NAME_LENGTH_MAX));
-		this.p = p;
+		this.player = p.getUniqueId();
 
 		this.scrollers = new HashMap<String, BoardScroller>();
 		this.timers = new HashMap<String, BoardTimer>();
-		this.entries = new HashMap<String, BoardEntry>();
-		this.pm = CorePlayerManager.getInstance();
+		this.entries = new HashMap<String, BaseBoardEntry>();
 
 		this.takenSlots = new ArrayList<Integer>();
 
@@ -89,9 +113,49 @@ public class CoreBoard {
 	 * @return CoreBoard - This instance
 	 */
 	public CoreBoard addScore(String name, String displayName, String score, ChatColor nameColor, ChatColor scoreColor) {
-		new BoardEntry(name, SpaceOut(nameColor + displayName, 16), SpaceOut(scoreColor + score, 16));
+		return addScore(name, displayName, score, nameColor, scoreColor, true);
+	}
 
-		show();
+	/**
+	 * @param name        - A unique name to help the CoreBoard remove/track the score
+	 * @param displayName - The name shown for the score
+	 * @param score       - The score itself. Yes, this supports double types - unlike normal scoreboards
+	 * @param nameColor   - The color to display the name
+	 * @param scoreColor  - The color to display the score
+	 * @param autoShow    - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addScore(String name, String displayName, String score, ChatColor nameColor, ChatColor scoreColor, boolean autoShow) {
+		new DuelBoardEntry(name, SpaceOut(nameColor + displayName, 16), SpaceOut(scoreColor + score, 16));
+
+		if (autoShow)
+			show();
+		return this;
+	}
+
+	/**
+	 * @param name        - A unique name to help the CoreBoard remove/track the score
+	 * @param displayName - The name shown for the score
+	 * @param nameColor   - The color to display the name
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addEntry(String name, String displayName, ChatColor nameColor) {
+		return addEntry(name, displayName, nameColor, true);
+	}
+
+	/**
+	 * @param name        - A unique name to help the CoreBoard remove/track the score
+	 * @param displayName - The name shown for the score
+	 * @param nameColor   - The color to display the name
+	 * @param autoShow    - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addEntry(String name, String displayName, ChatColor nameColor, boolean autoShow) {
+		new SoloBoardEntry(name, SpaceOut(nameColor + displayName, 16));
+
+		if (autoShow)
+			show();
+
 		return this;
 	}
 
@@ -104,12 +168,58 @@ public class CoreBoard {
 	 * @return CoreBoard - This instance
 	 */
 	public CoreBoard addScroller(String name, String displayedName, String scrollText, int visibleLength, ChatColor nameColor, ChatColor scrollerColor) {
+		return addScroller(name, displayedName, scrollText, visibleLength, nameColor, scrollerColor, true);
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the scroller to be displayed on the scoreboard
+	 * @param visibleLength - The length of the scroller to be displayed
+	 * @param nameColor     - The color of the scroller name
+	 * @param scrollerColor - The color of the scroller being displayed
+	 * @param autoShow      - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addScroller(String name, String displayedName, String scrollText, int visibleLength, ChatColor nameColor, ChatColor scrollerColor, boolean autoShow) {
 
 		BoardScroller scroller = new BoardScroller(name, displayedName, scrollText, visibleLength, nameColor, scrollerColor);
 		scroller.runTaskTimer(NoxCore.getInstance(), 0, 4);
 		scrollers.put(scroller.name, scroller);
 
-		show();
+		if (autoShow)
+			show();
+		return this;
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the timer to be displayed on the scoreboard
+	 * @param stamp       - A Time object representing how much time. <i>It is converted into seconds.</i>
+	 * @param nameColor     - The color of the timer name
+	 * @param scoreColor    - The color of the time counter being displayed
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addTimer(String name, String displayedName, CoolDown.Time stamp, ChatColor nameColor, ChatColor scoreColor) {
+		return addTimer(name, displayedName, stamp, nameColor, scoreColor, true);
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the timer to be displayed on the scoreboard
+	 * @param stamp       - A Time object representing how much time. <i>It is converted into seconds.</i>
+	 * @param nameColor     - The color of the timer name
+	 * @param scoreColor    - The color of the time counter being displayed
+	 * @param autoShow      - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addTimer(String name, String displayedName, CoolDown.Time stamp, ChatColor nameColor, ChatColor scoreColor, boolean autoShow) {
+
+		BoardTimer timer = new BoardTimer(name, displayedName, (int) (stamp.usesNanos() ? stamp.toStamp() / 1000000000 : stamp.toStamp() / 1000), nameColor, scoreColor);
+		timer.runTaskTimer(NoxCore.getInstance(), 0, 20);
+		timers.put(timer.name, timer);
+
+		if (autoShow)
+			show();
 		return this;
 	}
 
@@ -122,13 +232,31 @@ public class CoreBoard {
 	 * @return CoreBoard - This instance
 	 */
 	public CoreBoard addTimer(String name, String displayedName, int seconds, ChatColor nameColor, ChatColor scoreColor) {
+		return addTimer(name, displayedName, seconds, nameColor, scoreColor, true);
+	}
+
+	/**
+	 * @param name          - The name for the score, only used internally for tracking and removing the score
+	 * @param displayedName - The name of the timer to be displayed on the scoreboard
+	 * @param seconds       - The total time in seconds
+	 * @param nameColor     - The color of the timer name
+	 * @param scoreColor    - The color of the time counter being displayed
+	 * @param autoShow      - Automatically show the CoreBoard on completion.
+	 * @return CoreBoard - This instance
+	 */
+	public CoreBoard addTimer(String name, String displayedName, int seconds, ChatColor nameColor, ChatColor scoreColor, boolean autoShow) {
 
 		BoardTimer timer = new BoardTimer(name, displayedName, seconds, nameColor, scoreColor);
 		timer.runTaskTimer(NoxCore.getInstance(), 0, 20);
 		timers.put(timer.name, timer);
 
-		show();
+		if (autoShow)
+			show();
 		return this;
+	}
+	
+	public Player getPlayer() {
+		return Bukkit.getPlayer(player);
 	}
 
 	/**
@@ -152,7 +280,7 @@ public class CoreBoard {
 	 * @param entry - The entry to remove
 	 * @return CoreBoard - This instance
 	 */
-	public CoreBoard removeEntry(BoardEntry entry) {
+	public CoreBoard removeEntry(BaseBoardEntry entry) { //TODO: Why is this redundant like this?
 		return removeEntry(entry.getName());
 	}
 
@@ -162,7 +290,7 @@ public class CoreBoard {
 	 */
 	public CoreBoard removeEntry(String name) {
 
-		BoardEntry entry = entries.get(name);
+		BaseBoardEntry entry = entries.get(name);
 		if (entry == null)
 			return this;
 
@@ -223,23 +351,133 @@ public class CoreBoard {
 		return n;
 	}
 
-	private class BoardEntry {
-		private final String name;
-		private boolean active;
-		private boolean isGood = true;
-		private String displayedName;
-		private String scoreName;
-		private int slot1, slot2;
+	/**
+	 * Erases all entries from CoreBoard.
+	 * <p><i>Note: This will self update.</i></p>
+	 */
+	public void clear() {
+		for (BaseBoardEntry entry : Lists.newArrayList(entries.values())) //An attempt to prevent ConccurentModificationExceptions.
+			removeEntry(entry);
+		updateScores();
+	}
 
-		public BoardEntry(String name, String displayedName, String scoreName) {
-			for (BoardEntry e : entries.values()) {
-				if (e.name.equals(name) || e.displayedName.equals(displayedName) || e.scoreName.equals(scoreName)) {
+	private abstract class BaseBoardEntry {
+		protected final String name;
+		protected boolean active;
+		protected String displayedName;
+		protected boolean isGood = true;
+
+		protected BaseBoardEntry(String name, String displayedName) {
+			this.name = SpaceOut(name, 16).substring(0, BOARD_SCORE_NAME_MAX_LENGTH);
+			this.displayedName = SpaceOut(displayedName, 16).substring(0, BOARD_SCORE_NAME_MAX_LENGTH);
+		}
+
+		public final boolean isRendering() {
+			return active;
+		}
+
+		public abstract BaseBoardEntry getNewSlots();
+
+		public abstract BaseBoardEntry hide();
+
+		public final String getName() {
+			return name;
+		}
+
+		public final String getDisplayName() {
+			return this.displayedName;
+		}
+
+		public abstract void remove();
+
+		public final BaseBoardEntry setDisplayName(String name) {
+			this.displayedName = name;
+			hide();
+			show();
+			return this;
+		}
+
+		public abstract BaseBoardEntry show();
+	}
+
+	private class SoloBoardEntry extends BaseBoardEntry {
+		private int slot1;
+
+		protected SoloBoardEntry(String name, String displayedName) {
+			super(name, displayedName);
+			for (BaseBoardEntry e : entries.values()) {
+				if (e.getName().equals(name) || e.getDisplayName().equals(displayedName)) {
 					e.remove();
 				}
 			}
 
-			this.name = name;
 			this.displayedName = SpaceOut(displayedName, BOARD_SCORE_NAME_MAX_LENGTH).substring(0, BOARD_SCORE_NAME_MAX_LENGTH);
+
+			this.slot1 = getNewSlot();
+
+			entries.put(name, this);
+			show();
+		}
+
+		@Override
+		public SoloBoardEntry getNewSlots() {
+			ob.removeScore(name + slot1);
+
+			removeSlotID(slot1);
+			slot1 = getNewSlot();
+
+			ob.createScore(name + slot1, displayedName, slot1);
+
+			return this;
+		}
+
+		public int getSlot1() {
+			return slot1;
+		}
+
+		public BaseBoardEntry hide() {
+			if (!isRendering() || !isGood)
+				return this;
+
+			ob.removeScore(name + slot1);
+
+			active = false;
+			return this;
+		}
+
+		public void remove() {
+			hide();
+
+			entries.remove(name);
+			removeSlotID(slot1);
+
+			isGood = false;
+		}
+
+		public SoloBoardEntry show() {
+			if (active || !isGood)
+				return this;
+
+			active = true;
+
+			ob.createScore(name + slot1, displayedName, slot1);
+
+			return this;
+		}
+	}
+
+	private class DuelBoardEntry extends BaseBoardEntry {
+		private String scoreName;
+		private int slot1, slot2;
+
+		public DuelBoardEntry(String name, String displayedName, String scoreName) {
+			super(name, displayedName);
+			for (BaseBoardEntry e : entries.values()) {
+				if (e.getName().equals(name) || e.getDisplayName().equals(displayedName) || ((e instanceof DuelBoardEntry) && ((DuelBoardEntry)e).scoreName.equals(scoreName))) {
+					e.remove();
+				}
+			}
+
 			this.scoreName = SpaceOut(scoreName, 16).substring(0, BOARD_SCORE_NAME_MAX_LENGTH);
 
 			this.slot1 = getNewSlot();
@@ -249,11 +487,7 @@ public class CoreBoard {
 			show();
 		}
 
-		public String getName() {
-			return name;
-		}
-
-		public BoardEntry getNewSlots() {
+		public DuelBoardEntry getNewSlots() {
 			ob.removeScore(name + slot1);
 			ob.removeScore(name + slot2);
 
@@ -280,14 +514,15 @@ public class CoreBoard {
 			return scoreName;
 		}
 
-		public BoardEntry setValue(String value) {
+		public DuelBoardEntry setValue(String value) {
 			this.scoreName = value;
 			hide();
 			show();
 			return this;
 		}
 
-		public BoardEntry hide() {
+		@Override
+		public DuelBoardEntry hide() {
 			if (!active || !isGood)
 				return this;
 			
@@ -298,10 +533,7 @@ public class CoreBoard {
 			return this;
 		}
 
-		public boolean isRendering() {
-			return active;
-		}
-
+		@Override
 		public void remove() {
 			hide();
 
@@ -311,14 +543,8 @@ public class CoreBoard {
 			isGood = false;
 		}
 
-		public BoardEntry setDisplayName(String name) {
-			this.displayedName = name;
-			hide();
-			show();
-			return this;
-		}
-
-		public BoardEntry show() {
+		@Override
+		public DuelBoardEntry show() {
 			if (active || !isGood)
 				return this;
 
@@ -334,7 +560,7 @@ public class CoreBoard {
 	private class BoardScroller extends BukkitRunnable {
 
 		public final String name;
-		private BoardEntry entry;
+		private DuelBoardEntry entry;
 		private String displayName;
 		private ChatColor sc;
 		private StringBuilder text;
@@ -355,11 +581,12 @@ public class CoreBoard {
 
 			this.v = useScrollColor ? (visibleLength <= 14 ? visibleLength : 14) : (visibleLength <= 16 ? visibleLength : 16);
 
-			entry = new BoardEntry(name, displayName, this.text.substring(0, this.v));
+			entry = new DuelBoardEntry(name, displayName, this.text.substring(0, this.v));
 		}
 
 		public void run() {
-			if (entry == null || !entries.containsValue(entry) || p == null || !p.isOnline()) {
+			Player p;
+			if (entry == null || !entries.containsValue(entry) || (p = getPlayer()) == null || !p.isOnline()) {
 				safeCancel();
 				return;
 			}
@@ -381,7 +608,7 @@ public class CoreBoard {
 
 	private class BoardTimer extends BukkitRunnable {
 		public final String name;
-		private BoardEntry entry;
+		private DuelBoardEntry entry;
 		private String displayName;
 		private ChatColor sc;
 
@@ -402,7 +629,7 @@ public class CoreBoard {
 
 			this.timerString = TimeUtils.getReadableSecTime(timeStamp - (System.currentTimeMillis() / 1000));
 
-			entry = new BoardEntry(name, displayName, timerString);
+			entry = new DuelBoardEntry(name, displayName, timerString);
 		}
 
 		public void run() {
@@ -411,6 +638,7 @@ public class CoreBoard {
 				return;
 			}
 
+			Player p = getPlayer();
 			if ((System.currentTimeMillis() / 1000) > (timeStamp - 1) || p == null || !p.isValid() || !p.isOnline()) {
 				if (p.isOnline()) {
 					entry.remove();

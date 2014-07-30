@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.entity;
 
 import org.bukkit.entity.Entity;
@@ -5,6 +28,7 @@ import org.bukkit.util.Vector;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 
 public class ChargeEntityAbility extends BaseEntityAbility {
@@ -47,9 +71,9 @@ public class ChargeEntityAbility extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<ChargeEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<ChargeEntityAbility>(this, false);
 
 		Entity e = getEntity();
 
@@ -60,7 +84,7 @@ public class ChargeEntityAbility extends BaseEntityAbility {
 		new ParticleRunner(ParticleType.largesmoke, e, true, 0, 6, 10).start(0, 1);
 
 		e.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<ChargeEntityAbility>(this, true);
 	}
 
 }

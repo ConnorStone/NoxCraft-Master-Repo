@@ -1,20 +1,34 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import com.bergerkiller.bukkit.common.Common;
 import com.bergerkiller.bukkit.common.PluginBase;
+import com.bergerkiller.bukkit.common.collections.StringMap;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.commands.Command.CommandResult;
@@ -22,15 +36,38 @@ import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.core.commands.SafeNullPointerException;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.permissions.NoxPermission;
 import com.noxpvp.core.reloader.Reloader;
 import com.noxpvp.core.utils.CommandUtil;
 import com.noxpvp.core.utils.gui.MessageUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.logging.Level;
 
 public abstract class NoxPlugin extends PluginBase {
 
-	protected Map<String, Command> commandExecs = new HashMap<String, Command>();
+	protected StringMap<Command> commandExecs = new StringMap<Command>();
+	protected StringMap<String> commandAliases = new StringMap<String>();
+	private File noxPluginFolder;
+
+	public File getNoxPluginFolder() {
+		if (noxPluginFolder == null && getDataFolder() != null) noxPluginFolder = new File(getDataFolder().getParentFile(), "Nox");
+		if (!noxPluginFolder.mkdirs() && (!noxPluginFolder.exists() || noxPluginFolder.isFile())) log(Level.SEVERE, "Could not make the nox plugin folder!");
+
+		return noxPluginFolder;
+	}
+
+	public void addPermissions(Class<? extends NoxPermission> permDefaults) {
+		for (NoxPermission def : CommonUtil.getClassConstants(permDefaults))
+			this.addPermission(def);
+	}
 
 	public void addPermission(NoxPermission perm) {
 		NoxCore.getInstance().addPermission(perm);
@@ -45,16 +82,20 @@ public abstract class NoxPlugin extends PluginBase {
 		String argLine = StringUtil.join(" ", args);
 		CommandContext context = CommandUtil.parseCommand(sender, argLine);
 
-		if (commandExecs.containsKey(command.toLowerCase(Locale.ENGLISH))) {
-			Command cmd = commandExecs.get(command.toLowerCase(Locale.ENGLISH));
+		String cmdString = command;
+		if (commandAliases.containsKeyLower(cmdString))
+			cmdString = commandAliases.getLower(cmdString);
+
+		if (commandExecs.containsKeyLower(cmdString)) {
+			Command cmd = commandExecs.getLower(cmdString);
 			if (cmd == null)
 				throw new NullPointerException("Command execution class was null!");
 			try {
 				CommandResult result = cmd.executeCommand(context);
 
 				if (!result.success)
-					result.executer.displayHelp(context.getSender());
-				MessageUtil.sendMessage(context.getSender(), result.extraMessages);
+					result.executer.displayHelp(context);
+				MessageUtil.sendMessage(context.getSender(), MessageUtil.parseColor(result.extraMessages));
 
 				return true;
 			} catch (NoPermissionException e) {
@@ -124,7 +165,12 @@ public abstract class NoxPlugin extends PluginBase {
 						+ "\tRunner Owner: " + CommonUtil.getPluginByClass(runner.getClass()).getName());
 			}
 			e.printStackTrace();
+			return;
 		}
+
+		if (!LogicUtil.nullOrEmpty(cmd.getAliases()))
+			for (String alias : cmd.getAliases())
+				commandAliases.putLower(alias, cmd.getName());
 	}
 
 	public void registerCommands(Collection<Command> runners) {

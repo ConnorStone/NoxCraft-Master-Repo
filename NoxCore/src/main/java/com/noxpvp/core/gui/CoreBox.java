@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.gui;
 
 import java.lang.ref.Reference;
@@ -8,6 +31,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.noxpvp.core.data.NoxPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,6 +40,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,7 +53,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.effect.StaticEffects;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.listeners.NoxPLPacketListener;
@@ -50,34 +74,47 @@ public abstract class CoreBox extends NoxListener<NoxCore> implements ICoreBox, 
 
 	private ItemStack identifiableItem;
 
-	
 	protected ItemStack removeAttributes(ItemStack item) {
 		if (item == null || MaterialUtil.isType(item.getType(), Material.BOOK_AND_QUILL, Material.AIR))
 			return item;
 		
 		Attributes a = new Attributes(item);
-//		System.out.println(a.size());
 		a.clear();
-//		System.out.println(a.size());
 		
 		return a.getStack();
+	}
+	
+	public CoreBox(Player p, String name, InventoryType type, @Nullable CoreBox backButton) {
+		this(p, name, type, 0, backButton, NoxCore.getInstance());
 	}
 	
 	public CoreBox(Player p, String name, int size, @Nullable CoreBox backButton) {
 		this(p, name, size, backButton, NoxCore.getInstance());
 	}
+	
+	public CoreBox(Player p, String name, InventoryType type) {
+		this(p, name, type, 0, null, NoxCore.getInstance());
+	}
 
 	public CoreBox(Player p, String name, int size) {
 		this(p, name, size, null, NoxCore.getInstance());
 	}
+	
+	public CoreBox(Player p, String name, int size, @Nullable CoreBox backbutton, NoxCore core) {
+		this(p, name, InventoryType.CHEST, size, backbutton, core);
+	}
 
-	public CoreBox(final Player p, String name, int size, @Nullable CoreBox backButton, NoxCore core) {
+	public CoreBox(final Player p, String name, InventoryType type, int size, @Nullable CoreBox backButton, NoxCore core) {
 		super(core);
 
 		this.pm = CorePlayerManager.getInstance();
 		this.p = new WeakReference<Player>(p);
 
-		this.box = Bukkit.getServer().createInventory(null, size, (this.name = name));
+		this.name = name;
+		this.box = size == 0?
+				Bukkit.getServer().createInventory(null, type, name) :
+					Bukkit.getServer().createInventory(null, size, name);
+				
 		this.menuItems = new HashMap<Integer, CoreBoxItem>();
 		pName = p.getName();
 
@@ -145,6 +182,10 @@ public abstract class CoreBox extends NoxListener<NoxCore> implements ICoreBox, 
 	public Inventory getBox() {
 		return box;
 	}
+	
+	public CoreBox getBackButton() {
+		return backButton;
+	}
 
 	public Player getPlayer() {
 		return p == null ? null : p.get() == null ? null : p.get();
@@ -176,14 +217,14 @@ public abstract class CoreBox extends NoxListener<NoxCore> implements ICoreBox, 
 		if ((p = getPlayer()) == null)
 			return;
 
+		attributeHider.register();
+		register();
+
 		pm.getPlayer(p).setCoreBox(this);
 		p.openInventory(box);
 
 		for (ItemStack i : box.getContents())
 			i = removeAttributes(i);
-		
-		attributeHider.register();
-		register();
 	}
 
 	public void hide() {

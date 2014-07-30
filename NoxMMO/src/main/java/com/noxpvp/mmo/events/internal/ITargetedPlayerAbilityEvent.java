@@ -1,23 +1,37 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.events.internal;
 
-import org.bukkit.entity.LivingEntity;
+import com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility;
 
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
-import com.noxpvp.mmo.abilities.ITargetedPlayerAbility;
-
-public interface ITargetedPlayerAbilityEvent extends IRangedPlayerAbilityEvent {
+public interface ITargetedPlayerAbilityEvent<T extends TargetedPlayerAbility> extends IRangedPlayerAbilityEvent<T>, ITargetedAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link ITargetedPlayerAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility} associated with this event
 	 *
-	 * @return {@link BaseTargetedPlayerAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility} The ability
 	 */
-	public BaseTargetedPlayerAbility getAbility();
+	public T getAbility();
 
-	/**
-	 * Gets the target {@link LivingEntity} involved in this event
-	 *
-	 * @return {@link LivingEntity} The target
-	 */
-	public LivingEntity getTarget();
 }

@@ -1,10 +1,33 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.bergerkiller.bukkit.common.utils.PlayerUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,9 +35,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
-import com.bergerkiller.bukkit.common.utils.PlayerUtil;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class PlayerUtils extends PlayerUtil {
+
+	//~~~~~~~~~~~~~~~~~~~~~
+	//Item Logic
+	//~~~~~~~~~~~~~~~~~~~~~
 
 	public static boolean hasAtleast(Player p, ItemStack item) {
 		return hasAtleast(p.getInventory(), item, item.getAmount());
@@ -38,6 +67,32 @@ public class PlayerUtils extends PlayerUtil {
 		return totals >= amount;
 
 	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~
+	//Global Helpers
+	//~~~~~~~~~~~~~~~~~~~~~~~
+	public static boolean isOnline(UUID uuid) {
+		return isOnline(getOfflinePlayer(uuid));
+	}
+
+	public static boolean isOnline(OfflinePlayer player) {
+		return player.isOnline();
+	}
+
+	public static OfflinePlayer getOfflinePlayer(UUID uuid) {
+		return Bukkit.getOfflinePlayer(uuid);
+	}
+
+	public static boolean isOnline(String player) {
+		for (Player p : BukkitUtil.getOnlinePlayers())
+			if (p.getName().equals(player))
+				return true;
+		return false;
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~
+	//Sight Logic
+	//~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
 	 * @author burgerkiller - https://forums.bukkit.org/threads/determine-whether-the-player-can-see-a-mob.56129/

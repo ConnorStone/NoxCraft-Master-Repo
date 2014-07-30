@@ -1,21 +1,36 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.utils;
 
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.bergerkiller.bukkit.common.AsyncTask;
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.google.common.collect.ImmutableList;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.annotation.Blocking;
+import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
+import com.noxpvp.core.events.uuid.NoxUUIDLostEvent;
+import com.noxpvp.core.listeners.NoxListener;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,20 +43,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.bergerkiller.bukkit.common.AsyncTask;
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.google.common.collect.ImmutableList;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.annotation.Blocking;
-import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
-import com.noxpvp.core.events.uuid.NoxUUIDLostEvent;
-import com.noxpvp.core.listeners.NoxListener;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UUIDUtil extends NoxListener<NoxCore> {
 	public static final UUID ZERO_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	public static final Pattern uuidPattern = Pattern.compile("(\\w{8})-?(\\w{4})-?(\\w{4})-?(\\w{4})-?(\\w{12})");
 	public static final String ZERO_UUID_COMPRESSED = UUIDUtil.compressUUID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-	private volatile static UUIDUtil instance;
+	private static volatile UUIDUtil instance;
 	private ConcurrentHashMap<String, UUID> name2UUID;
 
 	private UUIDUtil() {
@@ -52,7 +69,7 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	public static String compressUUID(Object ob) {
-		return compressUUID(ob.toString());
+		return ob != null? compressUUID(ob.toString()) : null;
 	}
 
 	public static String compressUUID(String id) {
@@ -84,7 +101,7 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	public static boolean isUUID(Object object) {
-		return uuidPattern.matcher(object.toString()).matches();
+		return (object != null) && uuidPattern.matcher(object.toString()).matches();
 	}
 
 	public static UUIDUtil getInstance() {
@@ -128,12 +145,15 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	}
 
 	private void mapID(String username, UUID id) {
-		if ((name2UUID.containsKey(username) || name2UUID.get(username) == ZERO_UUID) && !name2UUID.get(username).equals(id)) {
+		Validate.notNull(id);
+		Validate.notNull(username);
+
+		if ((!name2UUID.containsKey(username) || (ZERO_UUID.equals(name2UUID.get(username))) && !id.equals(name2UUID.get(username)))) {
 			CommonUtil.callEvent(new NoxUUIDLostEvent(username, name2UUID.get(username)));
 			name2UUID.remove(username);
 		}
 
-		if (!name2UUID.containsKey(username) || name2UUID.get(username) == ZERO_UUID) {
+		if (!name2UUID.containsKey(username) || ZERO_UUID.equals(name2UUID.get(username))) {
 			name2UUID.put(username, id);
 			CommonUtil.callEvent(new NoxUUIDFoundEvent(username, id));
 		}
@@ -219,6 +239,10 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 	 */
 	public UUID tryGetID(Player player) {
 		String name = player.getName();
+		UUID puid = player.getUniqueId();
+		if (puid != null && name2UUID.containsKey(name) && !name2UUID.get(name).equals(puid))
+			mapID(name, puid);
+
 		if (name2UUID.containsKey(name)) {
 			UUID id = name2UUID.get(name);
 			return (id == ZERO_UUID) ? null : id;
@@ -226,7 +250,7 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 			if (Bukkit.isPrimaryThread()) {
 				UUID id = player.getUniqueId();
 				if (id != null) {
-					name2UUID.put(name, id);
+					mapID(name, id);
 					return id;
 				}
 			}
@@ -238,7 +262,16 @@ public class UUIDUtil extends NoxListener<NoxCore> {
 
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event) {
-		ensurePlayerUUIDByName(event.getPlayer().getName());
+		final Player p = event.getPlayer();
+		if (p.getUniqueId() != null) {
+			UUID uuid = tryGetID(p);
+			if (uuid != null && !uuid.equals(ZERO_UUID)) {
+				mapID(p.getName(), uuid);
+				return;
+			}
+		}
+		ensurePlayerUUIDsByName(toList(p.getName()));
+
 	}
 
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.MONITOR)

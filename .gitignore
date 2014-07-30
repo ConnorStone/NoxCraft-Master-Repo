@@ -15,3 +15,6 @@ JSON-java/
 *.iml
 .idea/
 us.stackdump
+NoxCore/.classpath
+NoxHomes/.classpath
+NoxMMO/.classpath

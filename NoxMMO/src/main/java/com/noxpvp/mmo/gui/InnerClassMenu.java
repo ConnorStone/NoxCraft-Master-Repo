@@ -1,10 +1,40 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.noxpvp.core.effect.StaticEffects;
+import com.noxpvp.core.gui.CoreBox;
+import com.noxpvp.core.gui.CoreBoxItem;
+import com.noxpvp.core.gui.CoreBoxRegion;
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.classes.internal.ClassTier;
+import com.noxpvp.mmo.classes.internal.IClassTier;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,32 +44,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.noxpvp.core.effect.StaticEffects;
-import com.noxpvp.core.gui.CoreBox;
-import com.noxpvp.core.gui.CoreBoxItem;
-import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.Ability;
-import com.noxpvp.mmo.classes.internal.ClassTier;
-import com.noxpvp.mmo.classes.internal.IClassTier;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class InnerClassMenu extends CoreBox {
 
 	public static final String MENU_NAME = "Class";
-	private ItemStack identifiableItem;
 	private static final int size = 27;
 
-	private CoreBox previousBox;
 	private PlayerClass clazz;
 
 	public InnerClassMenu(final Player p, PlayerClass clazz, CoreBox backButton) {
 		super(p, clazz.getDisplayName() + " " + MMOLocale.GUI_MENU_NAME_COLOR.get() + MENU_NAME, size, backButton);
 
-		this.previousBox = backButton;
 		this.clazz = clazz;
 
 		Inventory box = getBox();
@@ -115,8 +134,8 @@ public class InnerClassMenu extends CoreBox {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return new InnerClassMenu(getPlayer(), getPlayerClass(), this.previousBox);
+	protected InnerClassMenu clone() {
+		return new InnerClassMenu(getPlayer(), getPlayerClass(), this.getBackButton());
 	}
 
 	public PlayerClass getPlayerClass() {
@@ -145,11 +164,7 @@ public class InnerClassMenu extends CoreBox {
 	}
 	
 	public ItemStack getIdentifiableItem() {
-		if (identifiableItem == null) {
-			identifiableItem = new ItemStack(clazz.getIdentifiableItem());
-		}
-		
-		return identifiableItem;
+		return clazz.getIdentifiableItem();
 	}
 
 }

@@ -1,6 +1,30 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,25 +34,26 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AutoToolPlayerAbilities {
 
-	public static class AutoSword extends BasePlayerAbility implements IPassiveAbility<EntityDamageByEntityEvent> {
+	public static class AutoSword extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent> {
 
 		public static final String ABILITY_NAME = "Auto Sword";
 		public static final String PERM_NODE = "auto-sword";
 
-		public AutoSword(Player player) {
+		public AutoSword(OfflinePlayer player) {
 			super(ABILITY_NAME, player);
 		}
 
-		public AbilityResult execute(EntityDamageByEntityEvent event) {
+		public AbilityResult<AutoSword> execute(EntityDamageByEntityEvent event) {
 			if (!mayExecute())
-				return new AbilityResult(this, false);
+				return new AbilityResult<AutoSword>(this, false);
 
 			Player p = getPlayer();
 			Entity e = event.getEntity();
@@ -43,20 +68,20 @@ public class AutoToolPlayerAbilities {
 
 			e.setFireTicks(fireTicks);
 
-			return new AbilityResult(this, true);
+			return new AbilityResult<AutoSword>(this, true);
 		}
 
-		public AbilityResult execute() {
-			return new AbilityResult(this, true);
+		public AbilityResult<AutoSword> execute() {
+			return new AbilityResult<AutoSword>(this, true);
 		}
 	}
 
-	public static class AutoTool extends BasePlayerAbility implements IPassiveAbility<BlockBreakEvent> {
+	public static class AutoTool extends BasePlayerAbility implements PassiveAbility<BlockBreakEvent> {
 
 		public static final String ABILITY_NAME = "Auto Tool";
 		public static final String PERM_NODE = "auto-tool";
 
-		public AutoTool(Player player) {
+		public AutoTool(OfflinePlayer player) {
 			super(ABILITY_NAME, player);
 		}
 
@@ -65,13 +90,13 @@ public class AutoToolPlayerAbilities {
 			block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(type, amount, data));
 		}
 
-		public AbilityResult execute() {
-			return new AbilityResult(this, true);
+		public AbilityResult<AutoTool> execute() {
+			return new AbilityResult<AutoTool>(this, true);
 		}
 
-		public AbilityResult execute(BlockBreakEvent event) {
+		public AbilityResult<AutoTool> execute(BlockBreakEvent event) {
 			if (!mayExecute())
-				return new AbilityResult(this, false);
+				return new AbilityResult<AutoTool>(this, false);
 
 			Block block = event.getBlock();
 			Material tool = getPlayer().getItemInHand().getType();
@@ -101,7 +126,7 @@ public class AutoToolPlayerAbilities {
 
 							break;
 						default:
-							return new AbilityResult(this, false);
+							return new AbilityResult<AutoTool>(this, false);
 
 					}
 
@@ -120,7 +145,7 @@ public class AutoToolPlayerAbilities {
 
 							break;
 						default:
-							return new AbilityResult(this, false);
+							return new AbilityResult<AutoTool>(this, false);
 
 					}
 
@@ -139,41 +164,41 @@ public class AutoToolPlayerAbilities {
 
 							break;
 						default:
-							return new AbilityResult(this, false);
+							return new AbilityResult<AutoTool>(this, false);
 
 					}
 
 					break;
 				default:
-					return new AbilityResult(this, false);
+					return new AbilityResult<AutoTool>(this, false);
 			}
 
-			return new AbilityResult(this, true);
+			return new AbilityResult<AutoTool>(this, true);
 		}
 	}
 
-	public static class AutoArmor extends BasePlayerAbility implements IPassiveAbility<EntityDamageEvent> {
+	public static class AutoArmor extends BasePlayerAbility implements PassiveAbility<EntityDamageEvent> {
 
 		public static final String ABILITY_NAME = "Auto Armor";
 		public static final String PERM_NODE = "auto-armor";
 
-		public AutoArmor(Player player) {
+		public AutoArmor(OfflinePlayer player) {
 			super(ABILITY_NAME, player);
 		}
 
-		public AbilityResult execute(EntityDamageEvent event) {
+		public AbilityResult<AutoArmor> execute(EntityDamageEvent event) {
 			return execute();
 		}
 
-		public AbilityResult execute() {
+		public AbilityResult<AutoArmor> execute() {
 			Player p = getPlayer();
 
 			if (p.getEquipment().getHelmet().getType() != Material.GOLD_HELMET)
-				return new AbilityResult(this, false);
+				return new AbilityResult<AutoArmor>(this, false);
 
 			p.setRemainingAir(p.getMaximumAir());
 
-			return new AbilityResult(this, true);
+			return new AbilityResult<AutoArmor>(this, true);
 		}
 	}
 

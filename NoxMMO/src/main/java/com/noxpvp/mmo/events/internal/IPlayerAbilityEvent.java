@@ -1,15 +1,44 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.IPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import org.bukkit.entity.Player;
 
-public interface IPlayerAbilityEvent extends IAbilityEvent {
+public interface IPlayerAbilityEvent<T extends PlayerAbility> extends IAbilityEvent<T> {
 
 	/**
-	 * Gets the {@link IPlayerAbility} associated with this event
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.PlayerAbility} associated with this event
 	 *
-	 * @return {@link BasePlayerAbility} The ability
+	 * @return {@link com.noxpvp.mmo.abilities.internal.PlayerAbility} The ability
 	 */
-	public BasePlayerAbility getAbility();
+	public T getAbility();
+
+	/**
+	 * Retrieves the player associated with the event.
+	 * @return {@link Player}
+	 */
+	public Player getPlayer();
 
 }

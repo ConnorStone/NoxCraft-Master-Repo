@@ -1,8 +1,32 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.command.subcommands;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -14,18 +38,17 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
-import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassListCommand extends BaseCommand {
 
-	public final static String COMMAND_NAME = "list";
+	public static final String COMMAND_NAME = "list";
 	
 	public ClassListCommand() {
 		super(COMMAND_NAME, true);
 	}
 
 	public String[] getFlags() {
-		return new String[] {};
+		return blankStringArray;
 	}
 
 	public int getMaxArguments() {
@@ -39,7 +62,7 @@ public class ClassListCommand extends BaseCommand {
 		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin(), true);
 		Player p = context.getPlayer();
 		
-		for (PlayerClass clazz : PlayerClassUtil.getAvailableClasses(p)) {
+		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
 			mb.yellow("Primary classes").gold(": ");
 			
 			List<String> names = new ArrayList<String>();
@@ -50,7 +73,7 @@ public class ClassListCommand extends BaseCommand {
 		}
 		
 		mb.newLine().newLine();
-		for (PlayerClass clazz : PlayerClassUtil.getAvailableClasses(p)) {
+		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
 			mb.yellow("Secondary classes").gold(": ");
 			
 			List<String> names = new ArrayList<String>();

@@ -1,15 +1,40 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.targeted;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
 
 public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVPAbility {
 
@@ -25,6 +50,7 @@ public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVP
 	public CursePlayerAbility(Player player, double range) {
 		super(ABILITY_NAME, player, range, MMOPlayerManager.getInstance().getPlayer(player).getTarget());
 
+		setCD(new CoolDown.Time().seconds(35));
 		this.duration = 100;
 		this.lethality = 1;
 	}
@@ -69,9 +95,9 @@ public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVP
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<CursePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<CursePlayerAbility>(this, false);
 
 		LivingEntity t = getTarget();
 
@@ -80,6 +106,6 @@ public class CursePlayerAbility extends BaseTargetedPlayerAbility implements PVP
 
 		new ParticleRunner(ParticleType.angryVillager, t, false, 0, 1, 1).start(0);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<CursePlayerAbility>(this, true);
 	}
 }

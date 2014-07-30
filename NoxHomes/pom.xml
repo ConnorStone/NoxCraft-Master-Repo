@@ -10,8 +10,13 @@
 	<properties>
 		<main>com.noxpvp.homes.NoxHomes</main>
 	</properties>
-	<version>0.2.4-Snapshot</version>
-
+	<version>0.3-Snapshot</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.noxpvp</groupId>
+            <artifactId>NoxCore</artifactId>
+        </dependency>
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,14 +56,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>com.noxpvp</groupId>
-			<artifactId>NoxCore</artifactId>
-			<version>0.2.4-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

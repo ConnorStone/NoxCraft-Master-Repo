@@ -1,10 +1,35 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.runnables.HealRunnable;
 
 /**
@@ -24,7 +49,7 @@ public class RejuvenationPlayerAbility extends BasePlayerAbility implements PVPA
 	 *
 	 * @param player The Player type user for this ability instance
 	 */
-	public RejuvenationPlayerAbility(Player player) {
+	public RejuvenationPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.healthPerHeal = 2;
@@ -80,15 +105,15 @@ public class RejuvenationPlayerAbility extends BasePlayerAbility implements PVPA
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<RejuvenationPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<RejuvenationPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
 		new HealRunnable(p, healthPerHeal, heals).runTaskTimer(NoxMMO.getInstance(), 0, delayBetweenHeals);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<RejuvenationPlayerAbility>(this, true);
 	}
 
 }

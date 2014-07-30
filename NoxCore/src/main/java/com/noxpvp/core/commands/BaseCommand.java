@@ -1,15 +1,41 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.commands;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import org.bukkit.command.CommandSender;
-
 import com.bergerkiller.bukkit.common.collections.StringMap;
+import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.locales.GlobalLocale;
+import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.utils.NoxMessageBuilder;
+import org.bukkit.command.CommandSender;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
 public abstract class BaseCommand implements Command {
 	private final boolean isPlayerOnly;
@@ -18,8 +44,12 @@ public abstract class BaseCommand implements Command {
 	private boolean isRoot;
 	private BaseCommand parent;
 	private StringMap<BaseCommand> subCommands = new StringMap<BaseCommand>();
+	private StringMap<String> subCommandAliases = new StringMap<String>();
+	private List<String> aliases = new ArrayList<String>();
 
-	protected BaseCommand(BaseCommand parent, String name, boolean isPlayerOnly) {
+	protected static final String[] blankStringArray = new String[0];
+
+	public BaseCommand(@Nullable BaseCommand parent, String name, boolean isPlayerOnly) {
 		isRoot = parent == null;
 
 		this.parent = parent;
@@ -37,6 +67,14 @@ public abstract class BaseCommand implements Command {
 		this(null, name, isPlayerOnly);
 	}
 
+	public final String[] getAliases() {
+		return aliases.toArray(new String[aliases.size()]);
+	}
+
+	public final void addAlias(String alias) {
+		aliases.add(alias);
+	}
+
 	public final boolean containsSubCommand(String name) {
 		return subCommands.containsKeyLower(name);
 	}
@@ -45,29 +83,72 @@ public abstract class BaseCommand implements Command {
 		return containsSubCommand(command.getName());
 	}
 
-	public void displayHelp(CommandSender sender) {
+	public void displayHelp(ICommandContext context) {
+		final CommandSender sender = context.getSender();
 		StringMap<BaseCommand> cmds = getSubCommandMap();
 
-		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin(), true);
+		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin(), false);
+
+		mb.commandHeader(getName(), true);
+
+		NoxMessageBuilder onPre = onPreDisplayMessage(mb, context);
+		if (onPre != null) mb = onPre;
 
 		for (BaseCommand cmd : cmds.values())
 			mb.withCommand(cmd, true);
 
-		mb = onDisplayHelp(mb);
+		NoxMessageBuilder onPost = onPostDisplayHelp(mb, context);
+		if (onPost != null) mb = onPost;
 
 		mb.headerClose(false).send(sender);
-
 	}
 
-	public NoxMessageBuilder onDisplayHelp(NoxMessageBuilder message) {
+	/**
+	 * Tells the specified text is a match to an alias of this command.
+	 * @param alias
+	 * @return true if alias exists. Else false
+	 */
+	public final boolean isAlias(String alias) {
+		return aliases.contains(alias);
+	}
+
+	/**
+	 * Tells if the specified text is a match to a sub commands alias.
+	 * @param alias
+	 * @return true if alias exists. Else false
+	 */
+	public boolean isSubCommandAlias(String alias) {
+		return subCommandAliases.containsKeyLower(alias);
+	}
+
+	/**
+	 * Called before display list of sub commands.
+	 * @param message NoxMessageBuilder
+	 * @param context command context
+	 * @return original message builder
+	 */
+	public NoxMessageBuilder onPreDisplayMessage(NoxMessageBuilder message, ICommandContext context) {
+		return message;
+	}
+
+	/**
+	 * Called after display list of sub commands.
+	 * @param message NoxMessageBuilder
+	 * @param context command context
+	 * @return original message builder
+	 */
+	public NoxMessageBuilder onPostDisplayHelp(NoxMessageBuilder message, ICommandContext context) {
 		return message;
 	}
 
 	public abstract CommandResult execute(CommandContext context) throws NoPermissionException;
 
 	public final CommandResult executeCommand(CommandContext context) throws NoPermissionException {
-		if (!hasSubCommands() || context.getArgumentCount() == 0)
-			return execute(context);
+		if (!hasSubCommands() || context.getArgumentCount() == 0) {
+			if (context.hasFlag("h") || context.hasFlag("help") || context.hasFlag("?")) {
+				return new CommandResult(this, false);
+			} else return execute(context);
+		}
 
 		String[] args = context.getArguments();
 
@@ -132,11 +213,21 @@ public abstract class BaseCommand implements Command {
 	public final BaseCommand getSubCommand(String name) {
 		if (containsSubCommand(name))
 			return subCommands.getLower(name);
+		else if (isSubCommandAlias(name))
+			return subCommands.getLower(subCommandAliases.getLower(name));
 		return null;
 	}
 
 	protected StringMap<BaseCommand> getSubCommandMap() {
 		return subCommands;
+	}
+
+	public int getMinArguments() {
+		return 0;
+	}
+
+	public int getMaxArguments() {
+		return -1;
 	}
 
 	public boolean hasArgumentLimit() {
@@ -163,6 +254,9 @@ public abstract class BaseCommand implements Command {
 
 		command.setParent(this);
 		subCommands.putLower(command.getName(), command);
+		if (!LogicUtil.nullOrEmpty(command.getAliases()))
+			for (String alias: command.getAliases())
+				subCommandAliases.putLower(alias, command.getName());
 	}
 
 	public final void registerSubCommands(BaseCommand... commands) {

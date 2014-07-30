@@ -1,24 +1,50 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.targeted;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-
+import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.data.Vector3D;
+import com.noxpvp.core.gui.CoolDown;
+import com.noxpvp.core.gui.corebar.LivingEntityTracker;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
+import com.noxpvp.mmo.abilities.internal.SilentAbility;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.noxpvp.core.data.Vector3D;
-import com.noxpvp.core.gui.corebar.LivingEntityTracker;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.abilities.BaseRangedPlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
-import com.noxpvp.mmo.abilities.SilentAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 
-public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPassiveAbility<PlayerInteractEvent>, SilentAbility {
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
+
+public class TargetPlayerAbility extends BaseRangedPlayerAbility implements PassiveAbility<PlayerInteractEvent>, SilentAbility {
 
 	public static final String ABILITY_NAME = "Target";
 	public static final String PERM_NODE = "target";
@@ -31,19 +57,19 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 	public TargetPlayerAbility(Player player) {
 		super(ABILITY_NAME, player, 30);
 
-		setCD(1);
+		setCD(new CoolDown.Time().seconds(1));
 	}
 
 	/**
 	 * @return Boolean - PassiveAbililty, return true
 	 */
-	public AbilityResult execute() {
-		return new AbilityResult(this, true);
+	public RangedAbilityResult<TargetPlayerAbility> execute() {
+		return new RangedAbilityResult<TargetPlayerAbility>(this, true);
 	}
 
-	public AbilityResult execute(PlayerInteractEvent event) {
+	public RangedAbilityResult<TargetPlayerAbility> execute(PlayerInteractEvent event) {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		double range = getRange();
@@ -68,9 +94,10 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 
 				MMOPlayerManager pm = MMOPlayerManager.getInstance();
 				MMOPlayer mmoPlayer = pm.getPlayer(p), mmoIt = it instanceof Player ? pm.getPlayer((Player) it) : null;
+				NoxPlayer itNP = mmoIt.getNoxPlayer();
 
 				if (mmoPlayer == null)
-					return new AbilityResult(this, false);
+					return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 
 				mmoPlayer.setTarget(target_ref.get());
 
@@ -80,8 +107,8 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 					IPlayerClass c = mmoIt.getPrimaryClass();
 
 					if (c != null && c.getTier() != null) {
-						name = mmoIt.getFullName() + LivingEntityTracker.color + LivingEntityTracker.separater + c.getTier().getDisplayName();
-					} else name = mmoIt.getFullName();
+						name = itNP.getFullName() + LivingEntityTracker.color + LivingEntityTracker.separater + c.getTier().getDisplayName();
+					} else name = itNP.getFullName();
 				} else {
 					if (it instanceof Player) name = ((Player) it).getName();
 					else name = it.getType().name();
@@ -89,13 +116,13 @@ public class TargetPlayerAbility extends BaseRangedPlayerAbility implements IPas
 
 				new LivingEntityTracker(p, target_ref.get(), name);
 
-				return new AbilityResult(this, true);
+				return new RangedAbilityResult<TargetPlayerAbility>(this, true);
 			} else {
 				continue;
 			}
 		}
 
-		return new AbilityResult(this, false);
+		return new RangedAbilityResult<TargetPlayerAbility>(this, false);
 	}
 
 	private boolean hasIntersection(Vector3D p1, Vector3D p2, Vector3D min, Vector3D max) {

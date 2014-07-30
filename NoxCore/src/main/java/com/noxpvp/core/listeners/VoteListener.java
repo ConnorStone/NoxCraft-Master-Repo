@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.listeners;
 
 import java.io.IOException;
@@ -8,9 +31,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
@@ -70,7 +91,10 @@ public class VoteListener extends NoxListener<NoxCore> {
 		log.info(sb.toString());
 
 		final String user = vote.getUsername();
-		if (event.isAsynchronous() && usePlayer) {
+
+		//Requires updating. Need a username to UUID cache system.
+
+		/*if (event.isAsynchronous() && usePlayer) {
 			CommonUtil.nextTick(new Runnable() { // TODOD: Double check. This might not be needed with multithreading.. Must test concurrency support of player handler
 				public void run() {
 					NoxPlayer player = manager.getPlayer(user);
@@ -81,11 +105,11 @@ public class VoteListener extends NoxListener<NoxCore> {
 				}
 			});
 		} else {
-			NoxPlayer player = manager.getPlayer(vote.getUsername());
+			NoxPlayer player = manager.getPlayer();
 
 			synchronized (player) {
 				player.incrementVote();
 			}
-		}
+		}*/
 	}
 }

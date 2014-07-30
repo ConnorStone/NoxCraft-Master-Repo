@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.entity;
 
 import org.bukkit.Location;
@@ -6,6 +29,7 @@ import org.bukkit.util.Vector;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 import com.noxpvp.mmo.runnables.ShockWaveAnimation;
 
@@ -49,9 +73,9 @@ public class LeapEntityAbility extends BaseEntityAbility {
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<LeapEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<LeapEntityAbility>(this, false);
 
 		Entity e = getEntity();
 		Location eLoc = e.getLocation();
@@ -67,7 +91,7 @@ public class LeapEntityAbility extends BaseEntityAbility {
 		//reset fall distance on use
 		e.setFallDistance(0);
 		e.setVelocity(newVelocity);
-		return new AbilityResult(this, true);
+		return new AbilityResult<LeapEntityAbility>(this, true);
 	}
 
 }

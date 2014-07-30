@@ -1,7 +1,36 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.targeted;
 
-import java.util.ArrayDeque;
-
+import com.dsh105.holoapi.HoloAPI;
+import com.dsh105.holoapi.api.Hologram;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,21 +39,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.mmo.MMOPlayerManager;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BaseTargetedPlayerAbility;
+import java.util.ArrayDeque;
 
-public class DrainLifePlayerAbility extends BaseTargetedPlayerAbility {
+import static com.noxpvp.mmo.abilities.BaseTargetedAbility.TargetedAbilityResult;
+
+public class DrainLifePlayerAbility extends BaseTargetedPlayerAbility implements DamagingAbility {
 
 	public static final String ABILITY_NAME = "Drain Life";
 	public static final String PERM_NODE = "drain-life";
 
 	private int time;
 	private int period;
+	private double damage;
 
 	public DrainLifePlayerAbility(Player p) {
 		this(p, 10);
@@ -38,14 +64,22 @@ public class DrainLifePlayerAbility extends BaseTargetedPlayerAbility {
 		setDamage(1);
 	}
 
-	public AbilityResult execute() {
+	public TargetedAbilityResult<DrainLifePlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new TargetedAbilityResult<DrainLifePlayerAbility>(this, false);
 
 		new DrainingLifePipe(getPlayer(), getTarget(), time).start(0);
 
-		return new AbilityResult(this, true);
+		return new TargetedAbilityResult<DrainLifePlayerAbility>(this, true);
 
+	}
+
+	public double getDamage() {
+		return this.damage;
+	}
+
+	public void setDamage(double damage) {
+		this.damage = damage;
 	}
 
 	private class DrainingLifePipe extends BukkitRunnable {

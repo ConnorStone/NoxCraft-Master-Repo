@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.handlers;
 
 import java.util.Comparator;
@@ -17,13 +40,25 @@ public abstract class BaseMMOEventHandler<T extends Event> implements MMOEventHa
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this)
-			return true;
-		if (!(obj instanceof MMOEventHandler))
-			return false;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof MMOEventHandler)) return false;
 
-		return ((MMOEventHandler<?>) obj).getID().equals(this.getID());
+		MMOEventHandler that = (MMOEventHandler) o;
+
+		if (priority != that.getPriority()) return false;
+		if (eventPriority != that.getEventPriority()) return false;
+		if (!id.equals(that.getID())) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + eventPriority.hashCode();
+		result = 31 * result + priority;
+		return result;
 	}
 
 	public final String getID() {

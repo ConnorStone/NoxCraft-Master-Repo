@@ -1,24 +1,40 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.bergerkiller.bukkit.common.MessageBuilder;
+import com.noxpvp.core.utils.gui.MessageUtil;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.locale.MMOLocale;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
-import com.noxpvp.core.utils.gui.MessageUtil;
-import com.noxpvp.mmo.events.EntityAbilityExecutedEvent;
-import com.noxpvp.mmo.events.EntityTargetedAbilityExecutedEvent;
-import com.noxpvp.mmo.events.PlayerAbilityExecutedEvent;
-import com.noxpvp.mmo.events.PlayerTargetedAbilityExecutedEvent;
-import com.noxpvp.mmo.locale.MMOLocale;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseAbility implements Ability {
 	private final String name;
@@ -30,7 +46,7 @@ public abstract class BaseAbility implements Ability {
 
 	/**
 	 * This implementation returns {@link MMOLocale#ABIL_DISPLAY_NAME} using method {@link MMOLocale#get(String...)} with the parameters as [getName(), getName()]
-	 * <hr>
+	 * <hr/>
 	 * {@inheritDoc}
 	 */
 	public String getDisplayName() {
@@ -107,54 +123,6 @@ public abstract class BaseAbility implements Ability {
 	}
 
 	public boolean mayExecute() {
-		if (isCancelled())
-			return false;
-
 		return true;
-	}
-	
-	public class AbilityResult {
-		private Ability executer;
-		private boolean result;
-		private String[] messages;
-		
-		public AbilityResult(Ability executer, boolean result, String... messages) {
-			this.executer = executer;
-			this.result = result;
-			this.messages = messages;
-			
-			callEvent();
-		}
-		
-		public void callEvent() {
-			Event event = null;
-			
-			if (executer instanceof BaseTargetedPlayerAbility)
-				event = new PlayerTargetedAbilityExecutedEvent(((BaseTargetedPlayerAbility) executer).getPlayer(), this);
-			else if (executer instanceof BaseTargetedEntityAbility) {
-				event = new EntityTargetedAbilityExecutedEvent(((BaseTargetedEntityAbility) executer).getEntity(), this);	
-			} else if (executer instanceof BasePlayerAbility) {
-				event = new PlayerAbilityExecutedEvent(((BasePlayerAbility) executer).getPlayer(), this);
-			} else if (executer instanceof BaseEntityAbility) {
-				event = new EntityAbilityExecutedEvent(((BaseEntityAbility) executer).getEntity(), this);
-			}
-			
-			if (event == null)
-				throw new NullPointerException("executer could not be casted to an ability type");
-			
-			CommonUtil.callEvent(event);
-		}
-		
-		public Ability getExecuter() {
-			return executer;
-		}
-		
-		public boolean getResult() {
-			return result;
-		}
-		
-		public String[] getMessages() {
-			return messages;
-		}
 	}
 }

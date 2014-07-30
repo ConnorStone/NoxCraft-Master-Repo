@@ -1,33 +1,49 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
+import com.noxpvp.core.packet.ParticleRunner;
+import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.runnables.DespawnRunnable;
+import com.noxpvp.mmo.runnables.HealRunnable;
+import com.noxpvp.mmo.runnables.SetVelocityRunnable;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.noxpvp.core.packet.ParticleRunner;
-import com.noxpvp.core.packet.ParticleType;
-import com.noxpvp.core.utils.PlayerUtils.LineOfSightUtil;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.runnables.DespawnRunnable;
-import com.noxpvp.mmo.runnables.HealRunnable;
-import com.noxpvp.mmo.runnables.SetVelocityRunnable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author NoxPVP
@@ -50,7 +66,7 @@ public class GuardianAngelPlayerAbility extends BasePlayerAbility {
 	/**
 	 * @param player The Player type user for this ability instance
 	 */
-	public GuardianAngelPlayerAbility(Player player) {
+	public GuardianAngelPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.noTradeHandler = new BaseMMOEventHandler<PlayerInteractEntityEvent>(
@@ -142,9 +158,9 @@ public class GuardianAngelPlayerAbility extends BasePlayerAbility {
 		return v;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<GuardianAngelPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<GuardianAngelPlayerAbility>(this, false);
 
 		final NoxMMO instance = NoxMMO.getInstance();
 		Player p = getPlayer();
@@ -177,7 +193,7 @@ public class GuardianAngelPlayerAbility extends BasePlayerAbility {
 		}, 95);
 
 		setActive(true);
-		return new AbilityResult(this, true);
+		return new AbilityResult<GuardianAngelPlayerAbility>(this, true);
 	}
 
 }

@@ -1,24 +1,47 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.noxpvp.mmo.abilities.PVPAbility;
+import com.noxpvp.mmo.MasterListener;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
+import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.runnables.BlockTimerRunnable;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
-import com.noxpvp.mmo.MasterListener;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
-import com.noxpvp.mmo.locale.MMOLocale;
-import com.noxpvp.mmo.runnables.BlockTimerRunnable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetArrowPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -30,7 +53,7 @@ public class NetArrowPlayerAbility extends BasePlayerAbility implements PVPAbili
 	private int size;
 	private int time;
 	private boolean isFiring, isActive, isSingleShotMode;
-	public NetArrowPlayerAbility(Player player) {
+	public NetArrowPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		hitHandler = new BaseMMOEventHandler<ProjectileHitEvent>(
@@ -211,15 +234,15 @@ public class NetArrowPlayerAbility extends BasePlayerAbility implements PVPAbili
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<NetArrowPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<NetArrowPlayerAbility>(this, false);
 
 		if (!isActive() && !isFiring()) {
 			setFiring(true);
-			return new AbilityResult(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
+			return new AbilityResult<NetArrowPlayerAbility>(this, true, MMOLocale.ABIL_ACTIVATED.get(getName()));
 		} else {
-			return new AbilityResult(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
+			return new AbilityResult<NetArrowPlayerAbility>(this, false, MMOLocale.ABIL_ALREADY_ACTIVE.get(getName()));
 		}
 	}
 

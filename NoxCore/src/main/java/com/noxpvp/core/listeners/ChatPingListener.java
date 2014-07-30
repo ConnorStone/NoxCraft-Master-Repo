@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.core.listeners;
 
 import java.util.ArrayList;
@@ -15,7 +38,7 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.events.ChatPingEvent;
-import com.noxpvp.core.locales.CoreLocale;
+import com.noxpvp.core.localization.CoreLocale;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
 public class ChatPingListener extends NoxListener<NoxCore> {

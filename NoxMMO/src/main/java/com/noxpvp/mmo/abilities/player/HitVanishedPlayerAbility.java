@@ -1,12 +1,37 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.noxpvp.core.data.Vector3D;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
 
 public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAbility {
 
@@ -20,7 +45,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 	 * @param player The Player type user for this ability instance
 	 * @author Comphenix @ bukkit forums
 	 */
-	public HitVanishedPlayerAbility(Player player) {
+	public HitVanishedPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.range = 3.8;
@@ -42,9 +67,9 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 		return this;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<HitVanishedPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<HitVanishedPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 
@@ -57,7 +82,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 			break;
 		}
 		if (this.e == null)
-			return new AbilityResult(this, false);
+			return new AbilityResult<HitVanishedPlayerAbility>(this, false);
 
 		Location observerPos = p.getEyeLocation();
 		Vector3D observerDir = new Vector3D(observerPos.getDirection());
@@ -74,7 +99,7 @@ public class HitVanishedPlayerAbility extends BasePlayerAbility implements PVPAb
 			e.damage(1, p);
 		}
 
-		return new AbilityResult(this, false, "");
+		return new AbilityResult<HitVanishedPlayerAbility>(this, false, "");
 	}
 
 	private boolean hasIntersection(Vector3D p1, Vector3D p2, Vector3D min, Vector3D max) {

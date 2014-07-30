@@ -1,21 +1,46 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.abilities.PVPAbility;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.MMOPlayerManager;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.IPassiveAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP
  */
-public class BackStabPlayerAbility extends BasePlayerAbility implements IPassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+public class BackStabPlayerAbility extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
 
 	public static final String PERM_NODE = "backstab";
 	public static final String ABILITY_NAME = "BackStab";
@@ -28,7 +53,7 @@ public class BackStabPlayerAbility extends BasePlayerAbility implements IPassive
 	/**
 	 * @param player The Player type user for this ability instance
 	 */
-	public BackStabPlayerAbility(Player player) {
+	public BackStabPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.damagePercent = 150;
@@ -81,9 +106,9 @@ public class BackStabPlayerAbility extends BasePlayerAbility implements IPassive
 		this.damagePercent = damagePercent;
 	}
 
-	public AbilityResult execute(EntityDamageByEntityEvent event) {
+	public AbilityResult<BackStabPlayerAbility> execute(EntityDamageByEntityEvent event) {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
 
 		LivingEntity t = getTarget();
 		Player p = getPlayer();
@@ -94,28 +119,28 @@ public class BackStabPlayerAbility extends BasePlayerAbility implements IPassive
 		double pYaw = pLoc.getYaw();
 
 		if (!(pYaw <= (tYaw + accuracy)) && (pYaw >= (tYaw - accuracy)))
-			return new AbilityResult(this, false);
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
 
 		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
 		if (player == null)
-			return new AbilityResult(this, false);
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
 
 		IPlayerClass clazz = player.getPrimaryClass();
 
 		float chance = (clazz.getLevel() + clazz.getTotalLevel()) / 10;//up to 40% at max 400 total levels
 		if ((Math.random() * 100) > chance)
-			return new AbilityResult(this, false);
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
 
 		if (pLoc.distance(tLoc) < .35)//prevent if inside the target
-			return new AbilityResult(this, false);
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
 
 		event.setDamage(event.getDamage() * damagePercent);
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<BackStabPlayerAbility>(this, true);
 	}
 
 	public AbilityResult execute() {
-		return new AbilityResult(this, true);
+		return new AbilityResult<BackStabPlayerAbility>(this, true);
 	}
 
 }

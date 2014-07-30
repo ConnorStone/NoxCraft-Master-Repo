@@ -9,3 +9,6 @@ commands:
   nox:
     description: Current does nothing.
     alias: [noximperials]
+  options:
+    description: Sets player options!
+    alias: [playeroption, opt, popt, noxpopt]

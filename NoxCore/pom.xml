@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>NoxCore</artifactId>
 	<name>NoxCore</name>
-	<version>0.2.4-Snapshot</version>
+	<version>0.3-Snapshot</version>
 	<developers>
 		<developer>
 			<email>ckrier.3000@gmail.com</email>
@@ -24,6 +24,7 @@
 	<description>Provides core functionality to the server</description>
 	<properties>
 		<main>com.noxpvp.core.NoxCore</main>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<powermock.version>1.5.2</powermock.version>
 	</properties>
 
@@ -31,14 +32,7 @@
 		<dependency>
 			<groupId>com.comphenix.packetwrapper</groupId>
 			<artifactId>PacketWrapper</artifactId>
-			<version>1.7.2-R0.5</version>
 			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>bukkit</artifactId>
-					<groupId>org.bukkit</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		
 		<dependency>

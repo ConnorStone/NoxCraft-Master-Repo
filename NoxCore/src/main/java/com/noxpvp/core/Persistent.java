@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
+package com.noxpvp.core;
+
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+import java.util.UUID;
+import java.util.logging.Level;
+
+public interface Persistent extends ConfigurationSerializable {
+
+	/**
+	 * Log a message to the current logger.
+	 * <p>Implementation is non specific. However the minimal required level is plugin level. Do not log straight to bukkit.</p>
+	 * @param level of message.
+	 * @param msg message to log.
+	 */
+	public void log(Level level, String msg);
+
+	/**
+	 * Returns a Unique persistent ID for this data.
+	 * @return UUID object
+	 */
+	public UUID getPersistentID();
+
+	/**
+	 * Returns a path node for the data storage.
+	 * <p>When implementing if not implementing you must return getPersistentID().toString() it should use the UUID as the path instead!</p>
+	 *
+	 * @return String path that must never be null or empty.
+	 */
+	public String getPersistenceNode();
+}

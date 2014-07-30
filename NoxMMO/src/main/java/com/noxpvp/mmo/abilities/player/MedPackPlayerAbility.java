@@ -1,19 +1,27 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.player;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -25,9 +33,25 @@ import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 import com.noxpvp.mmo.runnables.HealRunnable;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MedPackPlayerAbility extends BasePlayerAbility {
 
@@ -40,7 +64,7 @@ public class MedPackPlayerAbility extends BasePlayerAbility {
 	private NoxPLPacketListener camoflouge;
 	private int health;
 	private boolean isActive;
-	public MedPackPlayerAbility(Player player) {
+	public MedPackPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
 
 		this.handler = new BaseMMOEventHandler<PlayerPickupItemEvent>(
@@ -78,9 +102,9 @@ public class MedPackPlayerAbility extends BasePlayerAbility {
 
 				new HealRunnable(pickupPlayer, 1, (int) health).runTaskTimer(NoxMMO.getInstance(), 5, 5);
 
-				MessageUtil.sendLocale(NoxMMO.getInstance(), pickupPlayer, "ability.medpack.pick-up", pickupPlayer.getName(), (abilPlayer != null ? abilPlayer.getName() : MedPackPlayerAbility.this.getNoxPlayer().getName()));
+				MessageUtil.sendLocale(NoxMMO.getInstance(), pickupPlayer, "ability.medpack.pick-up", pickupPlayer.getName(), (abilPlayer != null ? abilPlayer.getName() : MedPackPlayerAbility.this.getMMOPlayer().getPlayerName()));
 				if (abilPlayer != null && abilPlayer.isOnline())
-					MessageUtil.sendLocale(NoxMMO.getInstance(), abilPlayer, "ability.medpack.pick-up.other", pickupPlayer.getName(), MedPackPlayerAbility.this.getNoxPlayer().getName());
+					MessageUtil.sendLocale(NoxMMO.getInstance(), abilPlayer, "ability.medpack.pick-up.other", pickupPlayer.getName(), MedPackPlayerAbility.this.getMMOPlayer().getPlayerName());
 
 				packs.remove(getPack(eventItem));
 
@@ -236,9 +260,9 @@ public class MedPackPlayerAbility extends BasePlayerAbility {
 		return medPack;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<MedPackPlayerAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<MedPackPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		ItemStack medPack = craftNewPackStack();
@@ -249,11 +273,11 @@ public class MedPackPlayerAbility extends BasePlayerAbility {
 
 		if (!packs.add(new MedPackDataWrapper(pack, p, health))) {
 			pack.remove();
-			return new AbilityResult(this, false);
+			return new AbilityResult<MedPackPlayerAbility>(this, false);
 		}
 
 		setActive(true);
-		return new AbilityResult(this, true);
+		return new AbilityResult<MedPackPlayerAbility>(this, true);
 	}
 
 	private class MedPackDataWrapper {

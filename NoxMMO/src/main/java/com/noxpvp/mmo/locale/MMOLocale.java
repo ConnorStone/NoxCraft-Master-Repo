@@ -1,6 +1,29 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.locale;
 
-import com.noxpvp.core.locales.NoxLocale;
+import com.noxpvp.core.localization.NoxLocale;
 import com.noxpvp.mmo.NoxMMO;
 
 public class MMOLocale extends NoxLocale {
@@ -77,6 +100,11 @@ public class MMOLocale extends NoxLocale {
 	 * @param 1 ability
 	 */
 	public static final MMOLocale ABIL_ALREADY_ACTIVE;
+	
+	/**
+	 * @param 1 Ability name
+	 */
+	public static final MMOLocale ABIL_NOT_FOUND;
 
 	//Display
 	public static final MMOLocale CLASS_DN;
@@ -163,6 +191,7 @@ public class MMOLocale extends NoxLocale {
 		ABIL_RANGED_TOO_FAR = new MMOLocale("error.ability.ranged-too-far", "&cYou have to be within &e%0% &cblocks");
 		ABIL_NO_LOS = new MMOLocale("error.ability.no-los", "&cYou need line of sight to use the &e%0% &cability!");
 		ABIL_ALREADY_ACTIVE = new MMOLocale("error.ability.already-active", "&e%0% &cis already active");
+		ABIL_NOT_FOUND = new MMOLocale("error.ability.not-found", "&cThe ability &e%0% &ccould not be found");
 
 		//Display
 		CLASS_DN = new MMOLocale("display.class.default", "%1%%0%");

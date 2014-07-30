@@ -1,20 +1,51 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
+
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.Collection;
+import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.AbilityContainer;
+
 import java.util.List;
 import java.util.Map;
 
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
-import com.noxpvp.core.annotation.Temporary;
-import com.noxpvp.mmo.abilities.Ability;
-
-public interface IClassTier {
+public interface IClassTier extends AbilityContainer<Ability> {
 
 	public int getTierLevel();
 
 	public String getName();
 
 	public boolean canUse();
+
+	/**
+	 * This is not the bukkit api and is not included with configuration serialization.
+	 *
+	 * This is due to the way player class serialization works. This class has this method to manually deserialize stuff into class tiers.
+	 *
+	 * @return
+	 */
+	public Map<String, Object> serialize();
 
 	public PlayerClass getRetainingClass();
 
@@ -56,17 +87,12 @@ public interface IClassTier {
 
 	public void removeExp(int amount);
 
-	@Temporary
-	public Map<String, Ability> getAbilityMap();
-
-	@Temporary
-	public Collection<Ability> getAbilities();
-
 	public ExperienceType[] getExpTypes();
 
-	public void onSave(ConfigurationNode node);
-
-	public void onLoad(ConfigurationNode node);
+	/**
+	 * Dematerializes data from serialized data map.
+	 */
+	public void onLoad(Map<String, Object> data);
 
 	/**
 	 * Used to cleanup data if max exp per level changes and such. <br/>
@@ -79,4 +105,6 @@ public interface IClassTier {
 	public void update();
 
 	String getPermission();
+
+	public void onSave(Map<String, Object> tier);
 }

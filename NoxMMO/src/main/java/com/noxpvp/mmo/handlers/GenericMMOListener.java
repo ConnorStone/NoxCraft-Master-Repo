@@ -1,19 +1,34 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -38,6 +53,7 @@ public class GenericMMOListener<T extends Event> extends NoxListener<NoxMMO> {
 		constructors.put(InventoryPickupItemEvent.class, (SafeConstructor<GenericMMOListener<?>>) new SafeConstructor(InventoryPickupItemListener.class, NoxMMO.class));
 		constructors.put(PlayerInteractEntityEvent.class, (SafeConstructor<GenericMMOListener<?>>) new SafeConstructor(PlayerInteractEntityListener.class, NoxMMO.class));
 		constructors.put(EntityChangeBlockEvent.class, (SafeConstructor<GenericMMOListener<?>>) new SafeConstructor(EntityChangeBlockListener.class, NoxMMO.class));
+		constructors.put(EntityRegainHealthEvent.class, (SafeConstructor<GenericMMOListener<?>>) new SafeConstructor(EntityRegainHealthListener.class, NoxMMO.class));
 	}
 
 	private Class<T> eventType;

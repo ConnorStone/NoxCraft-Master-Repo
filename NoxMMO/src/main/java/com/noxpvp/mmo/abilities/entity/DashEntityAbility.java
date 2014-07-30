@@ -1,9 +1,33 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.entity;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 
 /**
@@ -52,13 +76,13 @@ public class DashEntityAbility extends BaseEntityAbility {
 		this.d = d;
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<DashEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<DashEntityAbility>(this, false);
 
 		((LivingEntity) getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, d, s, true));
 
-		return new AbilityResult(this, true);
+		return new AbilityResult<DashEntityAbility>(this, true);
 	}
 
 }

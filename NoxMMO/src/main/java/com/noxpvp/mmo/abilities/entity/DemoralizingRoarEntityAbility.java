@@ -1,14 +1,37 @@
+/*
+ * Copyright (c) 2014. NoxPVP.com
+ *
+ * All rights are reserved.
+ *
+ * You are not permitted to
+ * 	Modify
+ * 	Redistribute nor distribute
+ * 	Sublicense
+ *
+ * You are required to keep this license header intact
+ *
+ * You are allowed to use this for non commercial purpose only. This does not allow any ad.fly type links.
+ *
+ * When using this you are required to
+ * 	Display a visible link to noxpvp.com
+ * 	For crediting purpose.
+ *
+ * For more information please refer to the license.md file in the root directory of repo.
+ *
+ * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
+ */
+
 package com.noxpvp.mmo.abilities.entity;
-
-import java.util.HashSet;
-
-import com.noxpvp.mmo.abilities.PVPAbility;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
 
 import com.noxpvp.core.packet.ParticleRunner;
 import com.noxpvp.core.packet.ParticleType;
+import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+
+import java.util.HashSet;
 
 /**
  * @author NoxPVP
@@ -29,9 +52,9 @@ public class DemoralizingRoarEntityAbility extends BaseEntityAbility implements 
 		creatures = new HashSet<Creature>();
 	}
 
-	public AbilityResult execute() {
+	public AbilityResult<DemoralizingRoarEntityAbility> execute() {
 		if (!mayExecute())
-			return new AbilityResult(this, false);
+			return new AbilityResult<DemoralizingRoarEntityAbility>(this, false);
 
 		Entity e = getEntity();
 
@@ -53,7 +76,7 @@ public class DemoralizingRoarEntityAbility extends BaseEntityAbility implements 
 			}
 		}
 		
-		return new AbilityResult(this, !creatures.isEmpty());
+		return new AbilityResult<DemoralizingRoarEntityAbility>(this, !creatures.isEmpty());
 
 	}
 
