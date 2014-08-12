@@ -27,7 +27,7 @@ import com.noxpvp.core.external.prism.BaseNoxPrismEvent;
 import com.noxpvp.core.utils.PrismUtil;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import com.noxpvp.mmo.abilities.internal.TargetedAbility;
 import org.bukkit.entity.Player;
 
@@ -36,7 +36,7 @@ public class AbilityUsePrismEvent extends BaseNoxPrismEvent {
 	public static void trigger(Player player, AbilityResult abrs) {
 		MMOPrismEventArgBuilder b = new MMOPrismEventArgBuilder();
 		
-		Ability ab = abrs.getAbility();
+		TieredAbility ab = abrs.getAbility();
 		b.withAbility(ab);
 		/*
 		if (ab instanceof DamagingAbility) {

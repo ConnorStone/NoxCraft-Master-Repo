@@ -23,22 +23,16 @@
 
 package com.noxpvp.mmo.classes;
 
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
+import java.util.Set;
 
-import java.util.List;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 
 //FIXME: Documentation
 public interface PlayerClassContainer {
-	public boolean hasPlayerClass(String identifier);
-
-	public PlayerClass getPlayerClass(String identifier);
-
-	public List<PlayerClass> getPlayerClasses();
-
-	public boolean addPlayerClass(IPlayerClass clazz);
-
-	public boolean removePlayerClass(String identifier);
-
-	public boolean removePlayerClass(IPlayerClass clazz);
+	
+	public PlayerClass getPlayerClass(String name);
+	
+	public Set<PlayerClass> getPlayerClasses();
+	
+	public boolean hasPlayerClass(String name);
 }

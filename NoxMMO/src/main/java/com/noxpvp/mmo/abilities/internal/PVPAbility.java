@@ -26,5 +26,5 @@ package com.noxpvp.mmo.abilities.internal;
 /**
  * This is a marker interface. No extra methods are provided here.
  */
-public interface PVPAbility extends Ability {
+public interface PVPAbility {
 }

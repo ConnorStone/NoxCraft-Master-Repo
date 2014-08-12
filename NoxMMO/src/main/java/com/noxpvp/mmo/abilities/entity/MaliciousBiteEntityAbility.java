@@ -34,37 +34,44 @@ import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BaseEntityAbility;
 import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
-public class MaliciousBiteEntityAbility extends BaseEntityAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
-
-	public static final String ABILITY_NAME = "Malicious bite";
-	public static final String PERM_NODE = "malicious-bite";
-
+public class MaliciousBiteEntityAbility extends BaseEntityAbility implements
+		PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+	
+	public static final String	ABILITY_NAME	= "Malicious bite";
+	public static final String	PERM_NODE		= "malicious-bite";
+	
 	public MaliciousBiteEntityAbility(Entity entity) {
 		super(ABILITY_NAME, entity);
 	}
-
-	public AbilityResult<MaliciousBiteEntityAbility> execute(EntityDamageByEntityEvent event) {
-		if (!mayExecute())
-			return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
-
-		if (!(getEntity() instanceof Tameable)) return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
-
-		AnimalTamer a = ((Tameable) getEntity()).getOwner();
-
-		if (a == null || !(a instanceof Player)) return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
-
-		Player o = (Player) a;
-
-		IPlayerClass pClass = MMOPlayerManager.getInstance().getPlayer(o).getPrimaryClass();
-
-		return new AbilityResult<MaliciousBiteEntityAbility>(this, RandomUtils.nextFloat() < (pClass.getCurrentTierLevel() * pClass.getLevel()) / 1000);
-	}
-
+	
+	@Override
 	public AbilityResult execute() {
 		return new AbilityResult<MaliciousBiteEntityAbility>(this, true);
 	}
-
+	
+	public AbilityResult<MaliciousBiteEntityAbility> execute(
+			EntityDamageByEntityEvent event) {
+		if (!mayExecute())
+			return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
+		
+		if (!(getEntity() instanceof Tameable))
+			return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
+		
+		final AnimalTamer a = ((Tameable) getEntity()).getOwner();
+		
+		if (a == null || !(a instanceof Player))
+			return new AbilityResult<MaliciousBiteEntityAbility>(this, false);
+		
+		final Player o = (Player) a;
+		
+		final PlayerClass pClass = MMOPlayerManager.getInstance().getPlayer(o)
+				.getPrimaryClass();
+		
+		return new AbilityResult<MaliciousBiteEntityAbility>(this, RandomUtils
+				.nextFloat() < pClass.getLevel() / 1000);
+	}
+	
 }

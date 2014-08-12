@@ -23,30 +23,33 @@
 
 package com.noxpvp.mmo.events.ability;
 
-import com.noxpvp.mmo.abilities.internal.PlayerAbility;
-import com.noxpvp.mmo.events.internal.IPlayerAbilityEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-public class PlayerAbilityEvent<T extends PlayerAbility> extends BaseAbilityEvent<T> implements IPlayerAbilityEvent<T> {
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.events.internal.IPlayerAbilityEvent;
 
-	private static HandlerList handlers = new HandlerList();
-	private Player player;
-
+public class PlayerAbilityEvent<T extends BasePlayerAbility> extends
+		BaseAbilityEvent<T> implements IPlayerAbilityEvent<T> {
+	
+	private static HandlerList	handlers	= new HandlerList();
+	private final Player		player;
+	
 	public PlayerAbilityEvent(T ability, Player player) {
 		super(ability);
 		this.player = player;
 	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
+	
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
+	
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 }

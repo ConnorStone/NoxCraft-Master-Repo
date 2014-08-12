@@ -26,6 +26,6 @@ package com.noxpvp.mmo.abilities.internal;
 /**
  * Marker interface for silencing an ability.
  */
-public interface SilentAbility extends Ability {
+public interface SilentAbility extends TieredAbility {
 
 }

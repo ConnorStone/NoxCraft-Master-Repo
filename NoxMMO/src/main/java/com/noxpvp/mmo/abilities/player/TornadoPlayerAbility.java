@@ -58,7 +58,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.AbilityResult;
 
 public class TornadoPlayerAbility extends BaseRangedPlayerAbility implements PVPAbility {
 
@@ -79,18 +79,18 @@ public class TornadoPlayerAbility extends BaseRangedPlayerAbility implements PVP
 		return "The Tornado Lord is capable of summoning a vast amount of high power wind abilities";
 	}
 
-	public RangedAbilityResult<TornadoPlayerAbility> execute() {
+	public AbilityResult<TornadoPlayerAbility> execute() {
 		if (!mayExecute())
-			return new RangedAbilityResult<TornadoPlayerAbility>(this, false);
+			return new AbilityResult<TornadoPlayerAbility>(this, false);
 
 		Location loc;
 		if ((loc = LineOfSightUtil.getTargetBlockLocation(getPlayer(), (int) getRange(), Material.AIR)) != null) {
 			new TornadoVortex(getPlayer(), loc, time).start();
 
-			return new RangedAbilityResult<TornadoPlayerAbility>(this, true);
+			return new AbilityResult<TornadoPlayerAbility>(this, true);
 		}
 
-		return new RangedAbilityResult<TornadoPlayerAbility>(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
+		return new AbilityResult<TornadoPlayerAbility>(this, false, MMOLocale.ABIL_RANGED_TOO_FAR.get(Double.toString(getRange())));
 	}
 
 	private class TornadoVortex extends BaseVortex {

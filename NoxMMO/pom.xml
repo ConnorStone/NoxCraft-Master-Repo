@@ -69,6 +69,33 @@
 					</execution>
 				</executions>
 			</plugin>
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<finalName>NoxMMO</finalName>
+					<artifactSet>
+						<includes>
+						    <include>com.comphenix.attribute:AttributeStorage</include>
+						</includes>
+					</artifactSet>
+					<filters>
+					    <filter>
+					        <artifact>com.comphenix.attribute:AttributeStorage</artifact>
+					    </filter>
+
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 	</build>

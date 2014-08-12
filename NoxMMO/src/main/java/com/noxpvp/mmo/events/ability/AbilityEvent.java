@@ -23,10 +23,10 @@
 
 package com.noxpvp.mmo.events.ability;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.event.HandlerList;
 
-public class AbilityEvent<T extends Ability> extends BaseAbilityEvent<T> {
+public class AbilityEvent<T extends TieredAbility> extends BaseAbilityEvent<T> {
 
 	private static HandlerList handlers = new HandlerList();
 

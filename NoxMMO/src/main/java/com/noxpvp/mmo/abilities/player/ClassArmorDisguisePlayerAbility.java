@@ -33,67 +33,79 @@ import com.bergerkiller.bukkit.common.protocol.CommonPacket;
 import com.bergerkiller.bukkit.common.protocol.PacketTypeClasses.NMSPacketPlayOutEntityEquipment;
 import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class ClassArmorDisguisePlayerAbility extends BasePlayerAbility {
-
-	public static final String ABILITY_NAME = "Armor Disguise";
-	public static final String PERM_NODE = "armor-disguise";
-
-	private CommonPacket packet;
-
+	
+	public static final String	ABILITY_NAME	= "Armor Disguise";
+	public static final String	PERM_NODE		= "armor-disguise";
+	
+	private final CommonPacket	packet;
+	
 	public ClassArmorDisguisePlayerAbility(OfflinePlayer p, CommonPacket packet) {
 		super(ABILITY_NAME, p);
-
+		
 		this.packet = packet;
 	}
-
+	
 	public AbilityResult<ClassArmorDisguisePlayerAbility> execute() {
-		NMSPacketPlayOutEntityEquipment nms = new NMSPacketPlayOutEntityEquipment();
-
-		ItemStack stack = packet.read(nms.item);
-
+		final NMSPacketPlayOutEntityEquipment nms = new NMSPacketPlayOutEntityEquipment();
+		
+		final ItemStack stack = packet.read(nms.item);
+		
 		if (stack != null && packet.read(nms.slot) != 0) {
-			String name = stack.getType().name();
+			final String name = stack.getType().name();
 			stack.setType(Material.AIR);
-
+			
 			if (name.contains("HELMET")) {
 				stack.setType(Material.LEATHER_HELMET);
-
+				
 			} else if (name.contains("CHESTPLATE")) {
 				stack.setType(Material.LEATHER_CHESTPLATE);
-
+				
 			} else if (name.contains("LEGGING")) {
 				stack.setType(Material.LEATHER_LEGGINGS);
-
+				
 			} else if (name.contains("BOOT")) {
 				stack.setType(Material.LEATHER_BOOTS);
-
+				
 			}
-
+			
 			if (stack.getType() != Material.AIR) {
-
-				IPlayerClass clazz = MMOPlayerManager.getInstance().getPlayer(getPlayer()).getPrimaryClass();
+				
+				final PlayerClass clazz = MMOPlayerManager.getInstance().getPlayer(
+						getPlayer()).getPrimaryClass();
 				if (clazz == null)
-					return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
-
-				LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
-
-				if (clazz.getRBGColor() != null)
+					return new AbilityResult<ClassArmorDisguisePlayerAbility>(this,
+							false);
+				
+				final LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
+				
+				if (clazz.getRBGColor() != null) {
 					meta.setColor(clazz.getRBGColor());
-
+				}
+				
 				if (clazz.getLevel() == clazz.getMaxLevel())
-					meta.addEnchant(Enchantment.OXYGEN, 1, true);//fake enchant for maxed tiers
-
+				{
+					meta.addEnchant(Enchantment.OXYGEN, 1, true);// fake
+																	// enchant
+																	// for
+																	// maxed
+																	// tiers
+				}
+				
 				stack.setItemMeta(meta);
 				packet.write(nms.item, stack);
-
-			} else return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
-		} else return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
-
+				
+			} else
+				return new AbilityResult<ClassArmorDisguisePlayerAbility>(this,
+						false);
+		} else
+			return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, false);
+		
 		return new AbilityResult<ClassArmorDisguisePlayerAbility>(this, true);
-
+		
 	}
-
+	
 }

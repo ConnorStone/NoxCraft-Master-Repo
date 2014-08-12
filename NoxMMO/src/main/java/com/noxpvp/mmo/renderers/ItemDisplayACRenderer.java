@@ -23,7 +23,7 @@
 
 package com.noxpvp.mmo.renderers;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -72,14 +72,14 @@ public class ItemDisplayACRenderer extends BaseAbilityCyclerRenderer {
 		if (cycler == null) return;
 		final Player player = cycler.getPlayer();
 
-		Ability cur = cycler != null? cycler.current() : null;
+		TieredAbility cur = cycler != null? cycler.current() : null;
 		if (cycler == null || cur == null || player == null)
 			return;
 		
 		//Get list of all items, and show which is used with an arrow
 		String[] others = new String[cycler.getList().size()];
 		int i = 0;
-		for (Ability a : cycler.getList())
+		for (TieredAbility a : cycler.getList())
 			others[i++] = (a.equals(cur)? ChatColor.GREEN + ">" : " ") + a.getDisplayName(ChatColor.RED);
 		
 		//Set fake NBT data on item, and send update packet for that item

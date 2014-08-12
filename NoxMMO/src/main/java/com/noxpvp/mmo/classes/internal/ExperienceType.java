@@ -24,7 +24,22 @@
 package com.noxpvp.mmo.classes.internal;
 
 public enum ExperienceType {
-	EXCAVATION, MINING, PVE, PVP, SMELTING, TAMING; //Add missing exp please. All caps.
-
-	public static final ExperienceType[] COMBAT = new ExperienceType[]{PVE, PVP};
+	ALL(null),
+	EXCAVATION(ALL),
+	MINING(ALL),
+	COMBAT(ALL),
+		PVE(COMBAT),
+		PVP(COMBAT),
+	SMELTING(ALL),
+	TAMING(ALL);
+	
+	private ExperienceType parent;
+	
+	private ExperienceType(ExperienceType parent) {
+		this.parent = parent;
+	}
+	
+	public ExperienceType getParent() {
+		return parent;
+	}
 }

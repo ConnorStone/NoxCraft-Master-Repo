@@ -23,12 +23,12 @@
 
 package com.noxpvp.mmo.events.ability;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import com.noxpvp.mmo.events.internal.IAbilityEvent;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
-public abstract class BaseAbilityEvent<T extends Ability> extends Event implements IAbilityEvent<T>, Cancellable {
+public abstract class BaseAbilityEvent<T extends TieredAbility> extends Event implements IAbilityEvent<T>, Cancellable {
 	private final T ability;
 	private boolean isCancelled;
 

@@ -23,12 +23,9 @@
 
 package com.noxpvp.mmo.abilities.player;
 
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.internal.PVPAbility;
-import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -37,75 +34,84 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.PVPAbility;
+import com.noxpvp.mmo.abilities.internal.PassiveAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP
  */
-public class ParryPlayerAbility extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
-
-	public static final String ABILITY_NAME = "Parry";
-	public static final String PERM_NODE = "parry";
-
-	public List<Material> parriedWeapons = new ArrayList<Material>();
-
-	private float percentChance;
-	private boolean mustBlock;
-
+public class ParryPlayerAbility extends BasePlayerAbility implements
+		PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+	
+	public static final String	ABILITY_NAME	= "Parry";
+	public static final String	PERM_NODE		= "parry";
+	
+	public List<Material>		parriedWeapons	= new ArrayList<Material>();
+	
+	private float				percentChance;
+	private boolean				mustBlock;
+	
 	/**
-	 * @param player The Player type user for this ability instance
+	 * @param player
+	 *            The Player type user for this ability instance
 	 */
 	public ParryPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
-
-		this.mustBlock = false;
+		
+		mustBlock = false;
 	}
-
+	
+	public AbilityResult<ParryPlayerAbility> execute() {
+		return new AbilityResult<ParryPlayerAbility>(this, true);
+	}
+	
+	public AbilityResult<ParryPlayerAbility> execute(EntityDamageByEntityEvent event) {
+		if (event.getEntity() != getPlayer() || !mayExecute())
+			return new AbilityResult<ParryPlayerAbility>(this, false);
+		
+		final Player p = getPlayer();
+		
+		MMOPlayer mmoPlayer;
+		
+		if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p)) == null
+				|| mustBlock
+				&& !parriedWeapons.contains(p.getItemInHand().getType()))
+			return new AbilityResult<ParryPlayerAbility>(this, false);
+		
+		final float chance = mmoPlayer.getPrimaryClass().getLevel() / 6;
+		percentChance = chance <= 75 ? chance : 75;
+		if (RandomUtils.nextFloat() > percentChance)
+			return new AbilityResult<ParryPlayerAbility>(this, false);
+		
+		final Entity damager = event.getDamager();
+		if (damager instanceof Damageable) {
+			((Damageable) damager).damage(event.getDamage() / .7, p);
+		}
+		
+		return new AbilityResult<ParryPlayerAbility>(this, true);
+	}
+	
 	/**
-	 * @return boolean If this ability is set to only succeed if the user is blocking with a sword
+	 * @return boolean If this ability is set to only succeed if the user
+	 *         is blocking with a sword
 	 */
 	public boolean isMustBlock() {
 		return mustBlock;
 	}
-
+	
 	/**
-	 * @param mustBlock boolean if the ability should only succeed if the player is blocking with a sword
+	 * @param mustBlock
+	 *            boolean if the ability should only succeed if the player
+	 *            is blocking with a sword
 	 * @return ParryAbility This instance, used for chaining
 	 */
 	public ParryPlayerAbility setMustBlock(boolean mustBlock) {
 		this.mustBlock = mustBlock;
 		return this;
 	}
-
-	public AbilityResult<ParryPlayerAbility> execute() {
-		return new AbilityResult<ParryPlayerAbility>(this, true);
-	}
-
-
-	public AbilityResult<ParryPlayerAbility> execute(EntityDamageByEntityEvent event) {
-		if (event.getEntity() != getPlayer() || !mayExecute())
-			return new AbilityResult<ParryPlayerAbility>(this, false);
-
-		Player p = getPlayer();
-
-		MMOPlayer mmoPlayer;
-
-		if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p)) == null || (mustBlock && (!parriedWeapons.contains(p.getItemInHand().getType()))))
-			return new AbilityResult<ParryPlayerAbility>(this, false);
-
-		float chance = mmoPlayer.getPrimaryClass().getTotalLevel() / 6;
-		percentChance = (chance <= 75) ? chance : 75;
-		if (RandomUtils.nextFloat() > percentChance)
-			return new AbilityResult<ParryPlayerAbility>(this, false);
-
-
-		Entity damager = event.getDamager();
-		if (damager instanceof Damageable) {
-			((Damageable) damager).damage(event.getDamage() / .7, p);
-		}
-
-		return new AbilityResult<ParryPlayerAbility>(this, true);
-	}
-
+	
 }

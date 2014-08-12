@@ -23,44 +23,33 @@
 
 package com.noxpvp.mmo.util;
 
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.utils.NoxMessageBuilder;
-import com.noxpvp.mmo.classes.internal.IClassTier;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import org.bukkit.ChatColor;
 
-import java.util.Map.Entry;
-import java.util.Set;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.utils.NoxMessageBuilder;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
 
 public class NoxMMOMessageBuilder extends NoxMessageBuilder {
-
+	
 	public NoxMMOMessageBuilder(NoxPlugin plugin) {
 		super(plugin);
 	}
-
+	
 	public NoxMMOMessageBuilder(NoxPlugin plugin, boolean withHeader) {
 		super(plugin, withHeader);
 	}
-
+	
 	public NoxMMOMessageBuilder withClassInfo(IPlayerClass clazz) {
-
-		gold(ChatColor.BOLD + "Name: ").append(clazz.getDisplayName()).newLine();
+		
+		gold(ChatColor.BOLD + "Name: ").append(clazz.getColor()).append(
+				clazz.getName()).newLine();
 		gold(ChatColor.BOLD + "About: ");
 		
-		for (String lore : clazz.getLore(clazz.getColor(), 30))
+		for (final String lore : clazz.getLore()) {
 			append(lore).newLine();
-		
-		yellow(ChatColor.BOLD + "Tiers: ");
-
-		Set<Entry<Integer, IClassTier>> tiers = clazz.getTiers();
-		for (Entry<Integer, IClassTier> tier : tiers) {
-			append(tier.getValue().getDisplayName());
-
-			if (tiers.size() > tier.getKey())
-				append(", ");
 		}
-
+		
 		return this;
 	}
-
+	
 }

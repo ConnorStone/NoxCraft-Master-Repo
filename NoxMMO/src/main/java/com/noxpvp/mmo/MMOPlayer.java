@@ -23,354 +23,305 @@
 
 package com.noxpvp.mmo;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.commands.SafeNullPointerException;
-import com.noxpvp.core.data.player.BasePluginPlayer;
-import com.noxpvp.core.gui.MenuItemRepresentable;
-import com.noxpvp.mmo.abilities.AbilityContainer;
-import com.noxpvp.mmo.abilities.internal.Ability;
-import com.noxpvp.mmo.classes.PlayerClassContainer;
-import com.noxpvp.mmo.classes.internal.DummyClass;
-import com.noxpvp.mmo.classes.internal.ExperienceType;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
-import com.noxpvp.mmo.util.PlayerClassUtil;
+import java.lang.ref.WeakReference;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
+
+import javax.annotation.Nullable;
+
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.logging.Level;
-
-import static com.noxpvp.mmo.util.PlayerClassUtil.getAllChangedPlayerClasses;
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.noxpvp.core.commands.SafeNullPointerException;
+import com.noxpvp.core.data.player.BasePluginPlayer;
+import com.noxpvp.core.gui.MenuItemRepresentable;
+import com.noxpvp.mmo.abilities.AbilityContainer;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.classes.PlayerClassContainer;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
+import com.noxpvp.mmo.util.PlayerClassUtil;
 
 @SerializableAs("MMOPlayer")
-public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements MenuItemRepresentable, PlayerClassContainer, AbilityContainer<Ability> {
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Constant Keys
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public static final String CLASSES_KEY = "classes";
-	public static final String CYCLERS_KEY = "ability-cyclers";
-	public static final String CURRENT_PRIMARY_CLASS_KEY = "current-primary-class";
-	public static final String CURRENT_SECONDARY_CLASS_KEY = "current-secondary-class";
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Static Fields
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private static ModuleLogger logger;
-
+public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
+		MenuItemRepresentable, PlayerClassContainer,
+		AbilityContainer<PlayerAbility> {
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Init
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	static {
 		logger = MMOPlayerManager.getInstance().getModuleLogger("MMOPlayer");
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Fields
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private List<PlayerClass> all_classes = new ArrayList<PlayerClass>();
-	private Map<String, PlayerClass> classCache = new HashMap<String, PlayerClass>();
-	private IPlayerClass currentPrimaryClass = DummyClass.PRIMARY, currentSecondaryClass = DummyClass.SECONDARY;
-	private List<AbilityCycler> cyclers = new ArrayList<AbilityCycler>();
-
-	private ItemStack identifyingItem;
-	private LivingEntity target;
-	private boolean classesInitialized = false;
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Constructors
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public MMOPlayer(UUID playerUUID) {
-		super(playerUUID);
-	}
-
-	public MMOPlayer(Player player) {
-		super(player);
-	}
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public static final String			SERIALIZE_ALL_CLASSES				= "classes";
+	public static final String			SERIALIZE_ABLILTY_CYCLERS			= "ability-cyclers";
+	public static final String			SERIALIZE_CURRENT_PRIMARY_CLASS		= "current-primary-class";
+	public static final String			SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
+	private static ModuleLogger			logger;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instanced Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private Set<PlayerClass>			allClasses;
+	private Set<AbilityCycler>			cyclers;
+	private String						currentPrimaryClass;
+	private String						currentSecondaryClass;
+	
+	private ItemStack					identifyingItem;
+	private WeakReference<LivingEntity>	targetRef;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	public MMOPlayer(final Map<String, Object> data) {
 		super(data);
-
-//		MMOPlayerManager.getInstance().loadObject(this); //I know this is bad practice.. Temp fix for stuff.
-
+		
 		setupClasses(data);
 		setupCyclers(data);
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Internal Constructor Shortcuts
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private void setupClasses(Map<String, Object> data) {
-		try {
-			if (data.containsKey(CLASSES_KEY)) {
-				if (data.get(CLASSES_KEY) == null) throw new SafeNullPointerException();
-				Collection<?> r = (Collection<?>) data.get(CLASSES_KEY);
-				int failedCasts = 0;
-				for (Object o : r) {
-					try {
-						getAllClasses().add((PlayerClass) o);
-					} catch (ClassCastException e) {
-						failedCasts++;
-					}
-				}
-
-				if (failedCasts > 0)
-					log(Level.WARNING, "During class data importing " + failedCasts + " failed to be casted to PlayerClass objects." +
-							System.lineSeparator() + "Player: " + getPlayerUUID().toString());
+	
+	public MMOPlayer(Player player) {
+		this(player.getUniqueId());
+	}
+	
+	public MMOPlayer(UUID playerUUID) {
+		super(playerUUID);
+		
+		allClasses = new HashSet<PlayerClass>();
+		cyclers = new HashSet<AbilityCycler>();
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public boolean addPlayerClass(IPlayerClass clazz) {
+		if (clazz instanceof PlayerClass)
+			return addPlayerClass((PlayerClass) clazz);
+		return false;
+	}
+	
+	public boolean addPlayerClass(PlayerClass clazz) {
+		if (!allClasses.contains(clazz))
+			return allClasses.add(clazz);
+		
+		return false;
+	}
+	
+	public Set<PlayerAbility> getAbilities() {
+		final Set<PlayerAbility> ret = new HashSet<PlayerAbility>();
+		
+		if (getPrimaryClass() != null) {
+			for (final PlayerAbility a : getPrimaryClass().getAbilities()) {
+				ret.add(a);
 			}
-		} catch (Throwable t) {
-			boolean throwTrace = false;
-			if (t instanceof SafeNullPointerException) {
-				log(Level.WARNING, "Class data did not exist properly. It is possible it was never created.");
-				throwTrace = false;
-			} else if (t instanceof NullPointerException) {
-				log(Level.SEVERE, "There was a NPE within MMOPlayer during loading of class data." +
-						System.lineSeparator() + " What follows is a stacktrace of the issue.");
-				throwTrace = true;
-			} else if (t instanceof UnsupportedOperationException) {
-				log(Level.SEVERE, "Class data in MMOPlayer is immutable!!! Error occured within constructors.");
-				throwTrace = true;
+		}
+		
+		if (getSecondaryClass() != null) {
+			for (final PlayerAbility a : getSecondaryClass().getAbilities()) {
+				ret.add(a);
 			}
-
-			if (throwTrace) t.printStackTrace();
 		}
-
-		if (data.containsKey(CURRENT_PRIMARY_CLASS_KEY) && data.get(CURRENT_PRIMARY_CLASS_KEY) != null) setPrimaryClass(getPlayerClass(data.get(CURRENT_PRIMARY_CLASS_KEY).toString()));
-		if (data.containsKey(CURRENT_SECONDARY_CLASS_KEY) && data.get(CURRENT_SECONDARY_CLASS_KEY) != null) setSecondaryClass(getPlayerClass(data.get(CURRENT_SECONDARY_CLASS_KEY).toString()));;
-
+		
+		return ret;
 	}
-
-	private void updateClassCache() {
-		for (PlayerClass c : all_classes)
-			if (c != null)
-				classCache.put(c.getUniqueID(), c);
+	
+	public PlayerAbility getAbility(String name) {
+		for (final PlayerAbility a : getAbilities())
+			if (a.getName().equalsIgnoreCase(name))
+				return a;
+		
+		return null;
 	}
-
-	private void setupCyclers(Map<String, Object> data) {
-		try {
-			if (data.containsKey(CYCLERS_KEY)) {
-				if (data.get(CYCLERS_KEY) == null) throw new SafeNullPointerException();
-				Collection<?> r = (Collection<?>) data.get(CYCLERS_KEY);
-				int failedCasts = 0;
-				for (Object o : r) {
-					try {
-						cyclers.add((AbilityCycler) o);
-					} catch (ClassCastException e) {
-						failedCasts++;
-					}
-				}
-
-				if (failedCasts > 0)
-					log(Level.WARNING, "During class data importing " + failedCasts + " failed to be casted to AbilityCycler objects." +
-							System.lineSeparator() + "Player: " + getPlayerUUID().toString());
-			}
-		} catch (Throwable t) {
-			boolean throwTrace = true;
-			if (t instanceof SafeNullPointerException) {
-				log(Level.WARNING, "AbilityCycler data did not exist properly. It is possible it was never created.");
-				throwTrace = false;
-			} else if (t instanceof NullPointerException) {
-				log(Level.SEVERE, "There was a NPE within MMOPlayer during loading of AbilityCycler data." +
-						System.lineSeparator() + " What follows is a stacktrace of the issue.");
-				throwTrace = true;
-			} else if (t instanceof UnsupportedOperationException) {
-				log(Level.SEVERE, "Cyclers data in MMOPlayer is immutable!!! Error occured within constructors.");
-				throwTrace = true;
-			}
-
-			if (throwTrace) t.printStackTrace();
-		}
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: Internal
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	protected List<PlayerClass> getAllClasses() {
-		if ((all_classes == null || all_classes.isEmpty() || classesInitialized) && MMOPlayerManager.getInstance().isLoaded(this)) {
-			all_classes = PlayerClassUtil.getAllPlayerClasses(getPlayerUUID());
-			updateClassCache();
-			classesInitialized = true;
-		}
-		return all_classes;
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: Experience
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public void addExp(ExperienceType pvp, int floor) {
-
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: Classes
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public IPlayerClass getPrimaryClass() {
-		return currentPrimaryClass;
-	}
-
-	public IPlayerClass getSecondaryClass() {
-		return currentSecondaryClass;
-	}
-
-	public void setClass(@Nullable PlayerClass clazz) {
-		if (clazz.isPrimaryClass()) setPrimaryClass(clazz);
-		else setSecondaryClass(clazz);
-	}
-
-	public void setSecondaryClass(PlayerClass playerClass) {
-		if (playerClass != null) this.currentSecondaryClass = playerClass;
-		else this.currentPrimaryClass = DummyClass.SECONDARY;
-	}
-
-	public void setPrimaryClass(PlayerClass playerClass) {
-		if (playerClass != null) {
-			this.currentPrimaryClass = playerClass;
-			playerClass.setHealth(); //TODO: add more checks on resetting health as it can leak.
-			//Leak meaning that if the health was modified in another plugin it will reset to that instead.
-		}
-		else {
-			this.currentPrimaryClass = DummyClass.PRIMARY;
-		}
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: Targetting
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public void setTarget(LivingEntity target) {
-		this.target = target;
-	}
-
-	public LivingEntity getTarget() {
-		return target;
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: AbilityCyclers
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public List<AbilityCycler> getAbilityCyclers() {
+	
+	public Set<AbilityCycler> getAbilityCyclers() {
 		return cyclers;
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: AbilitiesContainer
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public Ability getAbility(String identity) {
-		return getAbilitiesMap().get(identity);
-	}
-
-	public boolean hasAbility(String identity) {
-		return getAbilitiesMap().containsKey(identity);
-	}
-
-	public Collection<Ability> getAbilities() {
-		List<Ability> ret = new ArrayList<Ability>();
-
-		ret.addAll(getPrimaryClass().getAbilities());
-		ret.addAll(getSecondaryClass().getAbilities());
-
-		return Collections.unmodifiableCollection(ret);
-	}
-
-	public Map<String, Ability> getAbilitiesMap() {
-		Map<String, Ability> ret = new HashMap<String, Ability>();
-
-		ret.putAll(getPrimaryClass().getAbilitiesMap());
-		ret.putAll(getSecondaryClass().getAbilitiesMap());
-
-		return Collections.unmodifiableMap(ret);
-	}
-
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: PlayerClassContainer
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public boolean hasPlayerClass(String identifier) {
-		return getClassMap().containsKey(identifier);
-	}
-
-	public PlayerClass getPlayerClass(String identifier) {
-		return getClassMap().get(identifier);
-	}
-
-	public List<PlayerClass> getPlayerClasses() {
-		return Collections.unmodifiableList(getAllClasses());
-	}
-
-	public boolean addPlayerClass(IPlayerClass clazz) {
-		if (clazz instanceof PlayerClass) return addPlayerClass((PlayerClass) clazz);
-		return false;
-	}
-
-	public boolean addPlayerClass(PlayerClass clazz) {
-		classCache.put(clazz.getUniqueID(), clazz);
-		if (getAllClasses().contains(clazz)) getAllClasses().remove(clazz);
-		return getAllClasses().add(clazz);
-	}
-
-	public boolean removePlayerClass(String identifier) {
-		return false;
-	}
-
-	public boolean removePlayerClass(IPlayerClass clazz) {
-		return false;
-	}
-
-	public Map<String, PlayerClass> getClassMap() {
-		return classCache;
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: MenuItemRepresentable
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+	
 	public ItemStack getIdentifiableItem() {
-		return this.identifyingItem;
+		return identifyingItem;
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods: PluginPlayer
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public void log(Level level, String msg) {
-		logger.log(level, msg);
+	
+	public String getPersistenceNode() {
+		return "MMOPlayer";
 	}
-
+	
+	public PlayerClass getPlayerClass(String name) {
+		for (final PlayerClass c : allClasses)
+			if (c.getName().equalsIgnoreCase(name))
+				return c;
+		
+		return null;
+	}
+	
+	public Set<PlayerClass> getPlayerClasses() {
+		return Collections.unmodifiableSet(allClasses);
+	}
+	
 	public NoxMMO getPlugin() {
 		return NoxMMO.getInstance();
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Serialization
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
+	
+	public PlayerClass getPrimaryClass() {
+		return getPlayerClass(currentPrimaryClass);
+	}
+	
+	public PlayerClass getSecondaryClass() {
+		return getPlayerClass(currentSecondaryClass);
+	}
+	
+	public LivingEntity getTarget() {
+		return targetRef.get();
+	}
+	
+	public boolean hasAbility(String name) {
+		return getAbility(name) != null;
+	}
+	
+	public boolean hasPlayerClass(String name) {
+		for (final PlayerClass c : allClasses)
+			if (c.getName().equalsIgnoreCase(name))
+				return true;
+		
+		return false;
+	}
+	
+	public void log(Level level, String msg) {
+		logger.log(level, msg);
+	}
+	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> data = super.serialize();
-
-		data.put(CLASSES_KEY, getAllChangedPlayerClasses(getPlayerUUID()));
-
-		if (!(getPrimaryClass() instanceof DummyClass)) data.put(CURRENT_PRIMARY_CLASS_KEY, getPrimaryClass().getUniqueID());
-		if (!(getSecondaryClass() instanceof DummyClass)) data.put(CURRENT_SECONDARY_CLASS_KEY, getSecondaryClass().getUniqueID());
-
+		final Map<String, Object> data = super.serialize();
+		
+		if (allClasses.size() > 0) {
+			data.put(SERIALIZE_ALL_CLASSES, PlayerClassUtil.getModifiedClasses(this));
+		} else
+			// return early if no classes are set or changed
+			return data;
+		
+		if (getPrimaryClass() != null) {
+			data.put(SERIALIZE_CURRENT_PRIMARY_CLASS, getPrimaryClass().getName());
+		}
+		
+		if (getSecondaryClass() != null) {
+			data.put(SERIALIZE_CURRENT_SECONDARY_CLASS, getSecondaryClass()
+					.getName());
+		}
+		
 		return data;
 	}
-
-	public String getPersistenceNode() {
-		return "MMOPlayer";
+	
+	public void setClass(@Nullable PlayerClass clazz) {
+		if (clazz.isPrimaryClass()) {
+			setPrimaryClass(clazz);
+		} else {
+			setSecondaryClass(clazz);
+		}
+	}
+	
+	public void setPrimaryClass(PlayerClass newPrimary) {
+		if (newPrimary != null) {
+			currentPrimaryClass = newPrimary.getName();
+		}
+	}
+	
+	public void setSecondaryClass(PlayerClass newSecondary) {
+		if (newSecondary != null) {
+			currentSecondaryClass = newSecondary.getName();
+		}
+	}
+	
+	public void setTarget(LivingEntity target) {
+		targetRef = new WeakReference<LivingEntity>(target);
+	}
+	
+	private void setupClasses(Map<String, Object> data) {
+		Object getter;
+		
+		if ((getter = data.get(SERIALIZE_ALL_CLASSES)) != null
+				&& getter instanceof Collection) {
+			allClasses = new HashSet<PlayerClass>((Collection<PlayerClass>) data);
+		} else {
+			allClasses = new HashSet<PlayerClass>();
+		}
+		
+		if (data.containsKey(SERIALIZE_CURRENT_PRIMARY_CLASS)
+				&& data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
+			setPrimaryClass(getPlayerClass(data.get(SERIALIZE_CURRENT_PRIMARY_CLASS)
+					.toString()));
+		}
+		if (data.containsKey(SERIALIZE_CURRENT_SECONDARY_CLASS)
+				&& data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
+			setSecondaryClass(getPlayerClass(data.get(
+					SERIALIZE_CURRENT_SECONDARY_CLASS)
+					.toString()));
+		}
+		;
+	}
+	
+	private void setupCyclers(Map<String, Object> data) {
+		try {
+			if (data.containsKey(SERIALIZE_ABLILTY_CYCLERS)) {
+				if (data.get(SERIALIZE_ABLILTY_CYCLERS) == null)
+					throw new SafeNullPointerException();
+				final Collection<?> r = (Collection<?>) data
+						.get(SERIALIZE_ABLILTY_CYCLERS);
+				int failedCasts = 0;
+				for (final Object o : r) {
+					try {
+						cyclers.add((AbilityCycler) o);
+					} catch (final ClassCastException e) {
+						failedCasts++;
+					}
+				}
+				
+				if (failedCasts > 0) {
+					log(Level.WARNING, "During class data importing " + failedCasts
+							+ " failed to be casted to AbilityCycler objects." +
+							System.lineSeparator() + "Player: "
+							+ getPlayerUUID().toString());
+				}
+			}
+		} catch (final Throwable t) {
+			boolean throwTrace = true;
+			if (t instanceof SafeNullPointerException) {
+				log(Level.WARNING,
+						"AbilityCycler data did not exist properly. It is possible it was never created.");
+				throwTrace = false;
+			} else if (t instanceof NullPointerException) {
+				log(Level.SEVERE,
+						"There was a NPE within MMOPlayer during loading of AbilityCycler data."
+								+
+								System.lineSeparator()
+								+ " What follows is a stacktrace of the issue.");
+				throwTrace = true;
+			} else if (t instanceof UnsupportedOperationException) {
+				log(Level.SEVERE,
+						"Cyclers data in MMOPlayer is immutable!!! Error occured within constructors.");
+				throwTrace = true;
+			}
+			
+			if (throwTrace) {
+				t.printStackTrace();
+			}
+		}
 	}
 }

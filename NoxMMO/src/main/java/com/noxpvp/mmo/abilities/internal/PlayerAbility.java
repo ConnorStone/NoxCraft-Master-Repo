@@ -23,57 +23,63 @@
 
 package com.noxpvp.mmo.abilities.internal;
 
-import com.noxpvp.core.internal.IHeated;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
+import java.util.UUID;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import com.noxpvp.core.internal.IHeated;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.BaseAbilityTier;
+import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
 
-public interface PlayerAbility extends Ability, IHeated, IMMOHandlerHolder {
-
+public interface PlayerAbility<T extends BaseAbilityTier<? extends PlayerAbility>>
+		extends TieredAbility<T>, IHeated, IMMOHandlerHolder {
+	
 	/**
-	 * Retrieves the player that uses this ability.
-	 *
-	 * @return Player object that holds this ability
-	 */
-	public Player getPlayer();
-
-	/**
-	 * Retrieves the OfflinePlayer object associated with this ability.
-	 *
-	 * @return OfflinePlayer object.
-	 */
-	public OfflinePlayer getOfflinePlayer();
-
-	/**
-	 * Tells whether or not the player is online.
-	 * @return true if online, false otherwise
-	 */
-	public boolean isOnline();
-
-	/**
-	 * Retrieves the player UUID
-	 * @return UUID
-	 */
-	public UUID getPlayerUUID();
-
-	/**
-	 * Retrieves the MMOPlayer
-	 * <br/>
-	 * This method should use getOfflinePlayer() within to retrieve this object if possible.
-	 *
+	 * Retrieves the MMOPlayer <br/>
+	 * This method should use getOfflinePlayer() within to retrieve this
+	 * object if possible.
+	 * 
 	 * @return MMOPlayer object.
 	 */
 	public MMOPlayer getMMOPlayer();
-
+	
+	/**
+	 * Retrieves the OfflinePlayer object associated with this ability.
+	 * 
+	 * @return OfflinePlayer object.
+	 */
+	public OfflinePlayer getOfflinePlayer();
+	
+	/**
+	 * Retrieves the player that uses this ability.
+	 * 
+	 * @return Player object that holds this ability
+	 */
+	public Player getPlayer();
+	
+	/**
+	 * Retrieves the player UUID
+	 * 
+	 * @return UUID
+	 */
+	public UUID getPlayerUUID();
+	
 	/**
 	 * Checks if the user has permission to use this ability.
-	 *
+	 * 
 	 * @return True if allow, False otherwise.
 	 */
 	public boolean hasPermission();
-
-	//TODO: Discuess whether or not we would like to add a method for fetching NoxPlayer in interfaces...
+	
+	/**
+	 * Tells whether or not the player is online.
+	 * 
+	 * @return true if online, false otherwise
+	 */
+	public boolean isOnline();
+	
+	// TODO: Discuess whether or not we would like to add a method for
+	// fetching NoxPlayer in interfaces...
 }

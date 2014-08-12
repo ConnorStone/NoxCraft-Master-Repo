@@ -23,65 +23,79 @@
 
 package com.noxpvp.mmo.manager;
 
+import java.util.UUID;
+import java.util.logging.Level;
+
+import org.bukkit.OfflinePlayer;
+
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.manager.BasePlayerManager;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import org.bukkit.OfflinePlayer;
-
-import java.util.UUID;
-import java.util.logging.Level;
 
 public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instance
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private static MMOPlayerManager instance;
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private static MMOPlayerManager			instance;
+	
+	private static final String				saveFolder	= "playerdata";
+	private static final Class<MMOPlayer>	saveType	= MMOPlayer.class;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private MMOPlayerManager() {
+		super(saveType, saveFolder);
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	public static MMOPlayerManager getInstance() {
-		if (instance == null) instance = new MMOPlayerManager();
+		if (instance == null) {
+			instance = new MMOPlayerManager();
+		}
 		return instance;
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Constructors
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private MMOPlayerManager() {
-		super(MMOPlayer.class, "playerdata");
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Logging
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instanced Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	@Override
-	public ModuleLogger getModuleLogger(String... moduleName) { return super.getModuleLogger(moduleName);} //protected -> public
-
-	public void log(Level level, String msg) {
-		getLogger().log(level, msg);
+	public ModuleLogger getModuleLogger(String... moduleName) {
+		return super.getModuleLogger(moduleName);
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+	
 	public NoxMMO getPlugin() {
 		return NoxMMO.getInstance();
 	}
-
+	
+	@Override
+	public void log(Level level, String msg) {
+		getLogger().log(level, msg);
+	}
+	
+	@Override
+	public void save(OfflinePlayer player) {
+		final MMOPlayer np = getIfLoaded(player.getUniqueId());
+		if (np == null)
+			return;
+		
+		super.save(player);
+	}
+	
 	@Override
 	public void unloadAndSave(UUID id) {
 		super.unloadAndSave(id);
-	} //protected -> public
-
-	@Override
-	public void save(OfflinePlayer player) {
-		MMOPlayer np = getIfLoaded(player.getUniqueId());
-		if (np == null) return;
-
-		super.save(player);
-	}
+	} // protected -> public
 }

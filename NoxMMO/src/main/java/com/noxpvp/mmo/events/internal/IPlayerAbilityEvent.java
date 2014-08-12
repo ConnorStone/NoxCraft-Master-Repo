@@ -23,22 +23,27 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import org.bukkit.entity.Player;
 
-public interface IPlayerAbilityEvent<T extends PlayerAbility> extends IAbilityEvent<T> {
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
 
+public interface IPlayerAbilityEvent<T extends BasePlayerAbility> extends
+		IAbilityEvent<T> {
+	
 	/**
-	 * Gets the {@link com.noxpvp.mmo.abilities.internal.PlayerAbility} associated with this event
-	 *
-	 * @return {@link com.noxpvp.mmo.abilities.internal.PlayerAbility} The ability
+	 * Gets the {@link com.noxpvp.mmo.abilities.internal.PlayerAbility}
+	 * associated with this event
+	 * 
+	 * @return {@link com.noxpvp.mmo.abilities.internal.PlayerAbility} The
+	 *         ability
 	 */
 	public T getAbility();
-
+	
 	/**
 	 * Retrieves the player associated with the event.
+	 * 
 	 * @return {@link Player}
 	 */
 	public Player getPlayer();
-
+	
 }

@@ -23,106 +23,121 @@
 
 package com.noxpvp.mmo.util;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.filtering.Filter;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
-import org.bukkit.OfflinePlayer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.bukkit.OfflinePlayer;
+
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.bergerkiller.bukkit.common.filtering.Filter;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
+
 public class PlayerClassUtil {
-
-	public static final String LOG_MODULE_NAME = "PlayerClass";
-
-	private static ModuleLogger log;
-
-	private static Filter<IPlayerClass> changedFilter = new Filter<IPlayerClass>() {
-		public boolean isFiltered(IPlayerClass element) {
-			if (element.getTotalExp() >= 1) return true;
-			else if (element.getLevel() >= 1) return true;
-			return false;
-		}
-	};
-
-	private static Filter<IPlayerClass> canUseFilter = new Filter<IPlayerClass>() {
-		public boolean isFiltered(IPlayerClass element) {
-			return element.canUseClass();
-		}
-	};
-
+	
+	public static final String			LOG_MODULE_NAME	= "PlayerClass";
+	
+	private static ModuleLogger			log;
+	
+	private static Filter<PlayerClass>	changedFilter	= new Filter<PlayerClass>() {
+															
+															public boolean isFiltered(
+																	PlayerClass element) {
+																if (element.getExp() >= 1)
+																	return true;
+																else if (element
+																		.getLevel() >= 1)
+																	return true;
+																return false;
+															}
+														};
+	
+	private static Filter<PlayerClass>	canUseFilter	= new Filter<PlayerClass>() {
+															
+															public boolean isFiltered(
+																	PlayerClass element) {
+																return element
+																		.canUseClass();
+															}
+														};
+	
+	public static Collection<? extends PlayerClass> getAllClasses(MMOPlayer player) {
+		return player.getPlayerClasses();
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Utilities: getAllClasses
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public static Collection<? extends PlayerClass> getAllClasses(UUID playerID) {
+		return getAllClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
+	}
+	
+	public static Collection<? extends PlayerClass> getModifiedClasses(
+			MMOPlayer player) {
+		return getFiltered(player.getPlayerClasses(), changedFilter);
+	}
+	
+	public static Collection<? extends PlayerClass> getModifiedClasses(
+			OfflinePlayer player) {
+		return getModifiedClasses(player.getUniqueId());
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Utilities: getModifiedClasses
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public static Collection<? extends PlayerClass> getModifiedClasses(UUID playerID) {
+		return getModifiedClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
+	}
+	
+	public static Collection<? extends PlayerClass> getUsableClasses(
+			OfflinePlayer player) {
+		return getUsableClasses(player.getUniqueId());
+	}
+	
+	public static Collection<? extends PlayerClass> getUsableClasses(UUID playerID) {
+		return getUsableClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Utilities: getAllowedClasses
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	public static void init() {
 		log = NoxMMO.getInstance().getModuleLogger(LOG_MODULE_NAME);
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Static Utilities: getAllClasses
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public Collection<? extends IPlayerClass> getAllClasses(OfflinePlayer player) {
-		return getAllClasses(player.getUniqueId());
-	}
-
-	public static Collection<? extends IPlayerClass> getAllClasses(UUID playerID) {
-		return getAllClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
-	}
-
-	public static Collection<? extends IPlayerClass> getAllClasses(MMOPlayer player) {
-		return player.getClassMap().values();
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Static Utilities: getModifiedClasses
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public static Collection<? extends IPlayerClass> getModifiedClasses(OfflinePlayer player) {
-		return getModifiedClasses(player.getUniqueId());
-	}
-
-	public static Collection<? extends IPlayerClass> getModifiedClasses(UUID playerID) {
-		return getModifiedClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
-	}
-
-	public static Collection<? extends IPlayerClass> getModifiedClasses(MMOPlayer player) {
-		return getFiltered(player.getPlayerClasses(), changedFilter);
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Static Utilities: getAllowedClasses
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	public static Collection<? extends IPlayerClass> getUsableClasses(OfflinePlayer player) {
-		return getUsableClasses(player.getUniqueId());
-	}
-
-	public static Collection<? extends IPlayerClass> getUsableClasses(UUID playerID) {
-		return getUsableClasses(MMOPlayerManager.getInstance().getPlayer(playerID));
-	}
-
-	private static Collection<? extends IPlayerClass> getUsableClasses(MMOPlayer player) {
-		return getFiltered(player.getPlayerClasses(), canUseFilter);
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Static Internal Utilities: Filtering
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private static <T extends IPlayerClass> Collection<T> getFiltered(Collection<T> values, Filter<IPlayerClass> filter) {
+	
+	private static <T extends PlayerClass> Collection<T> getFiltered(
+			Collection<T> values, Filter<PlayerClass> filter) {
 		try {
-			Iterator<T> iterator = values.iterator();
+			final Iterator<T> iterator = values.iterator();
 			while (iterator.hasNext())
-				if (!filter.isFiltered(iterator.next())) iterator.remove();
-		} catch (UnsupportedOperationException e) {
-			//Ignore and retry with a new mutable version.
+				if (!filter.isFiltered(iterator.next())) {
+					iterator.remove();
+				}
+		} catch (final UnsupportedOperationException e) {
+			// Ignore and retry with a new mutable version.
 			return getFiltered(new ArrayList<T>(values), filter);
 		}
 		return values;
 	}
-
-
+	
+	private static Collection<? extends PlayerClass> getUsableClasses(
+			MMOPlayer player) {
+		return getFiltered(player.getPlayerClasses(), canUseFilter);
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Internal Utilities: Filtering
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public Collection<? extends PlayerClass> getAllClasses(OfflinePlayer player) {
+		return getAllClasses(player.getUniqueId());
+	}
+	
 }

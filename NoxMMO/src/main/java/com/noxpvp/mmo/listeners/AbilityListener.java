@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.listeners;
 
-import com.noxpvp.mmo.abilities.internal.DamagingAbility;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,108 +34,125 @@ import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BasePlayerAbility;
+import com.noxpvp.mmo.abilities.internal.DamagingAbility;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.abilities.internal.SilentAbility;
-import com.noxpvp.mmo.abilities.internal.TargetedPlayerAbility;
 import com.noxpvp.mmo.events.ability.post.PostPlayerAbilityEvent;
-import com.noxpvp.mmo.events.ability.post.PostTargettedPlayerAbilityEvent;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.prism.AbilityUsePrismEvent;
 
 public class AbilityListener extends NoxListener<NoxMMO> {
-	private boolean isPrismActive;
-	private MMOPlayerManager pm;
-
+	
+	private final boolean			isPrismActive;
+	private final MMOPlayerManager	pm;
+	
 	public AbilityListener(boolean isPrismActive) {
 		this(NoxMMO.getInstance(), isPrismActive);
 	}
-
+	
 	public AbilityListener(NoxMMO plugin, boolean isPrismActive) {
 		super(plugin);
-
+		
 		this.isPrismActive = isPrismActive;
-		this.pm = MMOPlayerManager.getInstance();
+		pm = MMOPlayerManager.getInstance();
 	}
-
-	//TODO finish
-
+	
+	// TODO finish
+	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerAbilityExecuted(PostPlayerAbilityEvent event) {
-		if (event instanceof PostTargettedPlayerAbilityEvent) //Ignore Event.
-			return;
 		
-		Player p = event.getPlayer();
-		MMOPlayer mp = pm.getPlayer(p);
-		NoxPlayer np = mp.getNoxPlayer();
-		PlayerAbility ab = event.getAbility();
-		AbilityResult result = event.getResult();
+		final Player p = event.getPlayer();
+		final MMOPlayer mp = pm.getPlayer(p);
+		final NoxPlayer np = mp.getNoxPlayer();
+		final PlayerAbility ab = event.getAbility();
+		final AbilityResult<BasePlayerAbility> result = event.getResult();
 		
-		boolean hasMessages = result.hasMessages();
-		boolean silent = (ab instanceof SilentAbility);
-		boolean hasCD = ab.getCD().toStamp() > 0;
+		final boolean hasMessages = result.hasMessages();
+		final boolean silent = ab instanceof SilentAbility;
+		final boolean hasCD = ab.getCD().toStamp() > 0;
 		
 		if (result.isSuccessful()) {
 			
-			if (isPrismActive)
+			if (isPrismActive) {
 				AbilityUsePrismEvent.trigger(p, result);
+			}
 			
-			if (hasCD)
+			if (hasCD) {
 				np.addCoolDown(ab.getName(), ab.getCD(), !silent);
+			}
 		}
 		
 		if (!silent)
 			if (!hasMessages) {
-				if (result.isSuccessful())
+				if (result.isSuccessful()) {
 					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE, ab.getName());
-			} else
-				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result.getMessages())));		
+				}
+			} else {
+				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
+						.getMessages())));
+			}
 	}
-
+	
 	public void onPlayerTargetedAbilityExecuted(PostTargettedPlayerAbilityEvent event) {
-		Player p = event.getPlayer();
-		MMOPlayer mp = pm.getPlayer(p);
-		NoxPlayer np = mp.getNoxPlayer();
-		TargetedPlayerAbility ab = event.getAbility();
-		AbilityResult result = event.getResult();
+		final Player p = event.getPlayer();
+		final MMOPlayer mp = pm.getPlayer(p);
+		final NoxPlayer np = mp.getNoxPlayer();
+		final TargetedPlayerAbility ab = event.getAbility();
+		final AbilityResult result = event.getResult();
 		
-		boolean hasMessages = result.hasMessages();
-		boolean silent = (ab instanceof SilentAbility);
-		boolean hasCD = ab.getCD().toStamp() > 0;
+		final boolean hasMessages = result.hasMessages();
+		final boolean silent = ab instanceof SilentAbility;
+		final boolean hasCD = ab.getCD().toStamp() > 0;
 		
 		if (result.isSuccessful()) {
 			
-			if (isPrismActive)
+			if (isPrismActive) {
 				AbilityUsePrismEvent.trigger(p, result);
+			}
 			
-			if (hasCD)
+			if (hasCD) {
 				np.addCoolDown(ab.getName(), ab.getCD(), !silent);
+			}
 		}
-
-		String target = ab.getTarget() instanceof Player ?
+		
+		final String target = ab.getTarget() instanceof Player ?
 				pm.getPlayer((Player) ab.getTarget()).getNoxPlayer().getFullName() :
 				ab.getTarget().getType().name().toLowerCase();
-
+		
 		if (!silent) {
 			if (hasMessages) {
-				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result.getMessages())));
+				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
+						.getMessages())));
 			} else if (ab instanceof DamagingAbility) {
-				DamagingAbility dab = (DamagingAbility) ab;
+				final DamagingAbility dab = (DamagingAbility) ab;
 				if (dab.getDamage() > 0 && result.isSuccessful()) {
-					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab.getName(), target, String.format("%.2f", dab.getDamage()));
-
-					if (ab.getTarget() instanceof Player)
-						MessageUtil.sendLocale((Player) ab.getTarget(), MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np.getFullName(), ab.getName(), String.format("%.2f", dab.getDamage()));
+					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab
+							.getName(), target, String.format("%.2f", dab
+							.getDamage()));
+					
+					if (ab.getTarget() instanceof Player) {
+						MessageUtil.sendLocale((Player) ab.getTarget(),
+								MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np
+										.getFullName(), ab.getName(), String.format(
+										"%.2f", dab.getDamage()));
+					}
 				}
 			} else if (result.isSuccessful()) {
-				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET, ab.getName(), target);
+				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET, ab.getName(),
+						target);
 				
-				if (ab.getTarget() instanceof Player)
-					MessageUtil.sendLocale((Player) ab.getTarget(), MMOLocale.ABIL_HIT_ATTACKER, np.getFullName(), ab.getName());
+				if (ab.getTarget() instanceof Player) {
+					MessageUtil.sendLocale((Player) ab.getTarget(),
+							MMOLocale.ABIL_HIT_ATTACKER, np.getFullName(), ab
+									.getName());
+				}
 			}
 		}
 		
 		return;
 	}
-
+	
 }

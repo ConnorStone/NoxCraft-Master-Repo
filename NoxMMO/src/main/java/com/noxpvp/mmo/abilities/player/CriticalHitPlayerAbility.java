@@ -35,65 +35,70 @@ import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
-public class CriticalHitPlayerAbility extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
-
-	public static final String PERM_NODE = "critical-hit";
-	public static final String ABILITY_NAME = "Critical Hit";
-	private MMOPlayerManager pm;
-
+public class CriticalHitPlayerAbility extends BasePlayerAbility implements
+		PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+	
+	public static final String		PERM_NODE		= "critical-hit";
+	public static final String		ABILITY_NAME	= "Critical Hit";
+	private final MMOPlayerManager	pm;
+	
 	public CriticalHitPlayerAbility(OfflinePlayer p) {
 		super(ABILITY_NAME, p);
-
-		this.pm = MMOPlayerManager.getInstance();
-	}
-
-	@Override
-	public String getDescription() {
-		return "A random chance to land a critical hit, causing nausia and increased damage on the target";
-	}
-
-	public AbilityResult<CriticalHitPlayerAbility> execute(EntityDamageByEntityEvent event) {
-		if (!mayExecute())
-			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
-
-		Player playerAttacker = (Player) ((event.getDamager() instanceof Player) ? event.getDamager() : null);
-
-
-		if (playerAttacker == null || !playerAttacker.equals(getPlayer()))
-			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
 		
-		String itemName = playerAttacker.getItemInHand().getType().name().toUpperCase();
-		if (!itemName.contains("SWORD") && !itemName.contains("AXE"))
-			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
-
-		MMOPlayer player = pm.getPlayer(getPlayer());
-
-		if (player == null)
-			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
-
-		IPlayerClass clazz = player.getPrimaryClass();
-
-		double damage = (clazz.getLevel() + clazz.getTotalLevel()) / 75;
-		if ((Math.random() * 100) > (damage * 45))
-			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
-
-		event.setDamage(damage);
-
-		if (event.getEntity() instanceof LivingEntity)
-			((LivingEntity) event.getEntity()).addPotionEffect(
-					new PotionEffect(PotionEffectType.CONFUSION, 40, 2, false));
-
-		return new AbilityResult<CriticalHitPlayerAbility>(this, true);
+		pm = MMOPlayerManager.getInstance();
 	}
-
+	
 	/**
 	 * Always Returns True Due To Being Passive!
 	 */
 	public AbilityResult execute() {
 		return new AbilityResult<CriticalHitPlayerAbility>(this, true);
 	}
-
+	
+	public AbilityResult<CriticalHitPlayerAbility> execute(
+			EntityDamageByEntityEvent event) {
+		if (!mayExecute())
+			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
+		
+		final Player playerAttacker = (Player) (event.getDamager() instanceof Player ? event
+				.getDamager()
+				: null);
+		
+		if (playerAttacker == null || !playerAttacker.equals(getPlayer()))
+			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
+		
+		final String itemName = playerAttacker.getItemInHand().getType().name()
+				.toUpperCase();
+		if (!itemName.contains("SWORD") && !itemName.contains("AXE"))
+			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
+		
+		final MMOPlayer player = pm.getPlayer(getPlayer());
+		
+		if (player == null)
+			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
+		
+		final PlayerClass clazz = player.getPrimaryClass();
+		
+		final double damage = clazz.getLevel() / 75;
+		if (Math.random() * 100 > damage * 45)
+			return new AbilityResult<CriticalHitPlayerAbility>(this, false);
+		
+		event.setDamage(damage);
+		
+		if (event.getEntity() instanceof LivingEntity) {
+			((LivingEntity) event.getEntity()).addPotionEffect(
+					new PotionEffect(PotionEffectType.CONFUSION, 40, 2, false));
+		}
+		
+		return new AbilityResult<CriticalHitPlayerAbility>(this, true);
+	}
+	
+	@Override
+	public String getDescription() {
+		return "A random chance to land a critical hit, causing nausia and increased damage on the target";
+	}
+	
 }

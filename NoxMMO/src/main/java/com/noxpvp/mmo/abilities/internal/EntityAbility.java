@@ -23,22 +23,25 @@
 
 package com.noxpvp.mmo.abilities.internal;
 
-import com.noxpvp.core.internal.IHeated;
-import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
 import org.bukkit.entity.Entity;
 
-public interface EntityAbility extends Ability, IHeated, IMMOHandlerHolder{
+import com.noxpvp.core.internal.IHeated;
+import com.noxpvp.mmo.abilities.EntityAbilityTier;
+import com.noxpvp.mmo.listeners.IMMOHandlerHolder;
+
+public interface EntityAbility<T extends EntityAbilityTier<? extends EntityAbility>>
+		extends TieredAbility<T>, IHeated, IMMOHandlerHolder {
 	
 	/**
 	 * Retrieves the entity responsible for this ability.
-	 *
+	 * 
 	 * @return Entity object from bukkit.
 	 */
 	public Entity getEntity();
-
-//	public void addEffectedEntity(Entity e);
-//
-//	public List<Entity> getEffectedEntities();
-//
-//	public void clearEffected();
+	
+	// public void addEffectedEntity(Entity e);
+	//
+	// public List<Entity> getEffectedEntities();
+	//
+	// public void clearEffected();
 }

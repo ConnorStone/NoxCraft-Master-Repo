@@ -26,57 +26,63 @@ package com.noxpvp.mmo.filters;
 import com.bergerkiller.bukkit.common.filtering.Filter;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
+
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerClassIdentifierFilter implements Filter<Player> {
-
-	private List<String> classIds;
-
-	private boolean inverse = false;
-
+	
+	private final List<String>	classIds;
+	
+	private boolean				inverse	= false;
+	
+	public PlayerClassIdentifierFilter(String... ids) {
+		classIds = new ArrayList<String>();
+		for (final String id : ids) {
+			if (PlayerClassUtil. {
+				classIds.add(id);
+			}
+		}
+	}
+	
+	private static MMOPlayer getMMOPlayer(Player player) {
+		return MMOPlayerManager.getInstance().getPlayer(player);
+	}
+	
 	/**
 	 * Sets the internal inversion value for the output of isFiltered
-	 *
-	 * @param invert inverse value to set to.
+	 * 
+	 * @param invert
+	 *            inverse value to set to.
 	 * @return self instance for chaining.
 	 */
 	public PlayerClassIdentifierFilter invertFilter(boolean invert) {
 		inverse = invert;
 		return this;
 	}
-
+	
+	public boolean isFiltered(Player player) {
+		final MMOPlayer mPlayer = getMMOPlayer(player);
+		
+		final PlayerClass mainClass = mPlayer.getPrimaryClass();
+		final PlayerClass subClass = mPlayer.getSecondaryClass();
+		
+		if (classIds.contains(mainClass.getName())
+				|| classIds.contains(mainClass.getName()))
+			return !inverse;
+		if (classIds.contains(subClass.getName())
+				|| classIds.contains(subClass.getName()))
+			return !inverse;
+		
+		return inverse;
+	}
+	
 	public boolean isInverse() {
 		return inverse;
-	}
-
-	public PlayerClassIdentifierFilter(String... ids) {
-		classIds = new ArrayList<String>();
-		for (String id : ids) {
-			if (PlayerClassUtil.hasClass(id))
-				classIds.add(id);
-		}
-	}
-
-	public boolean isFiltered(Player player) {
-		MMOPlayer mPlayer = getMMOPlayer(player);
-
-		IPlayerClass mainClass = mPlayer.getPrimaryClass();
-		IPlayerClass subClass = mPlayer.getSecondaryClass();
-
-		if (classIds.contains(mainClass.getUniqueID()) || classIds.contains(mainClass.getName()))
-			return !inverse;
-		if (classIds.contains(subClass.getUniqueID()) || classIds.contains(subClass.getName()))
-			return !inverse;
-
-		return inverse;
-	}
-
-	private static MMOPlayer getMMOPlayer(Player player) {
-		return MMOPlayerManager.getInstance().getPlayer(player);
 	}
 }

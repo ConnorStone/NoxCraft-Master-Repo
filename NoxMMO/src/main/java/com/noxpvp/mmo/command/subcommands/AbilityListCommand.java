@@ -23,7 +23,7 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.ChatColor;
 
 import com.noxpvp.core.commands.BaseCommand;
@@ -57,7 +57,7 @@ public class AbilityListCommand extends BaseCommand {
 		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
 		NoxMessageBuilder mb = new NoxMessageBuilder(getPlugin()).commandHeader("Ability List", true);
 
-		for (Ability ability : player.getAbilities()) {
+		for (TieredAbility ability : player.getAbilities()) {
 			mb.yellow(ability.getDisplayName()).gold(": ").newLine();
 			for (String lore : ability.getLore(ChatColor.RED, 30))
 				mb.append(lore).newLine();

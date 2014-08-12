@@ -37,7 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.AbilityResult;
 
 /**
  * @author NoxPVP
@@ -131,9 +131,9 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 	/**
 	 * @return Boolean If execution has ended successfully
 	 */
-	public RangedAbilityResult execute() {
+	public AbilityResult execute() {
 		if (!mayExecute())
-			return new RangedAbilityResult<TrackingPlayerAbility>(this, false);
+			return new AbilityResult<TrackingPlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		double radius = getRange();
@@ -146,7 +146,7 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 		}
 
 		if (it == null)
-			return new RangedAbilityResult<TrackingPlayerAbility>(this, false, MMOLocale.ABIL_NO_TARGET.get());
+			return new AbilityResult<TrackingPlayerAbility>(this, false, MMOLocale.ABIL_NO_TARGET.get());
 
 		Monster tracker = (Monster) p.getWorld().spawnEntity(p.getLocation(), EntityType.ZOMBIE);
 
@@ -162,7 +162,7 @@ public class TrackingPlayerAbility extends BaseRangedPlayerAbility {
 		new ParticleRunner(ParticleType.flame, it, true, 0, 0, 4).start(0, 5);
 		new DespawnRunnable(tracker).runTaskLater(NoxMMO.getInstance(), duration);
 
-		return new RangedAbilityResult<TrackingPlayerAbility>(this, true);
+		return new AbilityResult<TrackingPlayerAbility>(this, true);
 	}
 
 }

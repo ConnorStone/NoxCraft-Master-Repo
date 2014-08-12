@@ -26,37 +26,51 @@ package com.noxpvp.mmo.abilities;
 import org.apache.commons.lang.Validate;
 
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public class AbilityResult<T extends Ability> {
-	private final T ability;
-	final boolean successful;
-	private String[] messages;
-
+public class AbilityResult<T extends TieredAbility<?>> {
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private final T		ability;
+	final boolean		successful;
+	private String[]	messages;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public AbilityResult(T ability, boolean success) {
+		this(ability, success, null);
+	}
+	
 	public AbilityResult(T ability, boolean success, String... messages) {
 		Validate.notNull(ability, "Ability cannot be null!");
+		
 		this.ability = ability;
 		this.successful = success;
 		this.messages = LogicUtil.fixNull(messages, new String[0]);
 	}
-
-	public AbilityResult(T ability, boolean success) {
-		this(ability, success, null);
-	}
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	public T getAbility() {
 		return ability;
 	}
-
-	public boolean isSuccessful() {
-		return successful;
+	
+	public String[] getMessages() {
+		return messages;
 	}
-
+	
 	public boolean hasMessages() {
 		return getMessages().length > 0;
 	}
-
-	public String[] getMessages() {
-		return messages;
+	
+	public boolean isSuccessful() {
+		return successful;
 	}
 }

@@ -24,7 +24,7 @@
 package com.noxpvp.mmo.prism;
 
 import com.noxpvp.core.external.prism.NoxPrismEventArgBuilder;
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -41,7 +41,7 @@ public class MMOPrismEventArgBuilder extends NoxPrismEventArgBuilder {
 	public static final String DAMAGE_ARG = "damage";
 	public static final String HEAL_ARG = "heal";
 	
-	public void withAbility(Ability ab) {
+	public void withAbility(TieredAbility ab) {
 		withArg(ABILITY_ARG, ab.getDisplayName(ChatColor.GOLD));
 	}
 	

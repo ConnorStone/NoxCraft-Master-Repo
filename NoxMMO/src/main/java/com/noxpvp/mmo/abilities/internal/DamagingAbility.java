@@ -23,18 +23,14 @@
 
 package com.noxpvp.mmo.abilities.internal;
 
-public interface DamagingAbility extends Ability {
+public interface DamagingAbility {
+	
 	/**
-	 * Gets the damage variable stored in this ability, 0 if it has not been set
-	 *
+	 * Gets the damage variable set for the given tier level of this
+	 * ability
+	 * 
 	 * @return {@link Double} damage amount
 	 */
-	double getDamage();
-
-	/**
-	 * Sets a damage variable to be used in this ability
-	 *
-	 * @param damage
-	 */
-	void setDamage(double damage);
+	double getDamage(int tierLevel);
+	
 }

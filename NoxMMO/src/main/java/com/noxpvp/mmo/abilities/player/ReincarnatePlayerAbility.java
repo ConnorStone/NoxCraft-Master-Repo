@@ -36,7 +36,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import static com.noxpvp.mmo.abilities.BaseRangedAbility.RangedAbilityResult;
+import static com.noxpvp.mmo.abilities.BaseRangedAbility.AbilityResult;
 
 public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 
@@ -95,9 +95,9 @@ public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 	 *
 	 * @return boolean If this ability executed successfully
 	 */
-	public RangedAbilityResult<ReincarnatePlayerAbility> execute() {
+	public AbilityResult<ReincarnatePlayerAbility> execute() {
 		if (!mayExecute())
-			return new RangedAbilityResult<ReincarnatePlayerAbility>(this, false);
+			return new AbilityResult<ReincarnatePlayerAbility>(this, false);
 
 		Player p = getPlayer();
 		Location pLoc = p.getLocation();
@@ -122,13 +122,13 @@ public class ReincarnatePlayerAbility extends BaseRangedPlayerAbility {
 		}
 
 		if (target == null)
-			new RangedAbilityResult<ReincarnatePlayerAbility>(this, false, MMOLocale.ABIL_NO_TARGET.get());
+			new AbilityResult<ReincarnatePlayerAbility>(this, false, MMOLocale.ABIL_NO_TARGET.get());
 
 		new ParticleRunner(ParticleType.explode, dLoc.clone().add(0, 1, 0), true, 0, 50, 1).start(0);
 		dLoc.getWorld().playSound(dLoc, Sound.ENDERMAN_TELEPORT, 3, 1);
 
 		target.teleport(dLoc);
-		return new RangedAbilityResult<ReincarnatePlayerAbility>(this, true, MMOLocale.ABIL_USE_TARGET.get(getName(), target instanceof Player ?
+		return new AbilityResult<ReincarnatePlayerAbility>(this, true, MMOLocale.ABIL_USE_TARGET.get(getName(), target instanceof Player ?
 				MMOPlayerManager.getInstance().getPlayer(target).getNoxPlayer().getFullName() : target.getType().name().toLowerCase()));
 	}
 

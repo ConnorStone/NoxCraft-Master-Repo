@@ -23,22 +23,24 @@
 
 package com.noxpvp.mmo.events.ability.post;
 
-import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.internal.Ability;
-import com.noxpvp.mmo.events.internal.IAbilityEvent;
 import org.bukkit.event.Event;
 
-public abstract class PostBaseAbilityEvent<T extends Ability> extends Event implements IAbilityEvent<T>{
-	private final T ability;
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
+import com.noxpvp.mmo.events.internal.IAbilityEvent;
 
+public abstract class PostBaseAbilityEvent<T extends TieredAbility> extends Event
+		implements IAbilityEvent<T> {
+	
+	private final T	ability;
+	
 	public PostBaseAbilityEvent(T ability) {
 		this.ability = ability;
 	}
-
-	@Override
+	
 	public T getAbility() {
 		return ability;
 	}
-
+	
 	public abstract AbilityResult<T> getResult();
 }

@@ -26,9 +26,9 @@ package com.noxpvp.mmo.events.ability.post;
 import org.bukkit.event.HandlerList;
 
 import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public class PostAbilityEvent<T extends Ability> extends PostBaseAbilityEvent<T> {
+public class PostAbilityEvent<T extends TieredAbility> extends PostBaseAbilityEvent<T> {
 
 	private static HandlerList handlers = new HandlerList();
 

@@ -34,113 +34,141 @@ import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.internal.PVPAbility;
 import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 /**
  * @author NoxPVP
  */
-public class BackStabPlayerAbility extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
-
-	public static final String PERM_NODE = "backstab";
-	public static final String ABILITY_NAME = "BackStab";
-
-	private LivingEntity target;
-	private float damagePercent;
-
-	private double accuracy;
-
+public class BackStabPlayerAbility extends BasePlayerAbility implements
+		PassiveAbility<EntityDamageByEntityEvent>, PVPAbility {
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public static final String	PERM_NODE		= "backstab";
+	public static final String	ABILITY_NAME	= "BackStab";
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private LivingEntity		target;
+	private float				damagePercent;
+	
+	private double				accuracy;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	/**
-	 * @param player The Player type user for this ability instance
+	 * @param player
+	 *            The Player type user for this ability instance
 	 */
 	public BackStabPlayerAbility(OfflinePlayer player) {
 		super(ABILITY_NAME, player);
-
-		this.damagePercent = 150;
-		this.accuracy = 20;
+		
+		damagePercent = 150;
+		accuracy = 20;
 	}
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public AbilityResult execute() {
+		return new AbilityResult<BackStabPlayerAbility>(this, true);
+	}
+	
+	public AbilityResult<BackStabPlayerAbility> execute(
+			EntityDamageByEntityEvent event) {
+		if (!mayExecute())
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
+		
+		final LivingEntity t = getTarget();
+		final Player p = getPlayer();
+		
+		final Location pLoc = p.getLocation();
+		final Location tLoc = t.getLocation();
+		final double tYaw = tLoc.getYaw();
+		final double pYaw = pLoc.getYaw();
+		
+		if (!(pYaw <= tYaw + accuracy) && pYaw >= tYaw - accuracy)
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
+		
+		final MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
+		if (player == null)
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
+		
+		final PlayerClass clazz = player.getPrimaryClass();
+		
+		final float chance = clazz.getLevel() / 10;
+		
+		if (Math.random() * 100 > chance)
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
+		
+		if (pLoc.distance(tLoc) < .35)// prevent if inside the target
+			return new AbilityResult<BackStabPlayerAbility>(this, false);
+		
+		event.setDamage(event.getDamage() * damagePercent);
+		
+		return new AbilityResult<BackStabPlayerAbility>(this, true);
+	}
+	
 	/**
-	 * @return double the currently set accuracy required for being behind the target
+	 * @return double the currently set accuracy required for being behind
+	 *         the target
 	 */
 	public double getAccuracy() {
 		return accuracy;
 	}
-
+	
 	/**
-	 * @param accuracy double value in degrees of accuracy required. 0 = exactly behind, 20 (Default) = 20 degrees to either side of target
-	 * @return BackStabAbility This instance, used for chaining
+	 * @return double The currently set damage percent. 100% = normal
+	 *         damage.
 	 */
-	public BackStabPlayerAbility setAccuracy(double accuracy) {
-		this.accuracy = accuracy;
-		return this;
+	public float getDamagePercent() {
+		return damagePercent;
 	}
-
+	
 	/**
 	 * @return Entity The currently set target for this ability
 	 */
 	public LivingEntity getTarget() {
 		return target;
 	}
-
+	
 	/**
-	 * @param target The LivingEntity type target for this ability instance
+	 * @param accuracy
+	 *            double value in degrees of accuracy required. 0 = exactly
+	 *            behind, 20 (Default) = 20 degrees to either side of
+	 *            target
+	 * @return BackStabAbility This instance, used for chaining
+	 */
+	public BackStabPlayerAbility setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
+		return this;
+	}
+	
+	/**
+	 * @param damagePercent
+	 *            double percent value for damage modifier. 100% = normal
+	 *            damage
+	 */
+	public void setDamagePercent(float damagePercent) {
+		this.damagePercent = damagePercent;
+	}
+	
+	/**
+	 * @param target
+	 *            The LivingEntity type target for this ability instance
 	 * @return BackStabAbility This instance, used for chaining
 	 */
 	public BackStabPlayerAbility setTarget(LivingEntity target) {
 		this.target = target;
 		return this;
 	}
-
-	/**
-	 * @return double The currently set damage percent. 100% = normal damage.
-	 */
-	public float getDamagePercent() {
-		return damagePercent;
-	}
-
-	/**
-	 * @param damagePercent double percent value for damage modifier. 100% = normal damage
-	 */
-	public void setDamagePercent(float damagePercent) {
-		this.damagePercent = damagePercent;
-	}
-
-	public AbilityResult<BackStabPlayerAbility> execute(EntityDamageByEntityEvent event) {
-		if (!mayExecute())
-			return new AbilityResult<BackStabPlayerAbility>(this, false);
-
-		LivingEntity t = getTarget();
-		Player p = getPlayer();
-
-		Location pLoc = p.getLocation();
-		Location tLoc = t.getLocation();
-		double tYaw = tLoc.getYaw();
-		double pYaw = pLoc.getYaw();
-
-		if (!(pYaw <= (tYaw + accuracy)) && (pYaw >= (tYaw - accuracy)))
-			return new AbilityResult<BackStabPlayerAbility>(this, false);
-
-		MMOPlayer player = MMOPlayerManager.getInstance().getPlayer(p);
-		if (player == null)
-			return new AbilityResult<BackStabPlayerAbility>(this, false);
-
-		IPlayerClass clazz = player.getPrimaryClass();
-
-		float chance = (clazz.getLevel() + clazz.getTotalLevel()) / 10;//up to 40% at max 400 total levels
-		if ((Math.random() * 100) > chance)
-			return new AbilityResult<BackStabPlayerAbility>(this, false);
-
-		if (pLoc.distance(tLoc) < .35)//prevent if inside the target
-			return new AbilityResult<BackStabPlayerAbility>(this, false);
-
-		event.setDamage(event.getDamage() * damagePercent);
-
-		return new AbilityResult<BackStabPlayerAbility>(this, true);
-	}
-
-	public AbilityResult execute() {
-		return new AbilityResult<BackStabPlayerAbility>(this, true);
-	}
-
+	
 }

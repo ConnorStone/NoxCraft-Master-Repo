@@ -26,7 +26,7 @@ package com.noxpvp.mmo.renderers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.ChatColor;
 
 import com.noxpvp.core.gui.CoreBoard;
@@ -42,7 +42,7 @@ public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements IC
 		this(cycler, new CoreBoard("Abilities", cycler.getPlayer()));
 		entries = new ArrayList<String>();
 
-		for (Ability ability : cycler.getList())
+		for (TieredAbility ability : cycler.getList())
 			entries.add(ability.getName());
 	}
 

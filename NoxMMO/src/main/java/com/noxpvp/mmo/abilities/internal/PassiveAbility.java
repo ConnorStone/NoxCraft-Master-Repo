@@ -30,6 +30,6 @@ import com.noxpvp.mmo.abilities.AbilityResult;
 /**
  * Currently this is no different from Ability. It only marks abilities that activate by themselves.
  */
-public interface PassiveAbility<T extends Event> extends Ability {
+public interface PassiveAbility<T extends Event> extends TieredAbility {
 	public AbilityResult execute(T event);
 }

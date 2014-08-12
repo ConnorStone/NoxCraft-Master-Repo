@@ -23,15 +23,17 @@
 
 package com.noxpvp.mmo.events.internal;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public interface IAbilityEvent<T extends Ability> {
-
+public interface IAbilityEvent<T extends TieredAbility<?>> {
+	
 	/**
-	 * Get the {@link com.noxpvp.mmo.abilities.internal.Ability} associated with this event
-	 *
-	 * @return {@link com.noxpvp.mmo.abilities.internal.Ability} The ability
+	 * Get the {@link com.noxpvp.mmo.abilities.internal.TieredAbility}
+	 * associated with this event
+	 * 
+	 * @return {@link com.noxpvp.mmo.abilities.internal.TieredAbility} The
+	 *         ability
 	 */
 	public T getAbility();
-
+	
 }

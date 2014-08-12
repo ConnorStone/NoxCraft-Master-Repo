@@ -23,37 +23,39 @@
 
 package com.noxpvp.mmo.events.ability.post;
 
-import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.internal.EntityAbility;
-import com.noxpvp.mmo.events.internal.IEntityAbilityEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
 
-public class PostEntityAbilityEvent<T extends EntityAbility> extends PostAbilityEvent<T> implements IEntityAbilityEvent<T> {
+import com.noxpvp.mmo.abilities.AbilityResult;
+import com.noxpvp.mmo.abilities.BaseEntityAbility;
+import com.noxpvp.mmo.events.internal.IEntityAbilityEvent;
 
-	private static HandlerList handlers = new HandlerList();
-	private final Entity entity;
-
+public class PostEntityAbilityEvent<T extends BaseEntityAbility> extends
+		PostAbilityEvent<T> implements IEntityAbilityEvent<T> {
+	
+	private static HandlerList	handlers	= new HandlerList();
+	private final Entity		entity;
+	
 	public PostEntityAbilityEvent(T ability, AbilityResult<T> result, Entity entity) {
 		super(ability, result);
 		this.entity = entity;
 	}
-
-	public Entity getEntity() {
-		return entity;
-	}
-
+	
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
+	
 	@Override
 	public T getAbility() {
 		return super.getAbility();
+	}
+	
+	public Entity getEntity() {
+		return entity;
+	}
+	
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 }

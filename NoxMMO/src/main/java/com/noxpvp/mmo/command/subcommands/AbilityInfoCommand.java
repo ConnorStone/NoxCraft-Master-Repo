@@ -31,7 +31,7 @@ import com.noxpvp.core.commands.SafeNullPointerException;
 import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.internal.Ability;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
@@ -67,9 +67,9 @@ public class AbilityInfoCommand extends BaseCommand {
 		if (mPlayer == null)
 			return new CommandResult(this, true, new MessageBuilder().red("mPlayer object is null!").lines());
 
-		Map<String, Ability> abilities = mPlayer.getAbilitiesMap();
+		Map<String, TieredAbility> abilities = mPlayer.getAbilitiesMap();
 
-		Ability ability = null;
+		TieredAbility ability = null;
 		if (abilities.containsKey(abilityName))
 			ability = abilities.get(abilityName);
 

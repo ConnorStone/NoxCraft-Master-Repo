@@ -23,20 +23,13 @@
 
 package com.noxpvp.mmo.abilities.internal;
 
-public interface RangedAbility extends Ability {
-
+public interface RangedAbility {
+	
 	/**
-	 * Gets the range for this ability
-	 *
+	 * Gets the range for this ability it the given tier level
+	 * 
 	 * @return {@link Double} the current range limit
 	 */
-	public double getRange();
-
-	/**
-	 * Sets the max range for this ability, the max distance the player and its ranged object
-	 *
-	 * @param range
-	 */
-	public void setRange(double range);
-
+	public double getRange(int tierLevel);
+	
 }

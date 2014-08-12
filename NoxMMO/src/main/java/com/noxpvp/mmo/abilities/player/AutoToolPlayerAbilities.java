@@ -37,169 +37,179 @@ import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.AbilityResult;
 import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AutoToolPlayerAbilities {
-
-	public static class AutoSword extends BasePlayerAbility implements PassiveAbility<EntityDamageByEntityEvent> {
-
-		public static final String ABILITY_NAME = "Auto Sword";
-		public static final String PERM_NODE = "auto-sword";
-
+	
+	public static class AutoArmor extends BasePlayerAbility implements
+			PassiveAbility<EntityDamageEvent> {
+		
+		public static final String	ABILITY_NAME	= "Auto Armor";
+		public static final String	PERM_NODE		= "auto-armor";
+		
+		public AutoArmor(OfflinePlayer player) {
+			super(ABILITY_NAME, player);
+		}
+		
+		public AbilityResult<AutoArmor> execute() {
+			final Player p = getPlayer();
+			
+			if (p.getEquipment().getHelmet().getType() != Material.GOLD_HELMET)
+				return new AbilityResult<AutoArmor>(this, false);
+			
+			p.setRemainingAir(p.getMaximumAir());
+			
+			return new AbilityResult<AutoArmor>(this, true);
+		}
+		
+		public AbilityResult<AutoArmor> execute(EntityDamageEvent event) {
+			return execute();
+		}
+	}
+	
+	public static class AutoSword extends BasePlayerAbility implements
+			PassiveAbility<EntityDamageByEntityEvent> {
+		
+		public static final String	ABILITY_NAME	= "Auto Sword";
+		public static final String	PERM_NODE		= "auto-sword";
+		
 		public AutoSword(OfflinePlayer player) {
 			super(ABILITY_NAME, player);
 		}
-
-		public AbilityResult<AutoSword> execute(EntityDamageByEntityEvent event) {
-			if (!mayExecute())
-				return new AbilityResult<AutoSword>(this, false);
-
-			Player p = getPlayer();
-			Entity e = event.getEntity();
-
-			MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
-
-			int fireTicks = 50;
-
-			IPlayerClass clazz = mmoPlayer.getPrimaryClass();
-
-			fireTicks = (int) (((mmoPlayer != null) && clazz != null) ? clazz.getTotalLevel() / 2.5 : fireTicks);
-
-			e.setFireTicks(fireTicks);
-
-			return new AbilityResult<AutoSword>(this, true);
-		}
-
+		
 		public AbilityResult<AutoSword> execute() {
 			return new AbilityResult<AutoSword>(this, true);
 		}
+		
+		public AbilityResult<AutoSword> execute(EntityDamageByEntityEvent event) {
+			if (!mayExecute())
+				return new AbilityResult<AutoSword>(this, false);
+			
+			final Player p = getPlayer();
+			final Entity e = event.getEntity();
+			
+			final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
+			
+			int fireTicks = 50;
+			
+			final PlayerClass clazz = mmoPlayer.getPrimaryClass();
+			
+			fireTicks = (int) (mmoPlayer != null && clazz != null ? clazz.getLevel() / 2.5
+					: fireTicks);
+			
+			e.setFireTicks(fireTicks);
+			
+			return new AbilityResult<AutoSword>(this, true);
+		}
 	}
-
-	public static class AutoTool extends BasePlayerAbility implements PassiveAbility<BlockBreakEvent> {
-
-		public static final String ABILITY_NAME = "Auto Tool";
-		public static final String PERM_NODE = "auto-tool";
-
+	
+	public static class AutoTool extends BasePlayerAbility implements
+			PassiveAbility<BlockBreakEvent> {
+		
+		public static final String	ABILITY_NAME	= "Auto Tool";
+		public static final String	PERM_NODE		= "auto-tool";
+		
 		public AutoTool(OfflinePlayer player) {
 			super(ABILITY_NAME, player);
 		}
-
-		private void breakBlockBurned(Block block, Material type, int amount, short data) {
-			block.setType(Material.AIR);
-			block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(type, amount, data));
-		}
-
+		
 		public AbilityResult<AutoTool> execute() {
 			return new AbilityResult<AutoTool>(this, true);
 		}
-
+		
 		public AbilityResult<AutoTool> execute(BlockBreakEvent event) {
 			if (!mayExecute())
 				return new AbilityResult<AutoTool>(this, false);
-
-			Block block = event.getBlock();
-			Material tool = getPlayer().getItemInHand().getType();
-
+			
+			final Block block = event.getBlock();
+			final Material tool = getPlayer().getItemInHand().getType();
+			
 			switch (tool) {
-
+			
 				case GOLD_PICKAXE:
 					switch (block.getType()) {
 						case IRON_ORE:
 							event.setCancelled(true);
-							breakBlockBurned(block, Material.IRON_INGOT, 1, (short) 0);
-
+							breakBlockBurned(block, Material.IRON_INGOT, 1,
+									(short) 0);
+							
 							break;
 						case GOLD_ORE:
 							event.setCancelled(true);
-							breakBlockBurned(block, Material.GOLD_INGOT, 1, (short) 0);
-
+							breakBlockBurned(block, Material.GOLD_INGOT, 1,
+									(short) 0);
+							
 							break;
 						case COBBLESTONE:
 							event.setCancelled(true);
 							breakBlockBurned(block, Material.STONE, 1, (short) 0);
-
+							
 							break;
 						case NETHERRACK:
 							event.setCancelled(true);
-							breakBlockBurned(block, Material.NETHER_BRICK_ITEM, 1, (short) 0);
-
+							breakBlockBurned(block, Material.NETHER_BRICK_ITEM, 1,
+									(short) 0);
+							
 							break;
 						default:
 							return new AbilityResult<AutoTool>(this, false);
-
+							
 					}
-
+					
 					break;
 				case GOLD_AXE:
 					switch (block.getType()) {
-
+					
 						case LOG:
 							event.setCancelled(true);
 							breakBlockBurned(block, Material.COAL, 1, (short) 0);
-
+							
 							break;
 						case CACTUS:
 							event.setCancelled(true);
 							breakBlockBurned(block, Material.INK_SACK, 1, (short) 2);
-
+							
 							break;
 						default:
 							return new AbilityResult<AutoTool>(this, false);
-
+							
 					}
-
+					
 					break;
 				case GOLD_SPADE:
 					switch (block.getType()) {
-
+					
 						case SAND:
 							event.setCancelled(true);
 							breakBlockBurned(block, Material.GLASS, 1, (short) 0);
-
+							
 							break;
 						case CLAY:
 							event.setCancelled(true);
-							breakBlockBurned(block, Material.CLAY_BRICK, 3, (short) 0);
-
+							breakBlockBurned(block, Material.CLAY_BRICK, 3,
+									(short) 0);
+							
 							break;
 						default:
 							return new AbilityResult<AutoTool>(this, false);
-
+							
 					}
-
+					
 					break;
 				default:
 					return new AbilityResult<AutoTool>(this, false);
 			}
-
+			
 			return new AbilityResult<AutoTool>(this, true);
 		}
-	}
-
-	public static class AutoArmor extends BasePlayerAbility implements PassiveAbility<EntityDamageEvent> {
-
-		public static final String ABILITY_NAME = "Auto Armor";
-		public static final String PERM_NODE = "auto-armor";
-
-		public AutoArmor(OfflinePlayer player) {
-			super(ABILITY_NAME, player);
-		}
-
-		public AbilityResult<AutoArmor> execute(EntityDamageEvent event) {
-			return execute();
-		}
-
-		public AbilityResult<AutoArmor> execute() {
-			Player p = getPlayer();
-
-			if (p.getEquipment().getHelmet().getType() != Material.GOLD_HELMET)
-				return new AbilityResult<AutoArmor>(this, false);
-
-			p.setRemainingAir(p.getMaximumAir());
-
-			return new AbilityResult<AutoArmor>(this, true);
+		
+		private void breakBlockBurned(Block block, Material type, int amount,
+				short data) {
+			block.setType(Material.AIR);
+			block.getWorld().dropItemNaturally(block.getLocation(),
+					new ItemStack(type, amount, data));
 		}
 	}
-
+	
 }

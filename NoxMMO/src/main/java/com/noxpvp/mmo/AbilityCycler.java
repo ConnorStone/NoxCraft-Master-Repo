@@ -21,19 +21,18 @@
  * To use this software with any different license terms you must get prior explicit written permission from the copyright holders.
  */
 
-
 package com.noxpvp.mmo;
 
-import com.bergerkiller.bukkit.common.utils.LogicUtil;
-import com.google.common.collect.MapMaker;
-import com.noxpvp.core.data.Cycler;
-import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.core.utils.UUIDUtil;
-import com.noxpvp.mmo.abilities.internal.Ability;
-import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
-import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
-import com.noxpvp.mmo.renderers.ItemDisplayACRenderer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -46,117 +45,158 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-import java.util.*;
-import java.util.concurrent.ConcurrentMap;
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.comphenix.attribute.AttributeStorage;
+import com.noxpvp.core.Persistent;
+import com.noxpvp.core.data.Cycler;
+import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.manager.AbilityCyclerManager;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
+import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
 
-public class AbilityCycler extends Cycler<Ability> implements ConfigurationSerializable {
-//	public static final String TEMP_PCTK = "ability-cycler.active-count";
-
-	static ConcurrentMap<String, List<AbilityCycler>> cyclers = null;
-	private static NoxListener<NoxMMO> iHeld = null, iInteract;
-	private ItemStack cycleItem;
-	private Reference<MMOPlayer> player = null;
-	private BaseAbilityCyclerRenderer renderer;
-	private int lastSlot = 0;
-
-	public void setRenderer(BaseAbilityCyclerRenderer renderer) {
-		this.renderer = renderer;
-	}
-
-
-	public AbilityCycler(int size, OfflinePlayer player, ItemStack cycleItem) {
-		this(size, MMOPlayerManager.getInstance().getPlayer(player), cycleItem);
-	}
-
-	public AbilityCycler(Collection<Ability> data, OfflinePlayer player, ItemStack cycleItem) {
-		this(data, MMOPlayerManager.getInstance().getPlayer(player), cycleItem);
-	}
-
-	public AbilityCycler(int size, MMOPlayer player, ItemStack cycleItem) {
-		super(size);
-		this.player = new SoftReference<MMOPlayer>(player);
-		this.cycleItem = cycleItem;
-
-		register(this);
-	}
-
-	public AbilityCycler(Collection<Ability> data, MMOPlayer player, ItemStack cycleItem) {
-		super(data);
-		this.player = new SoftReference<MMOPlayer>(player);
-		this.cycleItem = cycleItem;
+public class AbilityCycler extends Cycler<String> implements
+		Persistent, ConfigurationSerializable {
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private static ModuleLogger				logger;
+	private static NoxListener<NoxMMO>		iHeld, iInteract;
+	private static Map<UUID, AbilityCycler>	cyclers;
+	
+	// Serializers start
+	private static final String				SERIALIZE_ID		= "id";
+	private static final String				SERIALIZE_PLAYER_ID	= "player-id";
+	private static final String				SERIALIZE_ABILITIES	= "abilities";
+	// Serializers end
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Fields
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private final UUID						id;
+	private final UUID						player;
+	private Set<String>						abilities;
+	private BaseAbilityCyclerRenderer		renderer;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public AbilityCycler(Collection<PlayerAbility> data, UUID playerID,
+			ItemStack item) {
+		super();
 		
-		register(this);
-	}
-
-	public static void register(AbilityCycler cycler) {
-		Validate.notNull(cycler.getMMOPlayer());
-
-		MMOPlayer p = cycler.getMMOPlayer();
-
-		final String identity = UUIDUtil.compressUUID(p.getPlayerUUID());
-		if (cyclers == null) cyclers = new MapMaker().concurrencyLevel(4).makeMap();
-		if (cyclers.containsKey(identity))
-			cyclers.get(identity).add(cycler);
-		else {
-			List<AbilityCycler> abilities = new ArrayList<AbilityCycler>();
-			abilities.add(cycler);
-			cyclers.put(identity, abilities);
+		player = playerID;
+		id = UUID.randomUUID();
+		AttributeStorage.newTarget(item, id).setData(id.toString());
+		
+		final List<String> abs = new ArrayList<String>();
+		for (final PlayerAbility ab : data) {
+			abs.add(ab.getName());
 		}
 		
-		cycler.setRenderer(new ItemDisplayACRenderer(cycler));
+		addAll(abs);
+		
+		register(this);
+		AbilityCyclerManager.getInstance().loadObject(this);
 	}
-
-	public static List<AbilityCycler> getCyclers(String identity) {
-		if (isRegistered(identity))
-			return cyclers.get(identity);
-		return Collections.emptyList();
+	
+	public AbilityCycler(Map<String, Object> data) {
+		super();
+		
+		Validate.isTrue(data.containsKey(SERIALIZE_ID)
+				&& data.containsKey(SERIALIZE_PLAYER_ID)
+				&& data.containsKey(abilities),
+				"Data is missing required data from save!");
+		
+		Object getter;
+		
+		if ((getter = data.get(SERIALIZE_ID)) != null && getter instanceof String) {
+			id = UUID.fromString((String) getter);
+		} else {
+			id = UUID.randomUUID();
+		}
+		
+		if ((getter = data.get(SERIALIZE_PLAYER_ID)) != null
+				&& getter instanceof String) {
+			player = UUID.fromString((String) getter);
+		} else
+			throw new IllegalStateException(
+					"Data contained key for player-id, but could not be make into a UUID!");
+		
+		if ((getter = data.get(SERIALIZE_ABILITIES)) != null
+				&& getter instanceof Collection) {
+			abilities = new HashSet<String>((Collection<String>) getter);
+		} else {
+			abilities = new HashSet<String>();
+		}
+		
+		addAll(abilities);
 	}
-
-	public BaseAbilityCyclerRenderer getRenderer() {
-		if (this.renderer != null)
-			return this.renderer;
-		return BaseAbilityCyclerRenderer.dummy;
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Static methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public static AbilityCycler getCycler(UUID id) {
+		return cyclers.get(id);
 	}
-
-	public void renderDisplay() {
-		getRenderer().render();
+	
+	// INITIALIZE
+	public static void init() {
+		
+		cyclers = new HashMap<UUID, AbilityCycler>();
+		
+		iHeld = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
+			
+			@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+			public void onItemHeldEvent(PlayerItemHeldEvent event) {
+				if (!event.getPlayer().isSneaking())
+					return;
+				
+				for (final AbilityCycler ac : cyclers.values())
+					if (ac.isCycleItem(event.getPlayer().getItemInHand())) {
+						ac.onHeld(event);
+					}
+				
+			}
+			
+		};
+		
+		iInteract = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
+			
+			@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+			public void onInteract(PlayerInteractEvent event) {
+				if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) &&
+						!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+					return;
+				
+				for (final AbilityCycler ac : cyclers.values())
+					if (ac.isValid()) {
+						ac.onInteract(event);
+					}
+			}
+		};
+		
+		iHeld.register();
+		iInteract.register();
 	}
-
-	public boolean isCyclerMatch(ItemStack stack) {
-		return (stack.getType().equals(cycleItem.getType()) &&
-				stack.getData().equals(cycleItem.getData()));
+	
+	public static boolean isRegistered(UUID cyclerID) {
+		return cyclers != null && cyclers.containsKey(cyclerID);
 	}
-
-	public boolean isPlayerMatch(Object ob) {
-		if (!(ob instanceof OfflinePlayer || UUIDUtil.isUUID(ob) || ob instanceof MMOPlayer))
-			return false;
-
-		if (UUIDUtil.isUUID(ob) && getMMOPlayer() != null)
-			return getMMOPlayer().getPlayerUUID().equals(UUIDUtil.toUUID(ob));
-
-		if (getMMOPlayer() != null && ob instanceof MMOPlayer)
-			return getMMOPlayer().equals(ob);
-
-		return false;
+	
+	public static void register(AbilityCycler cycler) {
+		Validate.notNull(cycler);
+		
+		if (!cyclers.containsKey(cycler.getPersistentID())) {
+			cyclers.put(cycler.getPersistentID(), cycler);
+		}
 	}
-
-	public static AbilityCycler getCycler(String identity, final ItemStack item) {
-		List<AbilityCycler> cyclers = getCyclers(identity);
-		if (cyclers.isEmpty()) return null;
-
-		for (AbilityCycler cycler : cyclers)
-			if (cycler.isCyclerMatch(item))
-				return cycler;
-		return null;
-	}
-
-	static boolean isRegistered(String identity) {
-		return cyclers != null && cyclers.containsKey(identity);
-	}
-
-	//Helpers...
+	
 	private static int getChange(int prev, int next) {
 		if (next > prev)
 			return 1;
@@ -166,183 +206,101 @@ public class AbilityCycler extends Cycler<Ability> implements ConfigurationSeria
 			return 0;
 	}
 	
-	public void setLastSlot(int lastSlot) {
-		this.lastSlot = lastSlot;
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	public MMOPlayer getMMOPlayer() {
+		return MMOPlayerManager.getInstance().getPlayer(getPlayer());
+	};
+	
+	public String getPersistenceNode() {
+		return getPersistentID().toString();
 	}
 	
-	public int getLastSlot() {
-		return lastSlot;
-	}
-
-	//INITIALIZE
-	public static void init() {
-		cyclers = new MapMaker().concurrencyLevel(2).makeMap();
-
-		iHeld = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
-			@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-			public void onItemHeldEvent(PlayerItemHeldEvent event) {
-				final Player player = event.getPlayer();
-				final String identity = UUIDUtil.compressUUID(player.getUniqueId());
-				if (!player.isSneaking())
-					return;
-
-				final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
-
-				if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
-
-				final ItemStack heldItem = player.getInventory().getItemInHand();
-
-				AbilityCycler cycler = AbilityCycler.getCycler(identity, heldItem);
-				if (cycler == null) return;
-
-//				final int change = getChange(event.getPreviousSlot(), event.getNewSlot());
-				switch (/*change */getChange(event.getPreviousSlot(), event.getNewSlot())) {
-					case 1:
-						cycler.setLastSlot(36 + event.getPreviousSlot());
-						cycler.next();
-						event.setCancelled(true);
-						return;
-					case -1:
-						cycler.setLastSlot(36 + event.getPreviousSlot());
-						cycler.previous();
-						event.setCancelled(true);
-						return;
-					default:
-						return;
-				}
-			}
-
-		};
-
-		iInteract = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
-				@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-				public void onInteract(PlayerInteractEvent event) {
-					if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) &&
-							!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-						return;
-					
-					final Player player = event.getPlayer();
-					final String identity = UUIDUtil.compressUUID(player.getUniqueId());
-
-					final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
-
-					if (/*mmoPlayer.getTempData().get(TEMP_PCTK, 0) <= 0 || */!AbilityCycler.isRegistered(identity)) return; //Skip because we have no actual objects for this user.
-
-					final ItemStack heldItem = player.getInventory().getItemInHand();
-
-					AbilityCycler cycler = AbilityCycler.getCycler(identity, heldItem);
-					if (cycler == null) return;
-
-					Ability a = cycler.current();
-					if (a == null || a instanceof PassiveAbility) return;
-
-					//TODO: If complained about. Check if weapon to cancel event.
-
-					event.setCancelled(a.execute().isSuccessful());
-				}
-		};
-
-		iHeld.register();
-		iInteract.register();
-	}
-
-	boolean isValid() {
-		return player != null && player.get() != null;
-	}
-
-	public Map<String, Object> serialize() {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		//Ability Storage.
-		List<String> abilities = new LinkedList<String>();
-		for (Ability ability : getList())
-			abilities.add(ability.getName());
-
-		//Store current state.
-		ret.put("current-index", currentIndex());
-
-		ret.put("player", getMMOPlayer().getPlayerUUID());
-
-		//Store item that tells if its the cycler item.
-		ret.put("cycle-item", getCycleItem());
-
-		//Actually store the abilities.
-		ret.put("abilities", abilities);
-
-		return ret;
-	}
-
-	private static boolean isDataValid(Map<String, Object> data) {
-		return data.containsKey("player") && data.containsKey("cycle-item") && data.containsKey("abilities") && UUIDUtil.isUUID(data.get("player"));
-	}
-
-	public static AbilityCycler valueOf(Map<String, Object> data) {
-		if (!isDataValid(data))
-			return null;
-
-		UUID id = UUIDUtil.toUUID(data.get("player"));
-		OfflinePlayer player = Bukkit.getOfflinePlayer(id);
-
-		ItemStack cycleItem = null;
-		if (data.get("cycle-item") instanceof ItemStack)
-			cycleItem = (ItemStack) data.get("cycle-item");
-
-		List<String> abilityNames = null;
-		if (data.get("abilities") instanceof List)
-			abilityNames = (List<String>) data.get("abilities");
-
-		if (id == null || cycleItem == null || LogicUtil.nullOrEmpty(abilityNames))
-			return null;
-
-		MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(player);
-
-		List<Ability> abilities = new ArrayList<Ability>();
-
-		for (Ability a : mmoPlayer.getAbilities())
-			if (abilityNames.contains(a.getName()))
-				abilities.add(a);
-
-		if (LogicUtil.nullOrEmpty(abilities))
-			return null;
-
-		return new AbilityCycler(abilities, mmoPlayer, cycleItem);
-	}
-
-	@Override
-	public Ability previous() {
-		Ability ret = super.previous();
-		renderDisplay();
-		return ret;
-	}
-
-	@Override
-	public Ability next() {
-		Ability ret = super.next();
-		renderDisplay();
-		return ret;
-	}
-
-	public MMOPlayer getMMOPlayer() {
-		if (player != null) return player.get();
-		return null;
-	}
-
-	public ItemStack getCycleItem() {
-		return cycleItem;
-	}
-
-	public void setCycleItem(ItemStack itemStack) {
-		this.cycleItem = itemStack;
-	}
-
+	public UUID getPersistentID() {
+		return id;
+	};
+	
 	public Player getPlayer() {
-		if (isValid() && getMMOPlayer().isOnline())
-			return getMMOPlayer().getPlayer();
-
+		if (!isValid())
+			return null;
+		
+		OfflinePlayer p;
+		if ((p = Bukkit.getOfflinePlayer(player)) != null)
+			return p.getPlayer();
+		
 		return null;
 	}
-
-	public static AbilityCycler getCycler(Player player) {
-		return getCycler(UUIDUtil.compressUUID(player.getUniqueId()), player.getItemInHand());
+	
+	public BaseAbilityCyclerRenderer getRenderer() {
+		if (renderer != null)
+			return renderer;
+		
+		return BaseAbilityCyclerRenderer.dummy;
+	}
+	
+	public boolean isCycleItem(ItemStack stack) {
+		final AttributeStorage as = AttributeStorage.newTarget(stack, id);
+		
+		if (as.getData(null) == id.toString())
+			return true;
+		
+		return false;
+	}
+	
+	public void log(Level level, String msg) {
+		if (logger == null) {
+			logger = new ModuleLogger("AbilityCycler-"
+					+ Bukkit.getPlayer(player).getName());
+		}
+		
+		logger.log(level, msg);
+	}
+	
+	@Override
+	public String next() {
+		final String ret = super.next();
+		renderDisplay();
+		
+		return ret;
+	}
+	
+	@Override
+	public String previous() {
+		final String ret = super.previous();
+		renderDisplay();
+		
+		return ret;
+	}
+	
+	public void renderDisplay() {
+		getRenderer().render();
+	}
+	
+	public Map<String, Object> serialize() {
+		final Map<String, Object> ret = new HashMap<String, Object>();
+		
+		ret.put(SERIALIZE_ID, id.toString());
+		ret.put(SERIALIZE_PLAYER_ID, player.toString());
+		ret.put(SERIALIZE_ABILITIES, abilities);
+		
+		return ret;
+	}
+	
+	public void setRenderer(BaseAbilityCyclerRenderer renderer) {
+		this.renderer = renderer;
+	}
+	
+	private void onHeld(PlayerItemHeldEvent event) {
+		
+	}
+	
+	private void onInteract(PlayerInteractEvent event) {
+		
+	}
+	
+	boolean isValid() {
+		return getPlayer() != null;
 	}
 }

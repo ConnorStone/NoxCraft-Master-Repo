@@ -23,17 +23,15 @@
 
 package com.noxpvp.mmo.abilities;
 
-import com.noxpvp.mmo.abilities.internal.Ability;
+import java.util.Set;
 
-import java.util.Collection;
-import java.util.Map;
+import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public interface AbilityContainer <T extends Ability> {
-	public T getAbility(String identity);
-
-	public boolean hasAbility(String identity);
-
-	public Collection<T> getAbilities();
+public interface AbilityContainer<T extends TieredAbility> {
 	
-	public Map<String, T> getAbilitiesMap();
+	public Set<T> getAbilities();
+	
+	public T getAbility(String identity);
+	
+	public boolean hasAbility(String identity);
 }

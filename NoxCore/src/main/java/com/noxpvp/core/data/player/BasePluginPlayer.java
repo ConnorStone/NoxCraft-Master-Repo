@@ -23,88 +23,103 @@
 
 package com.noxpvp.core.data.player;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.lang.Validate;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.data.PluginPlayer;
 import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.PlayerUtils;
-import org.apache.commons.lang.Validate;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-public abstract class BasePluginPlayer<T extends NoxPlugin> implements PluginPlayer<T>, Persistent {
-
-	//~~~~~~~~~~~~~~~~~~~
-	//Instanced Fields
-	//~~~~~~~~~~~~~~~~~~~
-	private UUID uuid; //Player UUID
-
-	//~~~~~~~~~~~~~~~~~~~
-	//Constructors
-	//~~~~~~~~~~~~~~~~~~~
-
-	public BasePluginPlayer(UUID playerUUID) {
-		Validate.notNull(playerUUID);
-
-		this.uuid = playerUUID;
+public abstract class BasePluginPlayer<T extends NoxPlugin> implements
+		PluginPlayer<T>, Persistent {
+	
+	// ~~~~~~~~~~~~~~~~~~~
+	// Statci Fields
+	// ~~~~~~~~~~~~~~~~~~~
+	
+	private static final String	SERIALIZE_UUID	= "uuid";
+	
+	// ~~~~~~~~~~~~~~~~~~~
+	// Instanced Fields
+	// ~~~~~~~~~~~~~~~~~~~
+	
+	private UUID				uuid;
+	
+	// ~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~
+	
+	public BasePluginPlayer(Map<String, Object> data) {
+		Object getter = null;
+		
+		Validate.isTrue((getter = data.get(SERIALIZE_UUID)) != null,
+				"Not a valid data structure. Missing uuid entry!");
+		
+		this.uuid = UUID.fromString((String) getter);
 	}
-
+	
 	public BasePluginPlayer(OfflinePlayer player) {
 		this(player != null ? player.getUniqueId() : null);
 	}
-
-	public BasePluginPlayer(Map<String, Object> data) {
-		Validate.isTrue(data.containsKey("uuid"), "Not a valid data structure. Missing uuid entry!");
-
-		this.uuid = UUID.fromString(data.get("uuid").toString());
+	
+	public BasePluginPlayer(UUID playerUUID) {
+		Validate.notNull(playerUUID);
+		
+		this.uuid = playerUUID;
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~
-	//Instanced Methods
-	//~~~~~~~~~~~~~~~~~~~~
-
-	public final boolean isOnline() { return PlayerUtils.isOnline(getPlayerUUID()); }
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~
+	// Instanced Methods
+	// ~~~~~~~~~~~~~~~~~~~~
+	
 	public final String getFullName() {
-		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getFullName();
+		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID())
+				.getFullName();
 	}
-
-	public final String getPlayerName() {
-		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID()).getPlayerName();
-	}
-
-	public final OfflinePlayer getOfflinePlayer() {
-		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
-	}
-
-	public final Player getPlayer() {
-		return getOfflinePlayer().getPlayer();
-	}
-
+	
 	public final NoxPlayer getNoxPlayer() {
 		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID());
 	}
-
-	//~~~~~~~~~~~~~~~~~~~
-	//Serialization
-	//~~~~~~~~~~~~~~~~~~~
-
-	public final UUID getPlayerUUID() { return uuid; }
-
-	public final UUID getPersistentID() { return getPlayerUUID(); }
-
+	
+	public final OfflinePlayer getOfflinePlayer() {
+		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
+	}
+	
+	public final UUID getPersistentID() {
+		return getPlayerUUID();
+	}
+	
+	public final Player getPlayer() {
+		return getOfflinePlayer().getPlayer();
+	}
+	
+	public final String getPlayerName() {
+		return CorePlayerManager.getInstance().getPlayer(getPlayerUUID())
+				.getPlayerName();
+	}
+	
+	public final UUID getPlayerUUID() {
+		return uuid;
+	}
+	
+	public final boolean isOnline() {
+		return PlayerUtils.isOnline(getPlayerUUID());
+	}
+	
 	public Map<String, Object> serialize() {
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		data.put("uuid", getPlayerUUID().toString());
-
+		final Map<String, Object> data = new HashMap<String, Object>();
+		
+		data.put(SERIALIZE_UUID, getPlayerUUID().toString());
+		
 		return data;
 	}
-
-
+	
 }
