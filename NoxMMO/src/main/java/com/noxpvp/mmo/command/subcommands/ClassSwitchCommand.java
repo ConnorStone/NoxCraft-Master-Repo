@@ -75,7 +75,7 @@ public class ClassSwitchCommand extends BaseCommand {
 	@Override
 	public CommandResult execute(CommandContext context)
 	        throws NoPermissionException {
-		if (!context.hasFlag("nogui")) {
+		if (true || !context.hasFlag("nogui")) {
 			new ClassChooseMenu(context.getPlayer(), null).show();
 			return new CommandResult(this, true);
 		}
