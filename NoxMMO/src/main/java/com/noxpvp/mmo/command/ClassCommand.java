@@ -32,29 +32,30 @@ import com.noxpvp.mmo.command.subcommands.ClassListCommand;
 import com.noxpvp.mmo.command.subcommands.ClassSwitchCommand;
 
 public class ClassCommand extends BaseCommand {
-	public static final String COMMAND_NAME = "class";
-
-	private static final String[] flags = new String[]{"h", "help"};
-
+	
+	public static final String	  COMMAND_NAME	= "class";
+	
+	private static final String[]	flags	   = new String[] {};
+	
 	public ClassCommand() {
 		super(COMMAND_NAME, true);
-
+		
 		registerSubCommands(
-				new ClassSwitchCommand(),
-				new ClassInfoCommand(),
-				new ClassListCommand()
-		);
+		        new ClassSwitchCommand(),
+		        new ClassInfoCommand(),
+		        new ClassListCommand());
 	}
-
+	
 	public String[] getFlags() {
 		return flags;
 	}
-
+	
 	@Override
-	public CommandResult execute(CommandContext context) throws NoPermissionException {
+	public CommandResult execute(CommandContext context)
+	        throws NoPermissionException {
 		return new CommandResult(this, false);
 	}
-
+	
 	@Override
 	public NoxMMO getPlugin() {
 		return NoxMMO.getInstance();

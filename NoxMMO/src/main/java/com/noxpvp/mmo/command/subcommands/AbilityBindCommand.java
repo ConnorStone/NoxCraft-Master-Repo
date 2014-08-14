@@ -47,9 +47,9 @@ import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityBindCommand extends BaseCommand {
 	
-	public static final String		COMMAND_NAME	= "bind";
-	private static final String[]	flags			= new String[] { "h", "help",
-			"o", "overwrite"						};
+	public static final String	  COMMAND_NAME	= "bind";
+	private static final String[]	flags	   = new String[] { "h", "help",
+	                                           "o", "overwrite" };
 	
 	public AbilityBindCommand() {
 		super(COMMAND_NAME, true);
@@ -57,9 +57,9 @@ public class AbilityBindCommand extends BaseCommand {
 	
 	@Override
 	public CommandResult execute(CommandContext context)
-			throws NoPermissionException {
+	        throws NoPermissionException {
 		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(
-				context.getPlayer());
+		        context.getPlayer());
 		
 		final Player player = context.getPlayer();
 		final ItemStack currentItem = player.getItemInHand();
@@ -79,7 +79,7 @@ public class AbilityBindCommand extends BaseCommand {
 		}
 		
 		final boolean safe = context.hasFlag("o") || context.hasFlag("overwrite")
-				|| !exists;
+		        || !exists;
 		final Task t = new Task(NoxMMO.getInstance()) {
 			
 			public void run() {
@@ -88,8 +88,8 @@ public class AbilityBindCommand extends BaseCommand {
 					cycler = AbilityCycler.getCycler(player);
 				} else {
 					cycler = new AbilityCycler(!singleItem ?
-							mmoPlayer.getAbilities() :
-							new ArrayList<PlayerAbility>(), player, currentItem);
+					        mmoPlayer.getAbilities() :
+					        new ArrayList<PlayerAbility>(), player, currentItem);
 				}
 				
 				cycler.getList().clear();
@@ -103,13 +103,13 @@ public class AbilityBindCommand extends BaseCommand {
 					
 					if (abs.isEmpty()) {
 						MessageUtil
-								.sendLocale(player, MMOLocale.ABIL_NOT_FOUND, arg);
+						        .sendLocale(player, MMOLocale.ABIL_NOT_FOUND, arg);
 						return;
 					}
 				} else {
 					for (final PlayerAbility a : mmoPlayer.getAbilities())
 						if (!(a instanceof SilentAbility)
-								&& !(a instanceof PassiveAbility<?>)) {
+						        && !(a instanceof PassiveAbility<?>)) {
 							abs.add(a);
 						}
 					

@@ -23,6 +23,8 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
+import java.util.Map;
+
 import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
@@ -35,54 +37,55 @@ import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
-import java.util.Map;
-
 public class AbilityInfoCommand extends BaseCommand {
-
-	public static final String COMMAND_NAME = "info";
-
+	
+	public static final String	COMMAND_NAME	= "info";
+	
 	public AbilityInfoCommand() {
 		super(COMMAND_NAME, true);
 	}
-
+	
 	public String[] getFlags() {
 		return blankStringArray;
 	}
-
+	
 	public int getMaxArguments() {
 		return 1;
 	}
-
+	
 	@Override
 	public CommandResult execute(CommandContext context)
-			throws NoPermissionException {
-
+	        throws NoPermissionException {
+		
 		if (!context.hasArgument(0))
 			return new CommandResult(this, false);
-
+		
 		String abilityName = context.getArgument(0).toLowerCase();
-
-		MMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
-
+		
+		MMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(
+		        context.getPlayer());
+		
 		if (mPlayer == null)
-			return new CommandResult(this, true, new MessageBuilder().red("mPlayer object is null!").lines());
-
+			return new CommandResult(this, true, new MessageBuilder().red(
+			        "mPlayer object is null!").lines());
+		
 		Map<String, TieredAbility> abilities = mPlayer.getAbilitiesMap();
-
+		
 		TieredAbility ability = null;
 		if (abilities.containsKey(abilityName))
 			ability = abilities.get(abilityName);
-
+		
 		if (ability == null)
 			throw new SafeNullPointerException("Ability does not exist!");
-
-		MessageUtil.sendLocale(context.getSender(), MMOLocale.ABIL_INFO, ability.getDisplayName(), ability.getDescription());
+		
+		MessageUtil.sendLocale(context.getSender(), MMOLocale.ABIL_INFO, ability
+		        .getDisplayName(), ability.getDescription());
 		return new CommandResult(this, true);
 	}
-
+	
 	@Override
 	public NoxMMO getPlugin() {
 		return NoxMMO.getInstance();
 	}
-
+	
 }
