@@ -33,13 +33,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PlayerClassIdentifierFilter implements Filter<Player> {
+public class PlayerClassFilter implements Filter<Player> {
 	
 	private final List<String>	classIds;
 	
 	private boolean				inverse	= false;
 	
-	public PlayerClassIdentifierFilter(String... ids) {
+	public PlayerClassFilter(String... ids) {
 		classIds = new ArrayList<String>();
 		Collections.addAll(classIds, ids);
 	}
@@ -55,7 +55,7 @@ public class PlayerClassIdentifierFilter implements Filter<Player> {
 	 *            inverse value to set to.
 	 * @return self instance for chaining.
 	 */
-	public PlayerClassIdentifierFilter invertFilter(boolean invert) {
+	public PlayerClassFilter invertFilter(boolean invert) {
 		inverse = invert;
 		return this;
 	}
