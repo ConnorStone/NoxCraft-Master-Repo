@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-public abstract class Experientable implements ExperienceGaining,
+public abstract class ExperienceHolder implements IExperienceHolder,
 		ConfigurationSerializable {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,7 +35,7 @@ public abstract class Experientable implements ExperienceGaining,
 	// Constructors
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public Experientable(ExperienceFormula formula) {
+	public ExperienceHolder(ExperienceFormula formula) {
 		Validate.notNull(formula, "The class exp formula can not be null");
 		
 		this.formula = formula;
@@ -43,7 +43,7 @@ public abstract class Experientable implements ExperienceGaining,
 		exp = 0;
 	}
 	
-	public Experientable(Map<String, Object> data) {
+	public ExperienceHolder(Map<String, Object> data) {
 		Object getter;
 		
 		if ((getter = data.get(SERIALIZE_CURRENT_LEVEL)) != null

@@ -1,6 +1,6 @@
 package com.noxpvp.mmo.classes.internal;
 
-public interface ExperienceGaining {
+public interface IExperienceHolder {
 	
 	public void addExp(double amount);
 	

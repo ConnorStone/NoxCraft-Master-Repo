@@ -54,7 +54,7 @@ import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 @SerializableAs("PlayerClass")
-public abstract class PlayerClass extends Experientable implements IPlayerClass,
+public abstract class PlayerClass extends ExperienceHolder implements IPlayerClass,
 		MenuItemRepresentable, ConfigurationSerializable,
 		AbilityContainer<PlayerAbility> {
 	
@@ -147,10 +147,12 @@ public abstract class PlayerClass extends Experientable implements IPlayerClass,
 	}
 	
 	public Set<PlayerAbility> getAbilities() {
+		updateAbilityLevels();
 		return Collections.unmodifiableSet(abilitySet);
 	};
 	
 	public PlayerAbility getAbility(String name) {
+		updateAbilityLevels();
 		for (final PlayerAbility a : abilitySet)
 			if (a.getName().equalsIgnoreCase(name))
 				return a;
@@ -159,6 +161,7 @@ public abstract class PlayerClass extends Experientable implements IPlayerClass,
 	}
 	
 	public PlayerAbility getAbility(UUID identity) {
+		updateAbilityLevels();
 		for (final PlayerAbility a : abilitySet)
 			if (a.getUniqueId().equals(identity))
 				return a;
@@ -167,6 +170,7 @@ public abstract class PlayerClass extends Experientable implements IPlayerClass,
 	}
 	
 	public Set<PlayerAbility> getAbilitySet() {
+		updateAbilityLevels();
 		return Collections.unmodifiableSet(abilitySet);
 	}
 	
@@ -273,6 +277,35 @@ public abstract class PlayerClass extends Experientable implements IPlayerClass,
 		Validate.notNull(player);
 		
 		playerUUID = player.getUniqueId();
+	}
+	
+	private void updateAbilityLevels() {
+		for (final PlayerAbility ab : getAbilities()) {
+			final Map<Integer, Integer> map = levelsToTier.get(ab.getName());
+			if (map == null) {
+				continue;
+			}
+			
+			boolean set = false;
+			for (int lv = getLevel(); lv > 0; lv--) {
+				if (!map.containsKey(lv)) {
+					continue;
+				}
+				
+				int tier = 0;
+				if ((tier = map.get(lv)) > 0) {
+					ab.setCurrentTier(tier);
+					set = true;
+					break;
+				}
+			}
+			
+			if (!set) {
+				ab.setCurrentTier(1);
+			}
+			
+		}
+		
 	}
 	
 }
