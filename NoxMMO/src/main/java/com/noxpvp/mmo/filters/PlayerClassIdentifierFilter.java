@@ -25,14 +25,12 @@ package com.noxpvp.mmo.filters;
 
 import com.bergerkiller.bukkit.common.filtering.Filter;
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
-import com.noxpvp.mmo.util.PlayerClassUtil;
-
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PlayerClassIdentifierFilter implements Filter<Player> {
@@ -43,11 +41,7 @@ public class PlayerClassIdentifierFilter implements Filter<Player> {
 	
 	public PlayerClassIdentifierFilter(String... ids) {
 		classIds = new ArrayList<String>();
-		for (final String id : ids) {
-			if (PlayerClassUtil. {
-				classIds.add(id);
-			}
-		}
+		Collections.addAll(classIds, ids);
 	}
 	
 	private static MMOPlayer getMMOPlayer(Player player) {
