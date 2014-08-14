@@ -41,7 +41,7 @@ public class ClassSwitchCommand extends BaseCommand {
 	
 	public static final String	  COMMAND_NAME	= "switch";
 	
-	private static final String[]	flags	   = new String[] { "h", "help", "nogui" };
+	private static final String[]	flags	   = new String[] { "nogui" };
 	
 	public ClassSwitchCommand() {
 		super(COMMAND_NAME, true);
