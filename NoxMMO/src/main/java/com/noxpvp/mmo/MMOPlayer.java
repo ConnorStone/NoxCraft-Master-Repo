@@ -23,33 +23,27 @@
 
 package com.noxpvp.mmo;
 
-import java.lang.ref.WeakReference;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
-import javax.annotation.Nullable;
-
-import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.commands.SafeNullPointerException;
 import com.noxpvp.core.data.player.BasePluginPlayer;
 import com.noxpvp.core.gui.MenuItemRepresentable;
+import com.noxpvp.core.utils.UUIDUtil;
 import com.noxpvp.mmo.abilities.AbilityContainer;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.classes.PlayerClassContainer;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.manager.AbilityCyclerManager;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
+import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.logging.Level;
 
 @SerializableAs("MMOPlayer")
 public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
@@ -94,7 +88,17 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		super(data);
 		
 		setupClasses(data);
-		setupCyclers(data);
+		List<String> keys;
+
+		if (data.containsKey(SERIALIZE_ABLILTY_CYCLERS)) keys = (List<String>) data.get(SERIALIZE_ABLILTY_CYCLERS);
+		else keys = Collections.emptyList();
+		cyclers = new HashSet<AbilityCycler>(keys.size());
+
+		for (String key : keys) {
+			if (!UUIDUtil.isUUID(key)) continue;
+
+			cyclers.add(AbilityCyclerManager.getInstance().getCycler(UUIDUtil.toUUID(key)));
+		}
 	}
 	
 	public MMOPlayer(Player player) {
@@ -210,7 +214,15 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	@Override
 	public Map<String, Object> serialize() {
 		final Map<String, Object> data = super.serialize();
-		
+
+		Set<String> d = new HashSet<String>();
+
+		if (getAbilityCyclers() != null)
+			for (AbilityCycler cycler : getAbilityCyclers())
+				d.add(cycler.getPersistentID().toString());
+
+		data.put(SERIALIZE_ABLILTY_CYCLERS, d);
+
 		if (allClasses.size() > 0) {
 			data.put(SERIALIZE_ALL_CLASSES, PlayerClassUtil.getModifiedClasses(this));
 		} else
@@ -273,55 +285,6 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 			setSecondaryClass(getPlayerClass(data.get(
 					SERIALIZE_CURRENT_SECONDARY_CLASS)
 					.toString()));
-		}
-		;
-	}
-	
-	private void setupCyclers(Map<String, Object> data) {
-		try {
-			if (data.containsKey(SERIALIZE_ABLILTY_CYCLERS)) {
-				if (data.get(SERIALIZE_ABLILTY_CYCLERS) == null)
-					throw new SafeNullPointerException();
-				final Collection<?> r = (Collection<?>) data
-						.get(SERIALIZE_ABLILTY_CYCLERS);
-				int failedCasts = 0;
-				for (final Object o : r) {
-					try {
-						cyclers.add((AbilityCycler) o);
-					} catch (final ClassCastException e) {
-						failedCasts++;
-					}
-				}
-				
-				if (failedCasts > 0) {
-					log(Level.WARNING, "During class data importing " + failedCasts
-							+ " failed to be casted to AbilityCycler objects." +
-							System.lineSeparator() + "Player: "
-							+ getPlayerUUID().toString());
-				}
-			}
-		} catch (final Throwable t) {
-			boolean throwTrace = true;
-			if (t instanceof SafeNullPointerException) {
-				log(Level.WARNING,
-						"AbilityCycler data did not exist properly. It is possible it was never created.");
-				throwTrace = false;
-			} else if (t instanceof NullPointerException) {
-				log(Level.SEVERE,
-						"There was a NPE within MMOPlayer during loading of AbilityCycler data."
-								+
-								System.lineSeparator()
-								+ " What follows is a stacktrace of the issue.");
-				throwTrace = true;
-			} else if (t instanceof UnsupportedOperationException) {
-				log(Level.SEVERE,
-						"Cyclers data in MMOPlayer is immutable!!! Error occured within constructors.");
-				throwTrace = true;
-			}
-			
-			if (throwTrace) {
-				t.printStackTrace();
-			}
 		}
 	}
 }
