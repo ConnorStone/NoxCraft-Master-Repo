@@ -34,8 +34,6 @@ import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.internal.DamagingAbility;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.abilities.internal.SilentAbility;
 import com.noxpvp.mmo.events.ability.post.PostPlayerAbilityEvent;
@@ -45,7 +43,7 @@ import com.noxpvp.mmo.prism.AbilityUsePrismEvent;
 
 public class AbilityListener extends NoxListener<NoxMMO> {
 	
-	private final boolean			isPrismActive;
+	private final boolean	       isPrismActive;
 	private final MMOPlayerManager	pm;
 	
 	public AbilityListener(boolean isPrismActive) {
@@ -92,7 +90,7 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 				}
 			} else {
 				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
-						.getMessages())));
+				        .getMessages())));
 			}
 	}
 	

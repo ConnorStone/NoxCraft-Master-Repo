@@ -33,26 +33,27 @@ import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.player.AutoToolPlayerAbilities.AutoTool;
 
 public class BlockListener extends NoxListener<NoxMMO> {
-
+	
 	public BlockListener(NoxMMO mmo) {
 		super(mmo);
 	}
-
+	
 	public BlockListener() {
 		this(NoxMMO.getInstance());
 	}
-
+	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent e) {
-		if (VaultAdapter.permission.has(e.getPlayer(), NoxMMO.PERM_NODE + ".ability." + AutoTool.PERM_NODE)) {
+		if (VaultAdapter.permission.has(e.getPlayer(), NoxMMO.PERM_NODE
+		        + ".ability." + AutoTool.PERM_NODE)) {
 			new AutoTool(e.getPlayer()).execute(e);
 		}
 	}
-
-
-//	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-//	public void onPlace(BlockPlaceEvent e) {
-//		
-//	}
-
+	
+	// @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled =
+	// true)
+	// public void onPlace(BlockPlaceEvent e) {
+	//
+	// }
+	
 }

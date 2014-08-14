@@ -31,19 +31,19 @@ import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.gui.HealthBar;
 
 public class LoginListener extends NoxListener<NoxMMO> {
-
+	
 	public LoginListener(NoxMMO plugin) {
 		super(plugin);
 	}
-
+	
 	public LoginListener() {
 		super(NoxMMO.getInstance());
 	}
-
+	
 	public void onLogin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-
+		
 		new HealthBar(player);
 	}
-
+	
 }
