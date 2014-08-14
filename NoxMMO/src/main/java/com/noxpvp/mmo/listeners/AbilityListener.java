@@ -68,7 +68,7 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 		final MMOPlayer mp = pm.getPlayer(p);
 		final NoxPlayer np = mp.getNoxPlayer();
 		final PlayerAbility ab = event.getAbility();
-		final AbilityResult<BasePlayerAbility> result = event.getResult();
+		final AbilityResult result = event.getResult();
 		
 		final boolean hasMessages = result.hasMessages();
 		final boolean silent = ab instanceof SilentAbility;

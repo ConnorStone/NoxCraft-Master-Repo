@@ -39,10 +39,6 @@ public class PostAbilityEvent<T extends TieredAbility> extends PostBaseAbilityEv
 		this.result = result;
 	}
 
-	public T getAbility() {
-		return super.getAbility();
-	}
-
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}

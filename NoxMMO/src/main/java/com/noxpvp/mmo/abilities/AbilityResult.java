@@ -28,7 +28,7 @@ import org.apache.commons.lang.Validate;
 import com.bergerkiller.bukkit.common.utils.LogicUtil;
 import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public class AbilityResult<T extends TieredAbility<?>> {
+public class AbilityResult<T extends TieredAbility> {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instance Fields
