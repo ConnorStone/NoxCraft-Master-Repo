@@ -23,15 +23,16 @@
 
 package com.noxpvp.mmo.listeners;
 
+import org.bukkit.event.Event;
+
 import com.noxpvp.mmo.MasterListener;
 import com.noxpvp.mmo.handlers.MMOEventHandler;
-import org.bukkit.event.Event;
 
 /**
  * Used to provide helper methods for registering handlers.
  */
 public interface IMMOHandlerHolder {
-
+	
 	/**
 	 * <b>Helper method<b>
 	 * <p/>
@@ -40,7 +41,7 @@ public interface IMMOHandlerHolder {
 	 * @param handler
 	 */
 	public void registerHandler(MMOEventHandler<? extends Event> handler);
-
+	
 	/**
 	 * <b>Helper method<b>
 	 * <p/>
@@ -49,9 +50,10 @@ public interface IMMOHandlerHolder {
 	 * @param handler
 	 */
 	public void unregisterHandler(MMOEventHandler<? extends Event> handler);
-
+	
 	/**
-	 * Retrieves the master listener to register and unregister handlers for this ability.
+	 * Retrieves the master listener to register and unregister handlers
+	 * for this ability.
 	 *
 	 * @return MasterListener
 	 */

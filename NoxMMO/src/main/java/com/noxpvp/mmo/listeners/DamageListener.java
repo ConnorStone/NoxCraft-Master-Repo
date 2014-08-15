@@ -37,42 +37,46 @@ import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class DamageListener extends NoxListener<NoxMMO> {
-
-	CorePlayerManager pm;
-
+	
+	CorePlayerManager	pm;
+	
 	public DamageListener(NoxMMO mmo) {
 		super(mmo);
-
+		
 		this.pm = CorePlayerManager.getInstance();
 	}
-
+	
 	public DamageListener() {
 		this(NoxMMO.getInstance());
 	}
-
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamage(EntityDamageEvent event) {
-
-//		Entity e = event.getEntity();
-
-		LivingEntity livingDamaged = DamageUtil.getDamagedEntity(event),
-				livingAttacker = DamageUtil.getAttackingLivingEntity(event);
-
-		Player playerDamaged = DamageUtil.getDamagedPlayer(event),
-				playerAttacker = DamageUtil.getAttackingPlayer(event);
-
+		
+		// Entity e = event.getEntity();
+		
+		LivingEntity livingDamaged = DamageUtil.getDamagedEntity(event), livingAttacker = DamageUtil
+		        .getAttackingLivingEntity(event);
+		
+		Player playerDamaged = DamageUtil.getDamagedPlayer(event), playerAttacker = DamageUtil
+		        .getAttackingPlayer(event);
+		
 		if (playerAttacker != null) {
-
+			
 			if (livingDamaged != null) {
-				MMOPlayerManager.getInstance().getPlayer(playerAttacker).setTarget(livingDamaged);
-
+				MMOPlayerManager.getInstance().getPlayer(playerAttacker).setTarget(
+				        livingDamaged);
+				
 				if (event.getDamage() > 0) {
-					if (getPlugin().getMMOConfig().get("effect.damage.blood", Boolean.class, Boolean.TRUE)) {
+					if (getPlugin().getMMOConfig().get("effect.damage.blood",
+					        Boolean.class, Boolean.TRUE)) {
 						StaticEffects.BloodEffect(livingDamaged, getPlugin());
 					}
-					if (getPlugin().getMMOConfig().get("effect.damage.damage-particle", Boolean.class, Boolean.TRUE)) {
-						StaticEffects.DamageAmountParticle(livingDamaged, event.getDamage());
+					if (getPlugin().getMMOConfig().get(
+					        "effect.damage.damage-particle", Boolean.class,
+					        Boolean.TRUE)) {
+						StaticEffects.DamageAmountParticle(livingDamaged, event
+						        .getDamage());
 					}
 				}
 			}

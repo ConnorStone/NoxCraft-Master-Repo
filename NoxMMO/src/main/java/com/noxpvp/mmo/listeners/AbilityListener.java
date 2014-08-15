@@ -34,8 +34,6 @@ import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.abilities.AbilityResult;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
-import com.noxpvp.mmo.abilities.internal.DamagingAbility;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.abilities.internal.SilentAbility;
 import com.noxpvp.mmo.events.ability.post.PostPlayerAbilityEvent;
@@ -45,7 +43,7 @@ import com.noxpvp.mmo.prism.AbilityUsePrismEvent;
 
 public class AbilityListener extends NoxListener<NoxMMO> {
 	
-	private final boolean			isPrismActive;
+	private final boolean	       isPrismActive;
 	private final MMOPlayerManager	pm;
 	
 	public AbilityListener(boolean isPrismActive) {
@@ -68,7 +66,7 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 		final MMOPlayer mp = pm.getPlayer(p);
 		final NoxPlayer np = mp.getNoxPlayer();
 		final PlayerAbility ab = event.getAbility();
-		final AbilityResult<BasePlayerAbility> result = event.getResult();
+		final AbilityResult result = event.getResult();
 		
 		final boolean hasMessages = result.hasMessages();
 		final boolean silent = ab instanceof SilentAbility;
@@ -92,67 +90,67 @@ public class AbilityListener extends NoxListener<NoxMMO> {
 				}
 			} else {
 				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
-						.getMessages())));
+				        .getMessages())));
 			}
 	}
-	
-	public void onPlayerTargetedAbilityExecuted(PostTargettedPlayerAbilityEvent event) {
-		final Player p = event.getPlayer();
-		final MMOPlayer mp = pm.getPlayer(p);
-		final NoxPlayer np = mp.getNoxPlayer();
-		final TargetedPlayerAbility ab = event.getAbility();
-		final AbilityResult result = event.getResult();
-		
-		final boolean hasMessages = result.hasMessages();
-		final boolean silent = ab instanceof SilentAbility;
-		final boolean hasCD = ab.getCD().toStamp() > 0;
-		
-		if (result.isSuccessful()) {
-			
-			if (isPrismActive) {
-				AbilityUsePrismEvent.trigger(p, result);
-			}
-			
-			if (hasCD) {
-				np.addCoolDown(ab.getName(), ab.getCD(), !silent);
-			}
-		}
-		
-		final String target = ab.getTarget() instanceof Player ?
-				pm.getPlayer((Player) ab.getTarget()).getNoxPlayer().getFullName() :
-				ab.getTarget().getType().name().toLowerCase();
-		
-		if (!silent) {
-			if (hasMessages) {
-				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
-						.getMessages())));
-			} else if (ab instanceof DamagingAbility) {
-				final DamagingAbility dab = (DamagingAbility) ab;
-				if (dab.getDamage() > 0 && result.isSuccessful()) {
-					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab
-							.getName(), target, String.format("%.2f", dab
-							.getDamage()));
-					
-					if (ab.getTarget() instanceof Player) {
-						MessageUtil.sendLocale((Player) ab.getTarget(),
-								MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np
-										.getFullName(), ab.getName(), String.format(
-										"%.2f", dab.getDamage()));
-					}
-				}
-			} else if (result.isSuccessful()) {
-				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET, ab.getName(),
-						target);
-				
-				if (ab.getTarget() instanceof Player) {
-					MessageUtil.sendLocale((Player) ab.getTarget(),
-							MMOLocale.ABIL_HIT_ATTACKER, np.getFullName(), ab
-									.getName());
-				}
-			}
-		}
-		
-		return;
-	}
-	
+
+//	public void onPlayerTargetedAbilityExecuted(PostTargettedPlayerAbilityEvent event) {
+//		final Player p = event.getPlayer();
+//		final MMOPlayer mp = pm.getPlayer(p);
+//		final NoxPlayer np = mp.getNoxPlayer();
+//		final TargetedPlayerAbility ab = event.getAbility();
+//		final AbilityResult result = event.getResult();
+//
+//		final boolean hasMessages = result.hasMessages();
+//		final boolean silent = ab instanceof SilentAbility;
+//		final boolean hasCD = ab.getCD().toStamp() > 0;
+//
+//		if (result.isSuccessful()) {
+//
+//			if (isPrismActive) {
+//				AbilityUsePrismEvent.trigger(p, result);
+//			}
+//
+//			if (hasCD) {
+//				np.addCoolDown(ab.getName(), ab.getCD(), !silent);
+//			}
+//		}
+//
+//		final String target = ab.getTarget() instanceof Player ?
+//				pm.getPlayer((Player) ab.getTarget()).getNoxPlayer().getFullName() :
+//				ab.getTarget().getType().name().toLowerCase();
+//
+//		if (!silent) {
+//			if (hasMessages) {
+//				p.sendMessage(MessageUtil.parseColor(StringUtil.join(" ", result
+//						.getMessages())));
+//			} else if (ab instanceof DamagingAbility) {
+//				final DamagingAbility dab = (DamagingAbility) ab;
+//				if (dab.getDamage() > 0 && result.isSuccessful()) {
+//					MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET_DAMAGED, ab
+//							.getName(), target, String.format("%.2f", dab
+//							.getDamage()));
+//
+//					if (ab.getTarget() instanceof Player) {
+//						MessageUtil.sendLocale((Player) ab.getTarget(),
+//								MMOLocale.ABIL_HIT_ATTACKER_DAMAGED, np
+//										.getFullName(), ab.getName(), String.format(
+//										"%.2f", dab.getDamage()));
+//					}
+//				}
+//			} else if (result.isSuccessful()) {
+//				MessageUtil.sendLocale(p, MMOLocale.ABIL_USE_TARGET, ab.getName(),
+//						target);
+//
+//				if (ab.getTarget() instanceof Player) {
+//					MessageUtil.sendLocale((Player) ab.getTarget(),
+//							MMOLocale.ABIL_HIT_ATTACKER, np.getFullName(), ab
+//									.getName());
+//				}
+//			}
+//		}
+//
+//		return;
+//	}
+
 }

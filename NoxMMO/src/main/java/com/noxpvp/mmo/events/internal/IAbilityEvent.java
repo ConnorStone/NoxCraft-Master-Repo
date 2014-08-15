@@ -25,7 +25,7 @@ package com.noxpvp.mmo.events.internal;
 
 import com.noxpvp.mmo.abilities.internal.TieredAbility;
 
-public interface IAbilityEvent<T extends TieredAbility<?>> {
+public interface IAbilityEvent<T extends TieredAbility> {
 	
 	/**
 	 * Get the {@link com.noxpvp.mmo.abilities.internal.TieredAbility}

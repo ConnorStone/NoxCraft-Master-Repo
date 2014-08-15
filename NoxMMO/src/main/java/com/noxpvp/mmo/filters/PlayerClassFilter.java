@@ -25,29 +25,23 @@ package com.noxpvp.mmo.filters;
 
 import com.bergerkiller.bukkit.common.filtering.Filter;
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
-import com.noxpvp.mmo.util.PlayerClassUtil;
-
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class PlayerClassIdentifierFilter implements Filter<Player> {
+public class PlayerClassFilter implements Filter<Player> {
 	
 	private final List<String>	classIds;
 	
 	private boolean				inverse	= false;
 	
-	public PlayerClassIdentifierFilter(String... ids) {
+	public PlayerClassFilter(String... ids) {
 		classIds = new ArrayList<String>();
-		for (final String id : ids) {
-			if (PlayerClassUtil. {
-				classIds.add(id);
-			}
-		}
+		Collections.addAll(classIds, ids);
 	}
 	
 	private static MMOPlayer getMMOPlayer(Player player) {
@@ -61,7 +55,7 @@ public class PlayerClassIdentifierFilter implements Filter<Player> {
 	 *            inverse value to set to.
 	 * @return self instance for chaining.
 	 */
-	public PlayerClassIdentifierFilter invertFilter(boolean invert) {
+	public PlayerClassFilter invertFilter(boolean invert) {
 		inverse = invert;
 		return this;
 	}

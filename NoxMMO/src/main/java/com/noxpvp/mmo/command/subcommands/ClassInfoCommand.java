@@ -35,71 +35,74 @@ import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassInfoCommand extends BaseCommand {
-
-	public static final String COMMAND_NAME = "info";
-
+	
+	public static final String	COMMAND_NAME	= "info";
+	
 	public ClassInfoCommand() {
 		super(COMMAND_NAME, false);
 	}
-
+	
 	public String[] getFlags() {
 		return blankStringArray;
 	}
-
+	
 	public int getMaxArguments() {
 		return 1;
 	}
-
+	
 	@Override
-	public CommandResult execute(CommandContext context) throws NoPermissionException {
-
+	public CommandResult execute(CommandContext context)
+	        throws NoPermissionException {
+		
 		String className = null;
-		if (context.hasArgument(0)) className = context.getArgument(0).toLowerCase();
-
+		if (context.hasArgument(0))
+			className = context.getArgument(0).toLowerCase();
+		
 		IPlayerClass clazz = null;
-
+		
 		if (className != null && !PlayerClassUtil.hasClass(className)) {
 			return new CommandResult(this, false);
 		}
-
+		
 		if (className != null) {
-			for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context.getPlayer()))
+			for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context
+			        .getPlayer()))
 				if (c.getName().equalsIgnoreCase(className)) {
 					clazz = c;
 					break;
 				}
 		}
-
-
+		
 		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin());
-
+		
 		if (clazz != null) {
 			mb.commandHeader(clazz.getDisplayName() + " Class", true);
-
+			
 			mb.withClassInfo(clazz).headerClose(true);
 			mb.send(context.getSender());
 		} else {
-			MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(context.getPlayer());
-
+			MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(
+			        context.getPlayer());
+			
 			mb.commandHeader(p.getPrimaryClass().getDisplayName() + " Class", true);
-
+			
 			mb.withClassInfo(p.getPrimaryClass()).headerClose(true);
 			mb.headerClose();
 			mb.newLine();
 			mb.commandHeader(p.getSecondaryClass().getDisplayName() + " Class", true);
-
+			
 			mb.withClassInfo(p.getSecondaryClass()).headerClose(true);
 			mb.headerClose();
-
+			
 			mb.send(context.getSender());
 		}
-
+		
 		return new CommandResult(this, true);
 	}
-
+	
 	@Override
 	public NoxMMO getPlugin() {
 		return NoxMMO.getInstance();
 	}
-
+	
 }

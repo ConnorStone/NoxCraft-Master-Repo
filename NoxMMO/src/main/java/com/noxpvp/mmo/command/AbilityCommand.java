@@ -23,27 +23,19 @@
 
 package com.noxpvp.mmo.command;
 
-import java.util.Set;
-
-import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
-import com.noxpvp.core.commands.SafeNullPointerException;
-import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.command.subcommands.AbilityBindCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityInfoCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityListCommand;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityCommand extends BaseCommand {
 	
-	public static final String		COMMAND_NAME	= "ability";
+	public static final String	  COMMAND_NAME	= "ability";
 	
-	private static final String[]	flags			= new String[] { "h", "help" };
+	private static final String[]	flags	   = new String[] {};
 	
 	public AbilityCommand() {
 		super(COMMAND_NAME, true);
@@ -54,30 +46,9 @@ public class AbilityCommand extends BaseCommand {
 	
 	@Override
 	public CommandResult execute(CommandContext context)
-			throws NoPermissionException {
+	        throws NoPermissionException {
 		
-		if (!context.hasArgument(0))
-			return new CommandResult(this, false);
-		
-		final String abilityName = StringUtil.join(" ", context.getArguments());
-		
-		final MMOPlayer mPlayer = MMOPlayerManager.getInstance().getPlayer(
-				context.getPlayer());
-		
-		if (mPlayer == null)
-			return new CommandResult(this, true, new MessageBuilder().red(
-					"mPlayer object is null!").lines());
-		
-		final Set<BasePlayerAbility> abilities = mPlayer.getAbilities();
-		
-		BasePlayerAbility ability = null;
-		if ((ability = mPlayer.getAbility(abilityName)) == null)
-			throw new SafeNullPointerException("Ability \"" + abilityName
-					+ "\" does not exist!");
-		
-		ability.execute();
-		
-		return new CommandResult(this, true);
+		return new CommandResult(this, false);
 	}
 	
 	public String[] getFlags() {

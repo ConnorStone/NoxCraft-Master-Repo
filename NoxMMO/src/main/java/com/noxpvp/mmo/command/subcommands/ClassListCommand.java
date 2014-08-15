@@ -26,7 +26,6 @@ package com.noxpvp.mmo.command.subcommands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.util.PlayerClassUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -38,26 +37,27 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
+import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassListCommand extends BaseCommand {
-
-	public static final String COMMAND_NAME = "list";
+	
+	public static final String	COMMAND_NAME	= "list";
 	
 	public ClassListCommand() {
 		super(COMMAND_NAME, true);
 	}
-
+	
 	public String[] getFlags() {
 		return blankStringArray;
 	}
-
+	
 	public int getMaxArguments() {
 		return 0;
 	}
-
+	
 	@Override
 	public CommandResult execute(CommandContext context)
-			throws NoPermissionException {
+	        throws NoPermissionException {
 		
 		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin(), true);
 		Player p = context.getPlayer();
@@ -88,10 +88,10 @@ public class ClassListCommand extends BaseCommand {
 		
 		return new CommandResult(this, true);
 	}
-
+	
 	@Override
 	public NoxPlugin getPlugin() {
 		return NoxMMO.getInstance();
 	}
-
+	
 }
