@@ -23,10 +23,26 @@
 
 package com.noxpvp.mmo;
 
+import java.lang.ref.WeakReference;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
+
+import javax.annotation.Nullable;
+
+import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.data.player.BasePluginPlayer;
 import com.noxpvp.core.gui.MenuItemRepresentable;
-import com.noxpvp.core.utils.UUIDUtil;
 import com.noxpvp.mmo.abilities.AbilityContainer;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.classes.PlayerClassContainer;
@@ -35,20 +51,11 @@ import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.AbilityCyclerManager;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
-import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.logging.Level;
 
 @SerializableAs("MMOPlayer")
 public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
-		MenuItemRepresentable, PlayerClassContainer,
-		AbilityContainer<PlayerAbility> {
+        MenuItemRepresentable, PlayerClassContainer,
+        AbilityContainer<PlayerAbility> {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Static Init
@@ -62,22 +69,22 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	// Static Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public static final String			SERIALIZE_ALL_CLASSES				= "classes";
-	public static final String			SERIALIZE_ABLILTY_CYCLERS			= "ability-cyclers";
-	public static final String			SERIALIZE_CURRENT_PRIMARY_CLASS		= "current-primary-class";
-	public static final String			SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
-	private static ModuleLogger			logger;
+	public static final String	        SERIALIZE_ALL_CLASSES	          = "classes";
+	public static final String	        SERIALIZE_ABLILTY_CYCLERS	      = "ability-cyclers";
+	public static final String	        SERIALIZE_CURRENT_PRIMARY_CLASS	  = "current-primary-class";
+	public static final String	        SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
+	private static ModuleLogger	        logger;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instanced Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private Set<PlayerClass>			allClasses;
-	private Set<AbilityCycler>			cyclers;
-	private String						currentPrimaryClass;
-	private String						currentSecondaryClass;
+	private Set<PlayerClass>	        allClasses;
+	private final Set<AbilityCycler>	cyclers;
+	private String	                    currentPrimaryClass;
+	private String	                    currentSecondaryClass;
 	
-	private ItemStack					identifyingItem;
+	private ItemStack	                identifyingItem;
 	private WeakReference<LivingEntity>	targetRef;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,17 +95,27 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		super(data);
 		
 		setupClasses(data);
+		
 		List<String> keys;
-
-		if (data.containsKey(SERIALIZE_ABLILTY_CYCLERS)) keys = (List<String>) data.get(SERIALIZE_ABLILTY_CYCLERS);
-		else keys = Collections.emptyList();
-		cyclers = new HashSet<AbilityCycler>(keys.size());
-
-		for (String key : keys) {
-			if (!UUIDUtil.isUUID(key)) continue;
-
-			cyclers.add(AbilityCyclerManager.getInstance().getCycler(UUIDUtil.toUUID(key)));
-		}
+		Object getter;
+		
+		if ((getter = data.get(SERIALIZE_ABLILTY_CYCLERS)) != null
+		        && getter instanceof List) {
+			
+			keys = (List<String>) getter;
+			cyclers = new HashSet<AbilityCycler>();
+			AbilityCyclerManager acm = AbilityCyclerManager.getInstance();
+			
+			for (String key : keys) {
+				UUID id = UUID.fromString(key);
+				
+				if (key != null)
+					cyclers.add(acm.getCycler(id));
+			}
+			
+		} else
+			cyclers = new HashSet<AbilityCycler>();
+		
 	}
 	
 	public MMOPlayer(Player player) {
@@ -214,15 +231,16 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	@Override
 	public Map<String, Object> serialize() {
 		final Map<String, Object> data = super.serialize();
-
+		
 		Set<String> d = new HashSet<String>();
-
-		if (getAbilityCyclers() != null)
+		
+		if (getAbilityCyclers() != null) {
 			for (AbilityCycler cycler : getAbilityCyclers())
 				d.add(cycler.getPersistentID().toString());
-
-		data.put(SERIALIZE_ABLILTY_CYCLERS, d);
-
+			
+			data.put(SERIALIZE_ABLILTY_CYCLERS, d);
+		}
+		
 		if (allClasses.size() > 0) {
 			data.put(SERIALIZE_ALL_CLASSES, PlayerClassUtil.getModifiedClasses(this));
 		} else
@@ -235,7 +253,7 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		
 		if (getSecondaryClass() != null) {
 			data.put(SERIALIZE_CURRENT_SECONDARY_CLASS, getSecondaryClass()
-					.getName());
+			        .getName());
 		}
 		
 		return data;
@@ -269,22 +287,22 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		Object getter;
 		
 		if ((getter = data.get(SERIALIZE_ALL_CLASSES)) != null
-				&& getter instanceof Collection) {
+		        && getter instanceof Collection) {
 			allClasses = new HashSet<PlayerClass>((Collection<PlayerClass>) data);
 		} else {
 			allClasses = new HashSet<PlayerClass>();
 		}
 		
 		if (data.containsKey(SERIALIZE_CURRENT_PRIMARY_CLASS)
-				&& data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
+		        && data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
 			setPrimaryClass(getPlayerClass(data.get(SERIALIZE_CURRENT_PRIMARY_CLASS)
-					.toString()));
+			        .toString()));
 		}
 		if (data.containsKey(SERIALIZE_CURRENT_SECONDARY_CLASS)
-				&& data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
+		        && data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
 			setSecondaryClass(getPlayerClass(data.get(
-					SERIALIZE_CURRENT_SECONDARY_CLASS)
-					.toString()));
+			        SERIALIZE_CURRENT_SECONDARY_CLASS)
+			        .toString()));
 		}
 	}
 }
