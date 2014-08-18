@@ -24,7 +24,7 @@
 package com.noxpvp.mmo.gui;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +41,7 @@ import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
@@ -54,12 +54,12 @@ public class ClassChooseMenu extends CoreBox {
 														.get();
 	private static final int	size			= 18;
 	
-	public ClassChooseMenu(Player p, @Nullable CoreBox backButton) {
+	public ClassChooseMenu(final Player p, @Nullable CoreBox backButton) {
 		super(p, MMOLocale.GUI_MENU_NAME_COLOR.get() + MENU_NAME, size, backButton);
 		
 		final Inventory box = getBox();
 		
-		final List<PlayerClass> availableClasses = (List<PlayerClass>) PlayerClassUtil
+		final Collection<IPlayerClass> availableClasses = PlayerClassUtil
 				.getUsableClasses(p);
 		
 		final ItemStack primarySign = new ItemStack(Material.SIGN);
@@ -88,29 +88,25 @@ public class ClassChooseMenu extends CoreBox {
 				0, 7), secondarys = new CoreBoxRegion(this, new Vector(1, 0, 2), 0,
 				7);
 		
-		for (final PlayerClass clazz : availableClasses) {
+		for (final IPlayerClass clazz : availableClasses) {
 			
 			final ClassChooseMenuItem boxItem = new ClassChooseMenuItem(this, clazz
 					.getIdentifiableItem(), clazz) {
 				
 				public boolean onClick(InventoryClickEvent click) {
+					final MMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(
+							p);
 					
 					if (getPlayerClass().isPrimaryClass()) {
-						new InnerClassMenu(getPlayer(), getPlayerClass(),
-								ClassChooseMenu.this).show();
+						mmop.setPrimaryClass(getPlayerClass());
+						hide();
 						
 						return true;
 					} else {
-						MMOPlayer mmoPlayer;
-						if ((mmoPlayer = MMOPlayerManager.getInstance().getPlayer(
-								getPlayer())) != null) {
-							mmoPlayer.setSecondaryClass(getPlayerClass());
-							hide();
-							
-							return true;
-						}
+						mmop.setSecondaryClass(getPlayerClass());
+						hide();
 						
-						return false;
+						return true;
 					}
 					
 				}
@@ -128,7 +124,7 @@ public class ClassChooseMenu extends CoreBox {
 	@Override
 	public ItemStack getIdentifiableItem() {
 		final ItemStack item = super.getIdentifiableItem();
-		item.setType(Material.DIAMOND_CHESTPLATE);
+		item.setType(Material.DIAMOND_SWORD);
 		
 		return item;
 	}
@@ -141,16 +137,16 @@ public class ClassChooseMenu extends CoreBox {
 	
 	public abstract class ClassChooseMenuItem extends CoreBoxItem {
 		
-		private final PlayerClass	pClass;
+		private final IPlayerClass	pClass;
 		
 		public ClassChooseMenuItem(ClassChooseMenu parent, ItemStack item,
-				PlayerClass clazz) {
+				IPlayerClass clazz) {
 			super(parent, item);
 			
 			pClass = clazz;
 		}
 		
-		public PlayerClass getPlayerClass() {
+		public IPlayerClass getPlayerClass() {
 			return pClass;
 		}
 		

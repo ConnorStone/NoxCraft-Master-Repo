@@ -54,8 +54,8 @@ import com.noxpvp.mmo.util.PlayerClassUtil;
 
 @SerializableAs("MMOPlayer")
 public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
-        MenuItemRepresentable, PlayerClassContainer,
-        AbilityContainer<PlayerAbility> {
+		MenuItemRepresentable, PlayerClassContainer,
+		AbilityContainer<PlayerAbility> {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Static Init
@@ -69,22 +69,22 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	// Static Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public static final String	        SERIALIZE_ALL_CLASSES	          = "classes";
-	public static final String	        SERIALIZE_ABLILTY_CYCLERS	      = "ability-cyclers";
-	public static final String	        SERIALIZE_CURRENT_PRIMARY_CLASS	  = "current-primary-class";
-	public static final String	        SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
-	private static ModuleLogger	        logger;
+	public static final String			SERIALIZE_ALL_CLASSES				= "classes";
+	public static final String			SERIALIZE_ABLILTY_CYCLERS			= "ability-cyclers";
+	public static final String			SERIALIZE_CURRENT_PRIMARY_CLASS		= "current-primary-class";
+	public static final String			SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
+	private static ModuleLogger			logger;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instanced Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private Set<PlayerClass>	        allClasses;
+	private Set<IPlayerClass>			allClasses;
 	private final Set<AbilityCycler>	cyclers;
-	private String	                    currentPrimaryClass;
-	private String	                    currentSecondaryClass;
+	private String						currentPrimaryClass;
+	private String						currentSecondaryClass;
 	
-	private ItemStack	                identifyingItem;
+	private ItemStack					identifyingItem;
 	private WeakReference<LivingEntity>	targetRef;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,21 +100,23 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		Object getter;
 		
 		if ((getter = data.get(SERIALIZE_ABLILTY_CYCLERS)) != null
-		        && getter instanceof List) {
+				&& getter instanceof List) {
 			
 			keys = (List<String>) getter;
 			cyclers = new HashSet<AbilityCycler>();
-			AbilityCyclerManager acm = AbilityCyclerManager.getInstance();
+			final AbilityCyclerManager acm = AbilityCyclerManager.getInstance();
 			
-			for (String key : keys) {
-				UUID id = UUID.fromString(key);
+			for (final String key : keys) {
+				final UUID id = UUID.fromString(key);
 				
-				if (key != null)
+				if (key != null) {
 					cyclers.add(acm.getCycler(id));
+				}
 			}
 			
-		} else
+		} else {
 			cyclers = new HashSet<AbilityCycler>();
+		}
 		
 	}
 	
@@ -125,7 +127,7 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	public MMOPlayer(UUID playerUUID) {
 		super(playerUUID);
 		
-		allClasses = new HashSet<PlayerClass>();
+		allClasses = new HashSet<IPlayerClass>();
 		cyclers = new HashSet<AbilityCycler>();
 	}
 	
@@ -184,15 +186,15 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		return "MMOPlayer";
 	}
 	
-	public PlayerClass getPlayerClass(String name) {
-		for (final PlayerClass c : allClasses)
+	public IPlayerClass getPlayerClass(String name) {
+		for (final IPlayerClass c : allClasses)
 			if (c.getName().equalsIgnoreCase(name))
 				return c;
 		
 		return null;
 	}
 	
-	public Set<PlayerClass> getPlayerClasses() {
+	public Set<IPlayerClass> getPlayerClasses() {
 		return Collections.unmodifiableSet(allClasses);
 	}
 	
@@ -200,11 +202,11 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		return NoxMMO.getInstance();
 	}
 	
-	public PlayerClass getPrimaryClass() {
+	public IPlayerClass getPrimaryClass() {
 		return getPlayerClass(currentPrimaryClass);
 	}
 	
-	public PlayerClass getSecondaryClass() {
+	public IPlayerClass getSecondaryClass() {
 		return getPlayerClass(currentSecondaryClass);
 	}
 	
@@ -217,7 +219,7 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	}
 	
 	public boolean hasPlayerClass(String name) {
-		for (final PlayerClass c : allClasses)
+		for (final IPlayerClass c : allClasses)
 			if (c.getName().equalsIgnoreCase(name))
 				return true;
 		
@@ -232,11 +234,12 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	public Map<String, Object> serialize() {
 		final Map<String, Object> data = super.serialize();
 		
-		Set<String> d = new HashSet<String>();
+		final Set<String> d = new HashSet<String>();
 		
 		if (getAbilityCyclers() != null) {
-			for (AbilityCycler cycler : getAbilityCyclers())
+			for (final AbilityCycler cycler : getAbilityCyclers()) {
 				d.add(cycler.getPersistentID().toString());
+			}
 			
 			data.put(SERIALIZE_ABLILTY_CYCLERS, d);
 		}
@@ -253,7 +256,7 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		
 		if (getSecondaryClass() != null) {
 			data.put(SERIALIZE_CURRENT_SECONDARY_CLASS, getSecondaryClass()
-			        .getName());
+					.getName());
 		}
 		
 		return data;
@@ -267,13 +270,13 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		}
 	}
 	
-	public void setPrimaryClass(PlayerClass newPrimary) {
+	public void setPrimaryClass(IPlayerClass newPrimary) {
 		if (newPrimary != null) {
 			currentPrimaryClass = newPrimary.getName();
 		}
 	}
 	
-	public void setSecondaryClass(PlayerClass newSecondary) {
+	public void setSecondaryClass(IPlayerClass newSecondary) {
 		if (newSecondary != null) {
 			currentSecondaryClass = newSecondary.getName();
 		}
@@ -287,22 +290,22 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		Object getter;
 		
 		if ((getter = data.get(SERIALIZE_ALL_CLASSES)) != null
-		        && getter instanceof Collection) {
-			allClasses = new HashSet<PlayerClass>((Collection<PlayerClass>) data);
+				&& getter instanceof Collection) {
+			allClasses = new HashSet<IPlayerClass>((Collection<IPlayerClass>) data);
 		} else {
-			allClasses = new HashSet<PlayerClass>();
+			allClasses = new HashSet<IPlayerClass>();
 		}
 		
 		if (data.containsKey(SERIALIZE_CURRENT_PRIMARY_CLASS)
-		        && data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
+				&& data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
 			setPrimaryClass(getPlayerClass(data.get(SERIALIZE_CURRENT_PRIMARY_CLASS)
-			        .toString()));
+					.toString()));
 		}
 		if (data.containsKey(SERIALIZE_CURRENT_SECONDARY_CLASS)
-		        && data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
+				&& data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
 			setSecondaryClass(getPlayerClass(data.get(
-			        SERIALIZE_CURRENT_SECONDARY_CLASS)
-			        .toString()));
+					SERIALIZE_CURRENT_SECONDARY_CLASS)
+					.toString()));
 		}
 	}
 }

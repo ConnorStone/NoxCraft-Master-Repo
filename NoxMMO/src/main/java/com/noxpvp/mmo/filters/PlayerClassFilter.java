@@ -23,15 +23,16 @@
 
 package com.noxpvp.mmo.filters;
 
-import com.bergerkiller.bukkit.common.filtering.Filter;
-import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
-import com.noxpvp.mmo.manager.MMOPlayerManager;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.bukkit.entity.Player;
+
+import com.bergerkiller.bukkit.common.filtering.Filter;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class PlayerClassFilter implements Filter<Player> {
 	
@@ -63,8 +64,8 @@ public class PlayerClassFilter implements Filter<Player> {
 	public boolean isFiltered(Player player) {
 		final MMOPlayer mPlayer = getMMOPlayer(player);
 		
-		final PlayerClass mainClass = mPlayer.getPrimaryClass();
-		final PlayerClass subClass = mPlayer.getSecondaryClass();
+		final IPlayerClass mainClass = mPlayer.getPrimaryClass();
+		final IPlayerClass subClass = mPlayer.getSecondaryClass();
 		
 		if (classIds.contains(mainClass.getName())
 				|| classIds.contains(mainClass.getName()))

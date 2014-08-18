@@ -35,7 +35,7 @@ import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
@@ -47,38 +47,32 @@ public class ClassListCommand extends BaseCommand {
 		super(COMMAND_NAME, true);
 	}
 	
-	public String[] getFlags() {
-		return blankStringArray;
-	}
-	
-	public int getMaxArguments() {
-		return 0;
-	}
-	
 	@Override
 	public CommandResult execute(CommandContext context)
-	        throws NoPermissionException {
+			throws NoPermissionException {
 		
-		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin(), true);
-		Player p = context.getPlayer();
+		final NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin(), true);
+		final Player p = context.getPlayer();
 		
-		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
+		for (final IPlayerClass clazz : PlayerClassUtil.getUsableClasses(p)) {
 			mb.yellow("Primary classes").gold(": ");
 			
-			List<String> names = new ArrayList<String>();
-			if (clazz.isPrimaryClass())
-				names.add(clazz.getDisplayName());
+			final List<String> names = new ArrayList<String>();
+			if (clazz.isPrimaryClass()) {
+				names.add(clazz.getName());
+			}
 			
 			mb.append(StringUtil.join(ChatColor.GOLD + ", ", names));
 		}
 		
 		mb.newLine().newLine();
-		for (PlayerClass clazz : PlayerClassUtil.getAllowedPlayerClasses(p)) {
+		for (final IPlayerClass clazz : PlayerClassUtil.getUsableClasses(p)) {
 			mb.yellow("Secondary classes").gold(": ");
 			
-			List<String> names = new ArrayList<String>();
-			if (!clazz.isPrimaryClass())
-				names.add(clazz.getDisplayName());
+			final List<String> names = new ArrayList<String>();
+			if (!clazz.isPrimaryClass()) {
+				names.add(clazz.getName());
+			}
 			
 			mb.append(StringUtil.join(ChatColor.GOLD + ", ", names));
 		}
@@ -87,6 +81,15 @@ public class ClassListCommand extends BaseCommand {
 		mb.send(p);
 		
 		return new CommandResult(this, true);
+	}
+	
+	public String[] getFlags() {
+		return blankStringArray;
+	}
+	
+	@Override
+	public int getMaxArguments() {
+		return 0;
 	}
 	
 	@Override

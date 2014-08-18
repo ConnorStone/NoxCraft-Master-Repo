@@ -23,9 +23,6 @@
 
 package com.noxpvp.mmo.listeners;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,34 +31,28 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.BasePlayerAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 @SuppressWarnings("unused")
 public class PlayerInteractListener extends NoxListener<NoxMMO> {
 	
-	private static Map<String, BasePlayerAbility>	abs	= new HashMap<String, BasePlayerAbility>();
-	MMOPlayerManager	pm}
-	
-	public PlayerInteractListener(NoxMMO mmo) {
-		super(mmo);
-
-		this.pm = MMOPlayerManager.getInstance();
-	}
+	MMOPlayerManager	pm;
 	
 	public PlayerInteractListener() {
 		this(NoxMMO.getInstance());
-	;
+		
+	}
+	
+	public PlayerInteractListener(NoxMMO mmo) {
+		super(mmo);
+		
+		pm = MMOPlayerManager.getInstance();
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onInteract(PlayerInteractEvent e) {
 		
 		final Player p = e.getPlayer();
-		// OldMMOPlayer player = pm.getPlayer((p = e.getPlayer()));
-		// if (player == null) return;
-		
-		// new TargetPlayerAbility(p).execute(e);//TODO make default range
-		// configized || passiveness
 		
 		// debug===========================================
 		if (p.getItemInHand().getType() != Material.STICK)

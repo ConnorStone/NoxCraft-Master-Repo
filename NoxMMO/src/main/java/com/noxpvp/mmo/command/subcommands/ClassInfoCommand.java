@@ -29,7 +29,6 @@ import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.NoxMMOMessageBuilder;
 import com.noxpvp.mmo.util.PlayerClassUtil;
@@ -42,54 +41,46 @@ public class ClassInfoCommand extends BaseCommand {
 		super(COMMAND_NAME, false);
 	}
 	
-	public String[] getFlags() {
-		return blankStringArray;
-	}
-	
-	public int getMaxArguments() {
-		return 1;
-	}
-	
 	@Override
 	public CommandResult execute(CommandContext context)
-	        throws NoPermissionException {
+			throws NoPermissionException {
 		
 		String className = null;
-		if (context.hasArgument(0))
+		if (context.hasArgument(0)) {
 			className = context.getArgument(0).toLowerCase();
+		}
 		
 		IPlayerClass clazz = null;
 		
-		if (className != null && !PlayerClassUtil.hasClass(className)) {
+		if (className != null && !PlayerClassUtil.hasClass(className))
 			return new CommandResult(this, false);
-		}
 		
 		if (className != null) {
-			for (PlayerClass c : PlayerClassUtil.getAllowedPlayerClasses(context
-			        .getPlayer()))
+			for (final IPlayerClass c : PlayerClassUtil.getUsableClasses(context
+					.getPlayer()))
 				if (c.getName().equalsIgnoreCase(className)) {
 					clazz = c;
 					break;
 				}
 		}
 		
-		NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin());
+		final NoxMMOMessageBuilder mb = new NoxMMOMessageBuilder(getPlugin());
 		
 		if (clazz != null) {
-			mb.commandHeader(clazz.getDisplayName() + " Class", true);
+			mb.commandHeader(clazz.getName() + " Class", true);
 			
 			mb.withClassInfo(clazz).headerClose(true);
 			mb.send(context.getSender());
 		} else {
-			MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(
-			        context.getPlayer());
+			final MMOPlayer p = MMOPlayerManager.getInstance().getPlayer(
+					context.getPlayer());
 			
-			mb.commandHeader(p.getPrimaryClass().getDisplayName() + " Class", true);
+			mb.commandHeader(p.getPrimaryClass().getName() + " Class", true);
 			
 			mb.withClassInfo(p.getPrimaryClass()).headerClose(true);
 			mb.headerClose();
 			mb.newLine();
-			mb.commandHeader(p.getSecondaryClass().getDisplayName() + " Class", true);
+			mb.commandHeader(p.getSecondaryClass().getName() + " Class", true);
 			
 			mb.withClassInfo(p.getSecondaryClass()).headerClose(true);
 			mb.headerClose();
@@ -98,6 +89,15 @@ public class ClassInfoCommand extends BaseCommand {
 		}
 		
 		return new CommandResult(this, true);
+	}
+	
+	public String[] getFlags() {
+		return blankStringArray;
+	}
+	
+	@Override
+	public int getMaxArguments() {
+		return 1;
 	}
 	
 	@Override

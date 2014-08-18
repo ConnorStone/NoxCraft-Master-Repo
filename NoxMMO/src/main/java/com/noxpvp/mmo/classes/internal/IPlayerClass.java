@@ -28,21 +28,15 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.AbilityContainer;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 
-public interface IPlayerClass {
-	
-	/**
-	 * Gets the MMO player user of this class
-	 * 
-	 * @return
-	 */
-	public MMOPlayer getMMOPlayer();
-	
-	public OfflinePlayer getPlayer();
-	
-	public void setPlayer(OfflinePlayer player);
+public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
+		MenuItemRepresentable, ConfigurationSerializable, IExperienceHolder {
 	
 	/**
 	 * Checks if player can use this class.
@@ -50,13 +44,6 @@ public interface IPlayerClass {
 	 * @return
 	 */
 	public boolean canUseClass();
-	
-	/**
-	 * Gets the custom max health for the user of this class
-	 * 
-	 * @return
-	 */
-	public double getMaxHealth();
 	
 	/**
 	 * Retrieves the unmodified unmerged coloring of the armour.
@@ -88,11 +75,27 @@ public interface IPlayerClass {
 	public List<String> getLore();
 	
 	/**
+	 * Gets the custom max health for the user of this class
+	 * 
+	 * @return
+	 */
+	public double getMaxHealth();
+	
+	/**
+	 * Gets the MMO player user of this class
+	 * 
+	 * @return
+	 */
+	public MMOPlayer getMMOPlayer();
+	
+	/**
 	 * Gets the name of this class
 	 * 
 	 * @return
 	 */
 	public String getName();
+	
+	public OfflinePlayer getPlayer();
 	
 	/**
 	 * Retrieves the color used for coloring armour.
@@ -111,6 +114,8 @@ public interface IPlayerClass {
 	 */
 	public boolean isPrimaryClass();
 	
+	public void setPlayer(OfflinePlayer player);
+	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Special Color Blending techniques
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,11 +131,11 @@ public interface IPlayerClass {
 			
 			final int r = first.getRed(), g = first.getGreen(), b = first.getBlue();
 			final int r2 = second.getRed(), g2 = second.getGreen(), b2 = second
-			        .getBlue();
+					.getBlue();
 			
 			if (equals(ADDITIVE))
 				return Color.fromRGB(Math.min(r + r2, 255), Math.min(g + g2, 255),
-				        Math.min(b + b2, 255));
+						Math.min(b + b2, 255));
 			else if (equals(AVERAGE))
 				return Color.fromRGB((r + r2) / 2, (g + g2) / 2, (b + b2) / 2);
 			

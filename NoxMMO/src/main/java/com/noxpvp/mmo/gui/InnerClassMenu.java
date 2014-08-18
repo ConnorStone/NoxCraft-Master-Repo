@@ -33,20 +33,20 @@ import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
 import com.noxpvp.mmo.MMOPlayer;
-import com.noxpvp.mmo.abilities.internal.TieredAbility;
-import com.noxpvp.mmo.classes.internal.PlayerClass;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.classes.internal.IPlayerClass;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class InnerClassMenu extends CoreBox {
 	
 	public static final String	MENU_NAME	= "Class";
-	private static final int	size		= 27;
+	private static final int	size		= 18;
 	
-	private PlayerClass			clazz;
+	private IPlayerClass		clazz;
 	
-	public InnerClassMenu(final Player p, PlayerClass clazz, CoreBox backButton) {
-		super(p, clazz.getDisplayName() + " " + MMOLocale.GUI_MENU_NAME_COLOR.get()
+	public InnerClassMenu(final Player p, IPlayerClass clazz, CoreBox backButton) {
+		super(p, clazz.getName() + " " + MMOLocale.GUI_MENU_NAME_COLOR.get()
 				+ MENU_NAME, size, backButton);
 		
 		this.clazz = clazz;
@@ -55,12 +55,12 @@ public class InnerClassMenu extends CoreBox {
 		
 		box.setItem(0, clazz.getIdentifiableItem());
 		
-		final CoreBoxRegion abilities = new CoreBoxRegion(this, new Vector(2, 0, 0),
+		final CoreBoxRegion abilities = new CoreBoxRegion(this, new Vector(1, 0, 0),
 				1, 9);
 		
 		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(p);
 		
-		for (final TieredAbility ab : mmoPlayer.getAbilities()) {
+		for (final PlayerAbility ab : mmoPlayer.getAbilities()) {
 			final ItemStack item = ab.getIdentifiableItem(clazz.getAbilities()
 					.contains(ab));
 			
@@ -80,7 +80,7 @@ public class InnerClassMenu extends CoreBox {
 		return clazz.getIdentifiableItem();
 	}
 	
-	public PlayerClass getPlayerClass() {
+	public IPlayerClass getPlayerClass() {
 		return clazz;
 	}
 	
@@ -91,23 +91,17 @@ public class InnerClassMenu extends CoreBox {
 	
 	public abstract class ClassMenuItem extends CoreBoxItem {
 		
-		private final int			tier;
-		private final PlayerClass	clazz;
+		private final IPlayerClass	clazz;
 		
 		public ClassMenuItem(InnerClassMenu parent, ItemStack item,
-				PlayerClass clazz, int tier) {
+				IPlayerClass clazz) {
 			super(parent, item);
 			
 			this.clazz = clazz;
-			this.tier = tier;
 		}
 		
-		public PlayerClass getPlayerClass() {
+		public IPlayerClass getPlayerClass() {
 			return clazz;
-		}
-		
-		public int getTier() {
-			return tier;
 		}
 	}
 	
