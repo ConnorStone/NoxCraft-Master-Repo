@@ -263,7 +263,7 @@
 			<!-- Spigot -->
 			<dependency>
 				<groupId>org.spigotmc</groupId>
-				<artifactId>spigot-api</artifactId>
+				<artifactId>spigot</artifactId>
 				<version>1.7.9-R0.3-SNAPSHOT</version>
 				<scope>provided</scope>
 			</dependency>
@@ -304,7 +304,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
+			<artifactId>spigot</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

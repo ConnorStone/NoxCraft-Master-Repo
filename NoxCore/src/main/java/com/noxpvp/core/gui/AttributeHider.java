@@ -1,20 +1,23 @@
 package com.noxpvp.core.gui;
 
-import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.core.listeners.NoxPLPacketListener;
+import net.minecraft.server.v1_7_R3.*;
+import net.minecraft.util.io.netty.buffer.Unpooled;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 
-public class AttributeHider extends NoxListener<NoxCore> {
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class AttributeHider extends NoxPLPacketListener {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Static fields
@@ -31,7 +34,7 @@ public class AttributeHider extends NoxListener<NoxCore> {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	public AttributeHider() {
-		super(PacketType.Play.Server.WINDOW_ITEMS,
+		super(NoxCore.getInstance(), PacketType.Play.Server.WINDOW_ITEMS,
 				PacketType.Play.Server.CUSTOM_PAYLOAD,
 				PacketType.Play.Server.SET_SLOT);
 		
