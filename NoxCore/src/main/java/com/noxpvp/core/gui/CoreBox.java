@@ -23,13 +23,13 @@
 
 package com.noxpvp.core.gui;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
+import com.bergerkiller.bukkit.common.MessageBuilder;
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.data.NoxPlayer;
+import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.core.manager.CorePlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -44,13 +44,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.bergerkiller.bukkit.common.MessageBuilder;
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.data.NoxPlayer;
-import com.noxpvp.core.listeners.NoxListener;
-import com.noxpvp.core.manager.CorePlayerManager;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 		ICoreBox, MenuItemRepresentable, Cloneable {
@@ -136,7 +134,7 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 					gp.deleteCoreBox();
 				}
 				
-				attributeHider.unregister();
+				attributeHider.unRegister();
 				thisBox.unregister();
 				box.clear();
 				menuItems = null;
