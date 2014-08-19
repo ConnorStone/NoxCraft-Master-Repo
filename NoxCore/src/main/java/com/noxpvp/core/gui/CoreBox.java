@@ -30,6 +30,7 @@ import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.manager.CorePlayerManager;
+import com.noxpvp.core.utils.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -93,11 +94,12 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 		
 		pm = CorePlayerManager.getInstance();
 		playerID = p.getUniqueId();
-		
 		this.name = ChatColor.GOLD + name;
 		box = size == 0 ?
-				Bukkit.getServer().createInventory(null, type, this.name) :
-				Bukkit.getServer().createInventory(null, size, this.name);
+				BukkitUtil.createInventory(null, type, this.name) :
+				BukkitUtil.createInventory(null, size, this.name);
+
+		if (box == null) throw new IllegalStateException("CoreBox failed to initialize an inventory object for use.");
 		
 		menuItems = new HashMap<Integer, CoreBoxItem>();
 		
