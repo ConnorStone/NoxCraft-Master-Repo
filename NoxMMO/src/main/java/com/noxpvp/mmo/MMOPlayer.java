@@ -109,8 +109,10 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 			for (final String key : keys) {
 				final UUID id = UUID.fromString(key);
 				
-				if (key != null) {
-					cyclers.add(acm.getCycler(id));
+				AbilityCycler ac = null;
+				if (id != null && (ac = acm.getCycler(id)) != null) {
+					cyclers.add(ac);
+					AbilityCycler.register(ac);
 				}
 			}
 			

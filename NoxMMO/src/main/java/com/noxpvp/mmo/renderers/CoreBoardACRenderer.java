@@ -26,40 +26,46 @@ package com.noxpvp.mmo.renderers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.ChatColor;
 
 import com.noxpvp.core.gui.CoreBoard;
 import com.noxpvp.core.gui.rendering.ICoreBoardRenderer;
 import com.noxpvp.mmo.AbilityCycler;
 
-public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements ICoreBoardRenderer {
-	private CoreBoard board;
-	private List<String> entries;
-	private String currentEntry, nextEntry, prevEntry;
-
+public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements
+		ICoreBoardRenderer {
+	
+	private final CoreBoard	board;
+	private List<String>	entries;
+	private String			currentEntry, nextEntry, prevEntry;
+	
 	public CoreBoardACRenderer(AbilityCycler cycler) {
 		this(cycler, new CoreBoard("Abilities", cycler.getPlayer()));
 		entries = new ArrayList<String>();
-
-		for (TieredAbility ability : cycler.getList())
-			entries.add(ability.getName());
+		
+		for (final String ability : cycler.getList()) {
+			entries.add(ability);
+		}
 	}
-
+	
 	public CoreBoardACRenderer(AbilityCycler cycler, CoreBoard board) {
 		super(cycler);
 		this.board = board;
 	}
-
-	//Warning: This is slightly intensive if constantly being updated.
-	private void update() {
-		board.clear();
-		for (String entry : entries)
-			board.addEntry(entry,  entry, (entry.equals(currentEntry)? ChatColor.YELLOW: entry.equals(nextEntry) || entry.equals(prevEntry)? ChatColor.AQUA: null));
-	}
-
+	
 	/**
-	 * Renders a view provided by the {@link com.noxpvp.mmo.AbilityCycler#peekNext()} method.
+	 * Renders a view provided by the current through
+	 * {@link com.noxpvp.mmo.AbilityCycler#current()}.
+	 */
+	@Override
+	public void renderCurrent() {
+		update();
+	}
+	
+	/**
+	 * Renders a view provided by the
+	 * {@link com.noxpvp.mmo.AbilityCycler#peekNext()} method.
+	 * 
 	 * @deprecated Please use {@link #renderCurrent()}
 	 */
 	@Override
@@ -67,9 +73,11 @@ public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements IC
 	public void renderNext() {
 		renderCurrent();
 	}
-
+	
 	/**
-	 * Renders a view provided by the {@link com.noxpvp.mmo.AbilityCycler#peekPrevious()} method.
+	 * Renders a view provided by the
+	 * {@link com.noxpvp.mmo.AbilityCycler#peekPrevious()} method.
+	 * 
 	 * @deprecated Please use {@link #renderCurrent()}
 	 */
 	@Override
@@ -77,20 +85,23 @@ public class CoreBoardACRenderer extends BaseAbilityCyclerRenderer implements IC
 	public void renderPrevious() {
 		renderCurrent();
 	}
-
-	/**
-	 * Renders a view provided by the current through {@link com.noxpvp.mmo.AbilityCycler#current()}.
-	 */
-	@Override
-	public void renderCurrent() {
-		update();
-	}
-
+	
 	public void startRender() {
 		board.show();
 	}
-
+	
 	public void stopRender() {
 		board.hide();
+	}
+	
+	// Warning: This is slightly intensive if constantly being updated.
+	private void update() {
+		board.clear();
+		for (final String entry : entries) {
+			board.addEntry(entry, entry,
+					entry.equals(currentEntry) ? ChatColor.YELLOW : entry
+							.equals(nextEntry)
+							|| entry.equals(prevEntry) ? ChatColor.AQUA : null);
+		}
 	}
 }

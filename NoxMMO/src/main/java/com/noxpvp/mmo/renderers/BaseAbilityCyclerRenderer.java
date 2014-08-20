@@ -28,32 +28,10 @@ import com.noxpvp.mmo.AbilityCycler;
 
 public abstract class BaseAbilityCyclerRenderer extends RenderRunner {
 	
-	public static final BaseAbilityCyclerRenderer	dummy	= new BaseAbilityCyclerRenderer() {
-																
-																@Override
-																public void renderCurrent() {
-																	
-																}
-																
-																@Override
-																public void renderNext() {
-																	
-																}
-																
-																@Override
-																public void renderPrevious() {
-																	
-																}
-															};
-	
-	private final AbilityCycler						cycler;
+	private final AbilityCycler	cycler;
 	
 	public BaseAbilityCyclerRenderer(AbilityCycler cycler) {
 		this.cycler = cycler;
-	}
-	
-	private BaseAbilityCyclerRenderer() {
-		this(null);
 	}
 	
 	public AbilityCycler getCycler() {

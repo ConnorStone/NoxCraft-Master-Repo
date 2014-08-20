@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,10 +51,12 @@ import com.comphenix.attribute.AttributeStorage;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.data.Cycler;
 import com.noxpvp.core.listeners.NoxListener;
+import com.noxpvp.core.utils.InventoryUtil;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.manager.AbilityCyclerManager;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
+import com.noxpvp.mmo.renderers.ItemDisplayACRenderer;
 
 public class AbilityCycler extends Cycler<String> implements
 		Persistent, ConfigurationSerializable {
@@ -63,7 +66,7 @@ public class AbilityCycler extends Cycler<String> implements
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	private static ModuleLogger				logger;
-	private static NoxListener<NoxMMO>		iHeld, iInteract;
+	private static NoxListener<NoxMMO>		onCycle, onUse;
 	private static Map<UUID, AbilityCycler>	cyclers;
 	
 	// Serializers start
@@ -92,6 +95,7 @@ public class AbilityCycler extends Cycler<String> implements
 		player = playerID;
 		id = UUID.randomUUID();
 		AttributeStorage.newTarget(item, id).setData(id.toString());
+		renderer = new ItemDisplayACRenderer(this);
 		
 		final List<String> abs = new ArrayList<String>();
 		for (final PlayerAbility ab : data) {
@@ -135,6 +139,7 @@ public class AbilityCycler extends Cycler<String> implements
 		}
 		
 		addAll(abilities);
+		renderer = new ItemDisplayACRenderer(this);
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,39 +155,43 @@ public class AbilityCycler extends Cycler<String> implements
 		
 		cyclers = new HashMap<UUID, AbilityCycler>();
 		
-		iHeld = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
+		onCycle = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
 			
 			@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 			public void onItemHeldEvent(PlayerItemHeldEvent event) {
+				
+				// Return if not sneaking
 				if (!event.getPlayer().isSneaking())
 					return;
 				
 				for (final AbilityCycler ac : cyclers.values())
 					if (ac.isCycleItem(event.getPlayer().getItemInHand())) {
-						ac.onHeld(event);
+						ac.onCycle(event);
 					}
 				
 			}
 			
 		};
 		
-		iInteract = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
+		onUse = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
 			
 			@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 			public void onInteract(PlayerInteractEvent event) {
+				
+				// Return if not right clicking
 				if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) &&
 						!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 					return;
 				
 				for (final AbilityCycler ac : cyclers.values())
 					if (ac.isValid()) {
-						ac.onInteract(event);
+						ac.onUse(event);
 					}
 			}
 		};
 		
-		iHeld.register();
-		iInteract.register();
+		onCycle.register();
+		onUse.register();
 	}
 	
 	public static boolean isRegistered(UUID cyclerID) {
@@ -210,6 +219,10 @@ public class AbilityCycler extends Cycler<String> implements
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	public PlayerAbility getCurrentAB() {
+		return getMMOPlayer().getAbility(current());
+	}
+	
 	public MMOPlayer getMMOPlayer() {
 		return MMOPlayerManager.getInstance().getPlayer(getPlayer());
 	};
@@ -234,10 +247,11 @@ public class AbilityCycler extends Cycler<String> implements
 	}
 	
 	public BaseAbilityCyclerRenderer getRenderer() {
-		if (renderer != null)
-			return renderer;
-		
-		return BaseAbilityCyclerRenderer.dummy;
+		return renderer;
+	}
+	
+	public int getSlotOfItem(ItemStack item) {
+		return InventoryUtil.getSlotOfItem(getPlayer().getInventory(), item);
 	}
 	
 	public boolean isCycleItem(ItemStack stack) {
@@ -258,20 +272,34 @@ public class AbilityCycler extends Cycler<String> implements
 		logger.log(level, msg);
 	}
 	
-	@Override
-	public String next() {
-		final String ret = super.next();
-		renderDisplay();
+	public PlayerAbility nextAB() {
+		final String next = next();
+		final PlayerAbility ab = getMMOPlayer().getAbility(next);
 		
-		return ret;
+		if (ab != null) {
+			renderDisplay();
+		}
+		
+		return ab;
 	}
 	
-	@Override
-	public String previous() {
-		final String ret = super.previous();
-		renderDisplay();
+	public PlayerAbility peekNextAB() {
+		return getMMOPlayer().getAbility(peekNext());
+	}
+	
+	public PlayerAbility peekPreviousAB() {
+		return getMMOPlayer().getAbility(peekPrevious());
+	}
+	
+	public PlayerAbility previousAB() {
+		final String previous = previous();
+		final PlayerAbility ab = getMMOPlayer().getAbility(previous);
 		
-		return ret;
+		if (ab != null) {
+			renderDisplay();
+		}
+		
+		return ab;
 	}
 	
 	public void renderDisplay() {
@@ -292,15 +320,43 @@ public class AbilityCycler extends Cycler<String> implements
 		this.renderer = renderer;
 	}
 	
-	private void onHeld(PlayerItemHeldEvent event) {
-		
+	private void onCycle(PlayerItemHeldEvent event) {
+		switch (getChange(event.getPreviousSlot(), event.getNewSlot())) {
+			case 1:
+				nextAB();
+				renderDisplay();
+				break;
+			case -1:
+				previousAB();
+				renderDisplay();
+				break;
+			default:
+				break;
+		}
 	}
 	
-	private void onInteract(PlayerInteractEvent event) {
+	private void onUse(PlayerInteractEvent event) {
+		getCurrentAB().execute();
+	}
+	
+	private void pruneAbilitiesFromPlayer() {
+		final Iterator<String> abIter = abilities.iterator();
 		
+		while (abIter.hasNext()) {
+			final String ab = abIter.next();
+			final MMOPlayer mmop = getMMOPlayer();
+			
+			if (!mmop.hasAbility(ab)) {
+				abIter.remove();
+			}
+			
+		}
 	}
 	
 	boolean isValid() {
-		return getPlayer() != null;
+		pruneAbilitiesFromPlayer();
+		
+		return getPlayer() != null && abilities.size() > 0
+				&& AbilityCycler.isRegistered(getPersistentID());
 	}
 }

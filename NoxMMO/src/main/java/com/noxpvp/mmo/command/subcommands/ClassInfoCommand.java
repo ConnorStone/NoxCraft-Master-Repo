@@ -52,8 +52,9 @@ public class ClassInfoCommand extends BaseCommand {
 		
 		IPlayerClass clazz = null;
 		
-		if (className != null && !PlayerClassUtil.hasClass(className))
-			return new CommandResult(this, false);
+		// if (className != null &&
+		// !PlayerClassUtil.hasClass(className))//TODO
+		// return new CommandResult(this, false);
 		
 		if (className != null) {
 			for (final IPlayerClass c : PlayerClassUtil.getUsableClasses(context
