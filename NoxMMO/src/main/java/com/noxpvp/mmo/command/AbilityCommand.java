@@ -28,25 +28,23 @@ import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
 import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.command.subcommands.AbilityBindCommand;
-import com.noxpvp.mmo.command.subcommands.AbilityInfoCommand;
 import com.noxpvp.mmo.command.subcommands.AbilityListCommand;
 
 public class AbilityCommand extends BaseCommand {
 	
-	public static final String	  COMMAND_NAME	= "ability";
+	public static final String		COMMAND_NAME	= "ability";
 	
-	private static final String[]	flags	   = new String[] {};
+	private static final String[]	flags			= new String[] {};
 	
 	public AbilityCommand() {
 		super(COMMAND_NAME, true);
 		registerSubCommand(new AbilityBindCommand());
-		registerSubCommand(new AbilityInfoCommand());
 		registerSubCommand(new AbilityListCommand());
 	}
 	
 	@Override
 	public CommandResult execute(CommandContext context)
-	        throws NoPermissionException {
+			throws NoPermissionException {
 		
 		return new CommandResult(this, false);
 	}

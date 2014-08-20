@@ -136,7 +136,7 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 					gp.deleteCoreBox();
 				}
 				
-				attributeHider.unregister();
+				attributeHider.unRegister();
 				thisBox.unregister();
 				box.clear();
 				menuItems = null;
