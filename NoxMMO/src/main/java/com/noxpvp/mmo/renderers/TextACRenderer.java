@@ -40,7 +40,7 @@ public class TextACRenderer extends BaseAbilityCyclerRenderer {
 			final Player p = getCycler().getPlayer();
 			if (p != null) {
 				MessageUtil.sendMessage(p, MessageUtil.parseColor(getCycler()
-						.current().getName()));
+						.getCurrentAB().getName()));
 			}
 		}
 	}
@@ -49,7 +49,7 @@ public class TextACRenderer extends BaseAbilityCyclerRenderer {
 	public void renderNext() {
 		if (getCycler() != null && getCycler().getPlayer() != null) {
 			MessageUtil.sendMessage(getCycler().getPlayer(), MessageUtil
-					.parseColor(getCycler().peekNext().getName()));
+					.parseColor(getCycler().peekNextAB().getName()));
 		}
 	}
 	
@@ -57,7 +57,7 @@ public class TextACRenderer extends BaseAbilityCyclerRenderer {
 	public void renderPrevious() {
 		if (getCycler() != null && getCycler().getPlayer() != null) {
 			MessageUtil.sendMessage(getCycler().getPlayer(), MessageUtil
-					.parseColor(getCycler().peekPrevious().getName()));
+					.parseColor(getCycler().peekPreviousAB().getName()));
 		}
 		
 	}

@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.renderers;
 
-import com.noxpvp.mmo.abilities.internal.TieredAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,64 +31,95 @@ import com.comphenix.attribute.NbtFactory;
 import com.comphenix.attribute.NbtFactory.NbtCompound;
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import com.noxpvp.mmo.AbilityCycler;
+import com.noxpvp.mmo.MMOPlayer;
+import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class ItemDisplayACRenderer extends BaseAbilityCyclerRenderer {
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	public ItemDisplayACRenderer(AbilityCycler cycler) {
 		super(cycler);
 	}
 	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance Methods
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	/**
+	 * Renders a view provided by the current through
+	 * {@link com.noxpvp.mmo.AbilityCycler#current()}.
+	 */
+	@Override
+	public void renderCurrent() {
+		final AbilityCycler cycler = getCycler();
+		if (cycler == null)
+			return;
+		
+		final Player player = cycler.getPlayer();
+		
+		final PlayerAbility curAB = cycler.getCurrentAB();
+		final String curABName = cycler.current();
+		
+		if (cycler == null || curAB == null || player == null)
+			return;
+		
+		// Get list of all items, and show which is used with an arrow
+		final String[] others = new String[cycler.getList().size()];
+		final MMOPlayer mmop = MMOPlayerManager.getInstance().getPlayer(player);
+		int i = 0;
+		
+		for (final String a : cycler.getList()) {
+			if (curABName == a) {
+				continue;
+			}
+			
+			others[i++] = (curAB.getName().equals(curABName) ? ChatColor.GREEN + ">"
+					: " ")
+					+ curAB.getName();
+		}
+		
+		// Set fake NBT data on item, and send update packet for that item
+		final ItemStack item = NbtFactory.getCraftItemStack(getCycler().getPlayer()
+				.getItemInHand().clone());
+		
+		final NbtCompound tag = NbtFactory.fromItemTag(item);
+		tag.putPath("display.Name", ChatColor.GREEN + curAB.getName());
+		tag.putPath("display.Lore", NbtFactory.createList((Object[]) others));
+		
+		// Send update packet
+		getNewUpdate(item, (short) cycler.getSlotOfItem(item)).sendPacket(
+				getCycler().getPlayer());
+		
+	}
+	
+	/**
+	 * Renders a view provided by the
+	 * {@link com.noxpvp.mmo.AbilityCycler#peekNext()} method.
+	 */
+	@Override
+	public void renderNext() {
+		
+	}
+	
+	/**
+	 * Renders a view provided by the
+	 * {@link com.noxpvp.mmo.AbilityCycler#peekPrevious()} method.
+	 */
+	@Override
+	public void renderPrevious() {
+		
+	}
+	
 	private WrapperPlayServerSetSlot getNewUpdate(ItemStack s, short slot) {
-		WrapperPlayServerSetSlot p = new WrapperPlayServerSetSlot();
+		final WrapperPlayServerSetSlot p = new WrapperPlayServerSetSlot();
 		
 		p.setSlotData(s);
 		p.setSlot(slot);
 		
 		return p;
-	}
-
-	/**
-	 * Renders a view provided by the {@link com.noxpvp.mmo.AbilityCycler#peekNext()} method.
-	 */
-	@Override
-	public void renderNext() {
-	}
-
-	/**
-	 * Renders a view provided by the {@link com.noxpvp.mmo.AbilityCycler#peekPrevious()} method.
-	 */
-	@Override
-	public void renderPrevious() {
-
-	}
-
-	/**
-	 * Renders a view provided by the current through {@link com.noxpvp.mmo.AbilityCycler#current()}.
-	 */
-	@Override
-	public void renderCurrent() {
-		AbilityCycler cycler = getCycler();
-		if (cycler == null) return;
-		final Player player = cycler.getPlayer();
-
-		TieredAbility cur = cycler != null? cycler.current() : null;
-		if (cycler == null || cur == null || player == null)
-			return;
-		
-		//Get list of all items, and show which is used with an arrow
-		String[] others = new String[cycler.getList().size()];
-		int i = 0;
-		for (TieredAbility a : cycler.getList())
-			others[i++] = (a.equals(cur)? ChatColor.GREEN + ">" : " ") + a.getDisplayName(ChatColor.RED);
-		
-		//Set fake NBT data on item, and send update packet for that item
-		ItemStack item = NbtFactory.getCraftItemStack(getCycler().getPlayer().getItemInHand().clone());
-		NbtCompound tag = NbtFactory.fromItemTag(item);
-		tag.putPath("display.Name", cur.getDisplayName(ChatColor.GOLD));
-		tag.putPath("display.Lore", NbtFactory.createList(others));
-		
-		//Send update packet
-		getNewUpdate(item, (short) cycler.getLastSlot()).sendPacket(getCycler().getPlayer());
-
 	}
 }
