@@ -143,6 +143,7 @@ public class Cycler<E> implements ListIterator<E> {
 	}
 	
 	public void remove(E e) {
+		if (index >= data.size()) index = 0;
 		data.remove(e);
 	}
 	
