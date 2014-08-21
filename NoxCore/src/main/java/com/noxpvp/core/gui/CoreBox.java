@@ -25,6 +25,8 @@ package com.noxpvp.core.gui;
 
 import com.bergerkiller.bukkit.common.MessageBuilder;
 import com.bergerkiller.bukkit.common.utils.CommonUtil;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.data.NoxPlayer;
@@ -46,36 +48,33 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class CoreBox extends NoxListener<NoxPlugin> implements
-		ICoreBox, MenuItemRepresentable, Cloneable {
+        ICoreBox, MenuItemRepresentable, Cloneable {
 	
-	private final UUID					playerID;
-	private final String				name;
-	private Inventory					box;
-	private Map<Integer, CoreBoxItem>	menuItems;
-	private CoreBox						backButton;
-	public Runnable						closeRunnable;
-	private final CorePlayerManager		pm;
-	private final AttributeHider		attributeHider;
-	
-	private ItemStack					identifiableItem;
+	private final UUID	                playerID;
+	private final String	            name;
+	private final CorePlayerManager	    pm;
+	private final AttributeHider	    attributeHider;
+	public Runnable	                    closeRunnable;
+	private Inventory	                box;
+	private BiMap<Integer, CoreBoxItem>	menuItems;
+	private CoreBox	                    backButton;
+	private ItemStack	                identifiableItem;
+	private Set<CoreBoxItem>	        visibleMenuItems;
 	
 	public CoreBox(Player p, String name, int size) {
 		this(p, name, size, null, NoxCore.getInstance());
 	}
 	
 	public CoreBox(Player p, String name, int size,
-			@Nullable CoreBox backButton) {
+	        @Nullable CoreBox backButton) {
 		this(p, name, size, backButton, NoxCore.getInstance());
 	}
 	
 	public CoreBox(Player p, String name, int size,
-			@Nullable CoreBox backbutton, NoxPlugin plugin) {
+	        @Nullable CoreBox backbutton, NoxPlugin plugin) {
 		this(p, name, InventoryType.CHEST, size, backbutton, plugin);
 	}
 	
@@ -84,24 +83,27 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 	}
 	
 	public CoreBox(Player p, String name, InventoryType type,
-			@Nullable CoreBox backButton) {
+	        @Nullable CoreBox backButton) {
 		this(p, name, type, 0, backButton, NoxCore.getInstance());
 	}
 	
 	public CoreBox(final Player p, String name, InventoryType type,
-			int size, @Nullable CoreBox backButton, NoxPlugin plugin) {
+	        int size, @Nullable CoreBox backButton, NoxPlugin plugin) {
 		super(plugin);
 		
 		pm = CorePlayerManager.getInstance();
 		playerID = p.getUniqueId();
 		this.name = ChatColor.GOLD + name;
 		box = size == 0 ?
-				BukkitUtil.createInventory(null, type, this.name) :
-				BukkitUtil.createInventory(null, size, this.name);
-
-		if (box == null) throw new IllegalStateException("CoreBox failed to initialize an inventory object for use.");
+		        BukkitUtil.createInventory(null, type, this.name) :
+		        BukkitUtil.createInventory(null, size, this.name);
 		
-		menuItems = new HashMap<Integer, CoreBoxItem>();
+		if (box == null)
+			throw new IllegalStateException(
+			        "CoreBox failed to initialize an inventory object for use.");
+		
+		menuItems = HashBiMap.create(new HashMap<Integer, CoreBoxItem>());
+		visibleMenuItems = new HashSet<CoreBoxItem>();
 		
 		if (backButton != null) {
 			this.backButton = backButton;
@@ -111,9 +113,9 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 			
 			meta.setDisplayName(this.name);
 			meta.setLore(Arrays.asList(ChatColor.AQUA
-					+ "<- Go Back To The \"" + ChatColor.GOLD
-					+ backButton.getName().replaceAll("(?i)menu", "")
-					+ ChatColor.AQUA + "\" Menu"));
+			        + "<- Go Back To The \"" + ChatColor.GOLD
+			        + backButton.getName().replaceAll("(?i)menu", "")
+			        + ChatColor.AQUA + "\" Menu"));
 			
 			button.setItemMeta(meta);
 			
@@ -127,7 +129,7 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 			public void run() {
 				Player p;
 				if ((p = getPlayer()) != null
-						&& box.getViewers().contains(p)) {
+				        && box.getViewers().contains(p)) {
 					p.closeInventory();
 				}
 				
@@ -150,10 +152,11 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 	public boolean addMenuItem(int slot, CoreBoxItem item) {
 		box.setItem(slot, item.getItem());
 		menuItems.put(slot, item);
+		visibleMenuItems.add(item);
 		
 		ItemStack checkNull;
 		return (checkNull = box.getItem(slot)) != null
-				&& checkNull.equals(item.getItem());
+		        && checkNull.equals(item.getItem());
 	}
 	
 	public void clickHandler(InventoryClickEvent event) {
@@ -172,30 +175,22 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 		return box;
 	}
 	
+	public void setBox(Inventory newBox) {
+		box = newBox;
+	}
+	
 	public ItemStack getIdentifiableItem() {
 		if (identifiableItem == null) {
 			identifiableItem = new ItemStack(Material.CHEST);
 			final ItemMeta meta = identifiableItem.getItemMeta();
 			
 			meta.setDisplayName(new MessageBuilder().gold("Menu: ")
-					.yellow(ChatColor.stripColor(name)).toString());
+			        .yellow(ChatColor.stripColor(name)).toString());
 			
 			identifiableItem.setItemMeta(meta);
 		}
 		
 		return identifiableItem.clone();
-	}
-	
-	public CoreBoxItem getMenuItem(CoreBoxItem item) {
-		for (final CoreBoxItem menuItem : menuItems.values()) {
-			if (menuItem.equals(item))
-				return menuItem;
-			else {
-				continue;
-			}
-		}
-		
-		return null;
 	}
 	
 	public CoreBoxItem getMenuItem(int slot) {
@@ -222,10 +217,37 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 		return;
 	}
 	
+	public void hide(CoreBoxItem item) {
+		box.setItem(getSlot(item), null);
+		visibleMenuItems.remove(item);
+	}
+	
+	public void setSlot(int slot, CoreBoxItem item) {
+		int oldSlot = getSlot(item);
+		if (oldSlot != -1)
+			removeMenuItem(oldSlot);
+	}
+	
+	public int getSlot(CoreBoxItem item) {
+		BiMap<CoreBoxItem, Integer> r = menuItems.inverse();
+		if (r.containsKey(item))
+			return r.get(item);
+		else
+			return -1;
+	}
+	
+	public boolean hasItem(CoreBoxItem item) {
+		return menuItems.containsValue(item);
+	}
+	
+	public boolean isVisible(CoreBoxItem item) {
+		return visibleMenuItems.contains(item);
+	}
+	
 	public boolean isValid() {
 		final Player p = getPlayer();
 		return p != null && p.isValid()
-				&& pm.getPlayer(p).hasCoreBox(this);
+		        && pm.getPlayer(p).hasCoreBox(this);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -249,20 +271,20 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 		final ItemStack clickedItem = event.getCurrentItem();
 		if (event.getRawSlot() < box.getSize() - 1) {
 			if (clickedItem != null
-					&& clickedItem.getType() != Material.AIR) {
+			        && clickedItem.getType() != Material.AIR) {
 				
 				CoreBoxItem item;
 				if ((item = getMenuItem(event.getRawSlot())) != null)
 					if (item.onClick(event)) {
 						player.playSound(player.getLocation(),
-								Sound.CLICK, 1, 0);
+						        Sound.CLICK, 1, 0);
 					} else {
 						player.playSound(player.getLocation(),
-								Sound.NOTE_BASS, 2, -2);
+						        Sound.NOTE_BASS, 2, -2);
 					}
 			}
 		} else if (backButton != null
-				&& event.getRawSlot() == box.getSize() - 1) {
+		        && event.getRawSlot() == box.getSize() - 1) {
 			try {
 				((CoreBox) backButton.clone()).show();
 				player.playSound(player.getLocation(), Sound.CLICK, 1, 0);
@@ -289,18 +311,23 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 	}
 	
 	public boolean removeMenuItem(CoreBoxItem item) {
-		return box.removeItem(item.getItem()) == null
-				&& menuItems.values().remove(item);
+		visibleMenuItems.remove(item);
+		return box.removeItem(item.getItem()).isEmpty()
+		        && menuItems.values().remove(item);
 	}
 	
 	public void removeMenuItem(int slot) {
+		CoreBoxItem item = getMenuItem(slot);
 		box.setItem(slot, null);
 		
-		return;
+		if (item != null) {
+			visibleMenuItems.remove(item);
+		}
 	}
 	
-	public void setBox(Inventory newBox) {
-		box = newBox;
+	public void show(CoreBoxItem item) {
+		box.setItem(item.getSlot(), item.getItem());
+		visibleMenuItems.add(item);
 	}
 	
 	public void show() {

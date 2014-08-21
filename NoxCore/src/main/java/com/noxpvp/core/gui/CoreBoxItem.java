@@ -23,16 +23,14 @@
 
 package com.noxpvp.core.gui;
 
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import com.noxpvp.core.gui.ICoreBox.ICoreBoxItem;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class CoreBoxItem implements ICoreBoxItem {
 	
 	private final CoreBox	box;
-	private final ItemStack	item;
-	
+	private ItemStack	item;
+
 	public CoreBoxItem(CoreBox parent, ItemStack item) {
 		this.item = item;
 		box = parent;
@@ -46,13 +44,27 @@ public abstract class CoreBoxItem implements ICoreBoxItem {
 		return box;
 	}
 	
-	public int getSlotInParent() {
-		final Inventory box = getParentBox().getBox();
-		for (int i = 0; i > box.getSize(); i++)
-			if (box.getItem(i).equals(getItem()))
-				return i;
-		
-		return 0;
+	public void setSlot(int slot) {
+		box.setSlot(slot, this);
+	}
+
+	public int getSlot() {
+		return box.getSlot(this);
+	}
+	
+	public void show() {
+		box.show(this);
+	}
+
+	public void hide() {
+		box.hide(this);
+	}
+
+	public void setItem(ItemStack stack) {
+		if (getItem() != stack) {
+			this.item = stack;
+			box.getBox().setItem(getSlot(), this.item);
+		}
 	}
 	
 }

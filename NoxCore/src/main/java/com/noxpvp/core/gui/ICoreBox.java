@@ -96,6 +96,39 @@ public interface ICoreBox {
 	 * Closes the inventory of the player has it open
 	 */
 	public void hide();
+
+	/**
+	 * Shows the item in the inventory
+	 * @param item to show
+	 */
+	public void show(CoreBoxItem item);
+
+	/**
+	 * Tells whether or not the item is currently visible
+	 * @param item to check
+	 * @return true if visible, false otherwise
+	 */
+	public boolean isVisible(CoreBoxItem item);
+
+	/**
+	 * Tells whether or not the box has this item.
+	 * @param item to check for
+	 * @return true if box contains item, false otherwise
+	 */
+	public boolean hasItem(CoreBoxItem item);
+
+	/**
+	 * Hides the item from the inventory
+	 * @param item to hide
+	 */
+	public void hide(CoreBoxItem item);
+
+	/**
+	 * Retrieves the slot id for the following item
+	 * @param item to fetch slot
+	 * @return slot id or -1 if non existent
+	 */
+	public int getSlot(CoreBoxItem item);
 	
 	/**
 	 * Removes a given item from the menu
@@ -140,6 +173,40 @@ public interface ICoreBox {
 		 * @param click
 		 */
 		public boolean onClick(InventoryClickEvent click);
+
+		/**
+		 * Set current reference slot within the CoreBox Menu
+		 * @param slot to set to
+		 */
+		public void setSlot(int slot);
+
+		/**
+		 * Retrieves the current slot reference.
+		 * @return slot in inventory or -1 if none existant.
+		 */
+		public int getSlot();
+
+		/**
+		 * Shows the item in the menu
+		 */
+		public void show();
+
+		/**
+		 * Tells whether or not the item is currently visible
+		 * @return true if visible and false otherwise
+		 */
+		public boolean isVisible();
+
+		/**
+		 * Hides the item from the menu
+		 */
+		public void hide();
+
+		/**
+		 * Changes Item reference in the menu
+		 * @param item to change to
+		 */
+		public void setItem(ItemStack item);
 		
 	}
 	
