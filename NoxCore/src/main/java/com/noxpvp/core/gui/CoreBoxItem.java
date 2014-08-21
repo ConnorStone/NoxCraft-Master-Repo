@@ -36,11 +36,11 @@ public abstract class CoreBoxItem implements ICoreBoxItem {
 		box = parent;
 	}
 	
-	public ItemStack getItem() {
+	public final ItemStack getItem() {
 		return item;
 	}
 	
-	public CoreBox getParentBox() {
+	public final CoreBox getParentBox() {
 		return box;
 	}
 	
@@ -52,15 +52,19 @@ public abstract class CoreBoxItem implements ICoreBoxItem {
 		return box.getSlot(this);
 	}
 	
-	public void show() {
+	public final void show() {
 		box.show(this);
 	}
 
-	public void hide() {
+	public final boolean isVisible() {
+		return box.isVisible(this);
+	}
+
+	public final void hide() {
 		box.hide(this);
 	}
 
-	public void setItem(ItemStack stack) {
+	public final void setItem(ItemStack stack) {
 		if (getItem() != stack) {
 			this.item = stack;
 			box.getBox().setItem(getSlot(), this.item);

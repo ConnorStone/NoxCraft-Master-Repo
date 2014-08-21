@@ -218,12 +218,12 @@ public abstract class CoreBox extends NoxListener<NoxPlugin> implements
 	}
 	
 	public void hide(CoreBoxItem item) {
-		box.setItem(getSlot(item), null);
+		box.setItem(item.getSlot(), null);
 		visibleMenuItems.remove(item);
 	}
 	
 	public void setSlot(int slot, CoreBoxItem item) {
-		int oldSlot = getSlot(item);
+		int oldSlot = item.getSlot();
 		if (oldSlot != -1)
 			removeMenuItem(oldSlot);
 	}
