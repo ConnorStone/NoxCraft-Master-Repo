@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.permissions.PermissionDefault;
 
-import com.bergerkiller.bukkit.common.Common;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import com.bergerkiller.bukkit.common.reflection.SafeConstructor;
 import com.bergerkiller.bukkit.common.utils.StringUtil;
@@ -99,6 +98,8 @@ import com.noxpvp.mmo.listeners.DamageListener;
 import com.noxpvp.mmo.listeners.HealListener;
 import com.noxpvp.mmo.listeners.PlayerInteractListener;
 import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.manager.AbilityCyclerManager;
+import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.prism.MMOPrismUtil;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
@@ -126,9 +127,8 @@ public class NoxMMO extends NoxPlugin {
 			ClassCommand.class, AbilityCommand.class, MMOCommand.class			};
 	
 	private final Class<? extends ConfigurationSerializable>[]	serializables	= new Class[] {
-			AbilityCycler.class, PlayerClass.class,
-			WarlordPlayerClass.class
-																				};
+			AbilityCycler.class, PlayerClass.class, WarlordPlayerClass.class,
+			MMOPlayer.class													};
 	
 	public static NoxMMO getInstance() {
 		return instance;
@@ -136,6 +136,7 @@ public class NoxMMO extends NoxPlugin {
 	
 	@Override
 	public void disable() {
+		
 		masterListener.unregisterAll();
 		permHandler = null;
 		masterListener = null;
@@ -151,6 +152,9 @@ public class NoxMMO extends NoxPlugin {
 		
 		new StaticCleaner(this, getClassLoader(), internals, classes).resetAll();
 		
+		MMOPlayerManager.getInstance().unloadAndSaveAll();
+		AbilityCyclerManager.getInstance().unloadAndSaveAll();
+		
 		setInstance(null);
 	}
 	
@@ -164,13 +168,13 @@ public class NoxMMO extends NoxPlugin {
 		}
 		
 		setInstance(this);
-		Common.loadClasses("com.noxpvp.mmo.classes.internal.DummyClass");
 		MasterListener.init();
 		masterListener = new MasterListener();
 		
 		core = NoxCore.getInstance();
 		
 		PlayerClassUtil.init();
+		AbilityCycler.init();
 		
 		abilityListener = new AbilityListener(instance, core.isPrismActive());
 		damageListener = new DamageListener(instance);
@@ -228,7 +232,6 @@ public class NoxMMO extends NoxPlugin {
 			}
 		} catch (final Exception e) {
 		}
-		AbilityCycler.init();
 	}
 	
 	@Override

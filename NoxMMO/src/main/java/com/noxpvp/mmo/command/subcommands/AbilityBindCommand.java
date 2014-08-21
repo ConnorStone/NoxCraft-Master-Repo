@@ -23,33 +23,24 @@
 
 package com.noxpvp.mmo.command.subcommands;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.bergerkiller.bukkit.common.Task;
-import com.dsh105.holoapi.util.StringUtil;
 import com.noxpvp.core.commands.BaseCommand;
 import com.noxpvp.core.commands.CommandContext;
 import com.noxpvp.core.commands.NoPermissionException;
-import com.noxpvp.core.gui.QuestionBox;
-import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.AbilityCycler;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.NoxMMO;
-import com.noxpvp.mmo.abilities.internal.PassiveAbility;
-import com.noxpvp.mmo.abilities.internal.PlayerAbility;
-import com.noxpvp.mmo.abilities.internal.SilentAbility;
-import com.noxpvp.mmo.locale.MMOLocale;
+import com.noxpvp.mmo.gui.AbilityBindMenu;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 public class AbilityBindCommand extends BaseCommand {
 	
-	public static final String	  COMMAND_NAME	= "bind";
-	private static final String[]	flags	   = new String[] { "h", "help",
-	                                           "o", "overwrite" };
+	public static final String	COMMAND_NAME	= "bind";
 	
 	public AbilityBindCommand() {
 		super(COMMAND_NAME, true);
@@ -57,92 +48,31 @@ public class AbilityBindCommand extends BaseCommand {
 	
 	@Override
 	public CommandResult execute(CommandContext context)
-	        throws NoPermissionException {
+			throws NoPermissionException {
 		final MMOPlayer mmoPlayer = MMOPlayerManager.getInstance().getPlayer(
-		        context.getPlayer());
+				context.getPlayer());
 		
 		final Player player = context.getPlayer();
 		final ItemStack currentItem = player.getItemInHand();
-		// final int slot = player.getInventory().getHeldItemSlot();
-		// //TODO: Implement item replacement?
 		
-		final AbilityCycler cycler = AbilityCycler.getCycler(context.getPlayer());
-		final boolean exists = cycler != null;
+		if (currentItem == null || currentItem.getType() == Material.AIR)
+			return new CommandResult(this, false, "todo: add no item in hand locale");
 		
-		final boolean singleItem = context.hasArgument(0);
-		
-		final String arg;
-		if (singleItem) {
-			arg = StringUtil.join(context.getArguments(), " ");
-		} else {
-			arg = null;
-		}
-		
-		final boolean safe = context.hasFlag("o") || context.hasFlag("overwrite")
-		        || !exists;
-		final Task t = new Task(NoxMMO.getInstance()) {
+		AbilityCycler cycler = null;
+		if ((cycler = mmoPlayer.getCycler(currentItem)) == null) {
+			cycler = new AbilityCycler(Collections.EMPTY_LIST, mmoPlayer
+					.getPersistentID(), currentItem);
 			
-			public void run() {
-				AbilityCycler cycler;
-				if (exists) {
-					cycler = AbilityCycler.getCycler(player);
-				} else {
-					cycler = new AbilityCycler(!singleItem ?
-					        mmoPlayer.getAbilities() :
-					        new ArrayList<PlayerAbility>(), player, currentItem);
-				}
-				
-				cycler.getList().clear();
-				final List<PlayerAbility> abs = new ArrayList<PlayerAbility>();
-				if (singleItem) {
-					for (final PlayerAbility a : mmoPlayer.getAbilities())
-						if (a.getName().equalsIgnoreCase(arg)) {
-							abs.add(a);
-							break;
-						}
-					
-					if (abs.isEmpty()) {
-						MessageUtil
-						        .sendLocale(player, MMOLocale.ABIL_NOT_FOUND, arg);
-						return;
-					}
-				} else {
-					for (final PlayerAbility a : mmoPlayer.getAbilities())
-						if (!(a instanceof SilentAbility)
-						        && !(a instanceof PassiveAbility<?>)) {
-							abs.add(a);
-						}
-					
-				}
-				
-				cycler.addAll(abs);
-				mmoPlayer.getAbilityCyclers().add(cycler);
-			}
-		};
-		
-		if (!safe && exists) {
-			new QuestionBox(context.getPlayer(), "Bind All Abilities?") {
-				
-				@Override
-				public void onConfirm() {
-					t.start();
-					hide();
-				}
-				
-				@Override
-				public void onDeny() {
-					hide();
-				}
-			}.show();
-		} else if (safe) {
-			t.start();
+			mmoPlayer.addAbilityCycler(cycler);
 		}
+		
+		new AbilityBindMenu(player, cycler).show();
 		
 		return new CommandResult(this, true);
 	}
 	
 	public String[] getFlags() {
-		return flags;
+		return blankStringArray;
 	}
 	
 	@Override

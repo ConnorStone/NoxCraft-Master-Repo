@@ -142,6 +142,10 @@ public class Cycler<E> implements ListIterator<E> {
 		}
 	}
 	
+	public void remove(E e) {
+		data.remove(e);
+	}
+	
 	public void set(E e) {
 		data.set(currentIndex(), e);
 	}

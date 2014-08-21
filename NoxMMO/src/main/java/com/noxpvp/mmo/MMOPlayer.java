@@ -55,7 +55,7 @@ import com.noxpvp.mmo.util.PlayerClassUtil;
 @SerializableAs("MMOPlayer")
 public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		MenuItemRepresentable, PlayerClassContainer,
-		AbilityContainer<PlayerAbility> {
+		AbilityContainer<PlayerAbility>, AbilityCyclerContainer {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Static Init
@@ -137,6 +137,14 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	public void addAbilityCycler(AbilityCycler cycler) {
+		if (cycler == null || !cycler.getMMOPlayer().equals(this))
+			return;
+		
+		cyclers.add(cycler);
+		
+	}
+	
 	public boolean addPlayerClass(IPlayerClass clazz) {
 		if (clazz instanceof PlayerClass)
 			return addPlayerClass((PlayerClass) clazz);
@@ -180,6 +188,28 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		return cyclers;
 	}
 	
+	public AbilityCycler getCycler(ItemStack item) {
+		if (item == null)
+			return null;
+		
+		for (final AbilityCycler ac : cyclers)
+			if (ac.isCycleItem(item))
+				return ac;
+		
+		return null;
+	}
+	
+	public AbilityCycler getCycler(UUID id) {
+		if (id == null)
+			return null;
+		
+		for (final AbilityCycler ac : cyclers)
+			if (ac.getPersistentID().equals(id))
+				return ac;
+		
+		return null;
+	}
+	
 	public ItemStack getIdentifiableItem() {
 		return identifyingItem;
 	}
@@ -218,6 +248,14 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	
 	public boolean hasAbility(String name) {
 		return getAbility(name) != null;
+	}
+	
+	public boolean hasAbilityCycler(ItemStack item) {
+		return getCycler(item) != null;
+	}
+	
+	public boolean hasAbilityCycler(UUID id) {
+		return getCycler(id) != null;
 	}
 	
 	public boolean hasPlayerClass(String name) {

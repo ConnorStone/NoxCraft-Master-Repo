@@ -44,72 +44,78 @@ import com.noxpvp.mmo.NoxMMO;
 import com.noxpvp.mmo.handlers.BaseMMOEventHandler;
 
 public class HealthBar {
-	private static Map<String, HealthBar> bars;
-	private static Scoreboard sb;
-	private static Objective ob;
-	private static BaseMMOEventHandler<EntityRegainHealthEvent> healHandler;
-	private static BaseMMOEventHandler<EntityDamageEvent> damageHandler;
+	
+	private static Map<String, HealthBar>						bars;
+	private static Scoreboard									sb;
+	private static Objective									ob;
+	private static BaseMMOEventHandler<EntityRegainHealthEvent>	healHandler;
+	private static BaseMMOEventHandler<EntityDamageEvent>		damageHandler;
 	
 	static {
 		bars = new HashMap<String, HealthBar>();
 		sb = Bukkit.getScoreboardManager().getMainScoreboard();
-		ob = (ob = sb.getObjective("HealthBar")) != null? ob : sb.registerNewObjective("HealthBar", "dummy");
+		ob = (ob = sb.getObjective("HealthBar")) != null ? ob : sb
+				.registerNewObjective("HealthBar", "dummy");
 		ob.setDisplayName(ChatColor.RED.toString() + "❤");
 		ob.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		
 		healHandler = new BaseMMOEventHandler<EntityRegainHealthEvent>(
-				new StringBuilder("HealthBar").append("EntityRegainHealthEvent").toString(),
+				new StringBuilder("HealthBar").append("EntityRegainHealthEvent")
+						.toString(),
 				EventPriority.MONITOR, 1) {
 			
-			public boolean ignoreCancelled() {
-				return true;
-			}
-			
-			public Class<EntityRegainHealthEvent> getEventType() {
-				return EntityRegainHealthEvent.class;
+			public void execute(EntityRegainHealthEvent event) {
+				HealthBar b;
+				final Entity e = event.getEntity();
+				final String key = e instanceof Player ? ((Player) e).getName()
+						: Integer.toString(e.getEntityId());
+				
+				if ((b = bars.get(key)) == null || !(e instanceof LivingEntity))
+					return;
+				
+				updateBar(b);
 			}
 			
 			public String getEventName() {
 				return "EntityRegainHealthEvent";
 			}
 			
-			public void execute(EntityRegainHealthEvent event) {
+			public Class<EntityRegainHealthEvent> getEventType() {
+				return EntityRegainHealthEvent.class;
+			}
+			
+			public boolean ignoreCancelled() {
+				return true;
+			}
+		};
+		
+		damageHandler = new BaseMMOEventHandler<EntityDamageEvent>(
+				new StringBuilder().append("HealthBar").append("EntityDamageEvent")
+						.toString(),
+				EventPriority.MONITOR, 1) {
+			
+			public void execute(EntityDamageEvent event) {
 				HealthBar b;
-				Entity e = event.getEntity();
-				String key = (String) (e instanceof Player? ((Player) e).getName() : Integer.toString(e.getEntityId()));
+				final Entity e = event.getEntity();
+				final String key = e instanceof Player ? ((Player) e).getName()
+						: Integer.toString(e.getEntityId());
 				
 				if ((b = bars.get(key)) == null || !(e instanceof LivingEntity))
 					return;
 				
 				updateBar(b);
-			}
-		};
-		
-		damageHandler = new BaseMMOEventHandler<EntityDamageEvent>(
-				new StringBuilder().append("HealthBar").append("EntityDamageEvent").toString(),
-				EventPriority.MONITOR, 1) {
-			
-			public boolean ignoreCancelled() {
-				return true;
-			}
-			
-			public Class<EntityDamageEvent> getEventType() {
-				return EntityDamageEvent.class;
 			}
 			
 			public String getEventName() {
 				return "EntityDamageEvent";
 			}
 			
-			public void execute(EntityDamageEvent event) {
-				HealthBar b;
-				Entity e = event.getEntity();
-				String key = (String) (e instanceof Player? ((Player) e).getName() : Integer.toString(e.getEntityId()));
-				
-				if ((b = bars.get(key)) == null || !(e instanceof LivingEntity))
-					return;
-				
-				updateBar(b);
+			public Class<EntityDamageEvent> getEventType() {
+				return EntityDamageEvent.class;
+			}
+			
+			public boolean ignoreCancelled() {
+				return true;
 			}
 		};
 		
@@ -117,29 +123,12 @@ public class HealthBar {
 		NoxMMO.getInstance().getMasterListener().registerHandler(damageHandler);
 	}
 	
-	public static HealthBar getHealthBar(Player p) {
-		HealthBar b = bars.get(p.getName());
-		if (b == null)
-			return null;
-		
-		return b;
-	}
-	
-	public static void updateBar(final HealthBar b) {
-		CommonUtil.nextTick(new Runnable() {
-			
-			public void run() {
-				b.update();
-				
-			}
-		});
-	}
-	
-	private LivingEntity e;
+	private LivingEntity										e;
 	
 	public HealthBar(LivingEntity e) {
 		HealthBar b;
-		if ((b = bars.get(Integer.toString(e.getEntityId()))) != null && b.e.isValid()) {
+		if ((b = bars.get(Integer.toString(e.getEntityId()))) != null
+				&& b.e.isValid()) {
 			b.update();
 			return;
 		}
@@ -156,13 +145,32 @@ public class HealthBar {
 			return;
 		}
 		
-		this.e = p;
+		e = p;
 		bars.put(p.getName(), this);
 		update();
 	}
 	
+	public static HealthBar getHealthBar(Player p) {
+		final HealthBar b = bars.get(p.getName());
+		if (b == null)
+			return null;
+		
+		return b;
+	}
+	
+	public static void updateBar(final HealthBar b) {
+		CommonUtil.nextTick(new Runnable() {
+			
+			public void run() {
+				b.update();
+				
+			}
+		});
+	}
+	
 	public void update() {
-		String key = e instanceof Player? ((Player) e).getName() : Integer.toString(e.getEntityId());
+		final String key = e instanceof Player ? ((Player) e).getName() : Integer
+				.toString(e.getEntityId());
 		Score s;
 		
 		if ((s = ob.getScore(key)) != null) {
@@ -170,5 +178,5 @@ public class HealthBar {
 		}
 		
 	}
-
+	
 }

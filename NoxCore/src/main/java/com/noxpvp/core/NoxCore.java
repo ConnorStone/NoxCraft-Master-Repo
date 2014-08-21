@@ -23,6 +23,28 @@
 
 package com.noxpvp.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+
+import me.botsko.prism.Prism;
+
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
 import com.bergerkiller.bukkit.common.Common;
 import com.bergerkiller.bukkit.common.bases.mutable.LocationAbstract;
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
@@ -38,6 +60,7 @@ import com.dsh105.holoapi.HoloAPICore;
 import com.noxpvp.core.commands.Command;
 import com.noxpvp.core.commands.NoxCommand;
 import com.noxpvp.core.commands.ReloadCommand;
+import com.noxpvp.core.data.NoxPlayer;
 import com.noxpvp.core.data.OldNoxPlayer;
 import com.noxpvp.core.data.OldNoxPlayerAdapter;
 import com.noxpvp.core.data.player.CorePlayerStats;
@@ -45,7 +68,12 @@ import com.noxpvp.core.data.player.PlayerStats;
 import com.noxpvp.core.gui.CoolDown;
 import com.noxpvp.core.internal.CooldownHandler;
 import com.noxpvp.core.internal.PermissionHandler;
-import com.noxpvp.core.listeners.*;
+import com.noxpvp.core.listeners.ChatPingListener;
+import com.noxpvp.core.listeners.ChestBlockListener;
+import com.noxpvp.core.listeners.DeathListener;
+import com.noxpvp.core.listeners.LoginListener;
+import com.noxpvp.core.listeners.ServerPingListener;
+import com.noxpvp.core.listeners.VoteListener;
 import com.noxpvp.core.localization.CoreLocale;
 import com.noxpvp.core.localization.GlobalLocale;
 import com.noxpvp.core.manager.CorePlayerManager;
@@ -57,265 +85,326 @@ import com.noxpvp.core.utils.UUIDUtil;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.command.TownyAdminCommand;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import me.botsko.prism.Prism;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-
-import java.util.*;
-import java.util.logging.Level;
 
 public class NoxCore extends NoxPlugin {
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	//Instance
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	private static NoxCore instance;
-	private Class<? extends ConfigurationSerializable>[] serializables = new Class[]{
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Instance
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	private static NoxCore															instance;
+	private final Class<? extends ConfigurationSerializable>[]						serializables		= new Class[] {
 			SafeLocation.class, CoolDown.class,
-			PlayerStats.class, CorePlayerStats.class
-	};
-
+			PlayerStats.class, CorePlayerStats.class, NoxPlayer.class
+																										};
+	
+	@SuppressWarnings("unchecked")
+	private static final Class<Command>[]											commands			= new Class[] {
+			NoxCommand.class, ReloadCommand.class														};
+	
+	private static boolean															useNanoTime			= false;
+	private static boolean															useUserFile			= true;
+	private Command																	noxCommand;
+	
+	private CooldownHandler															cdh;
+	private FileConfiguration														config;
+	private FileConfiguration														globalLocales;
+	private HoloAPICore																holoAPI				= null;
+	private final List<NoxPermission>												permissions			= new ArrayList<NoxPermission>();
+	// public List<NoxPlugin> plugins = new ArrayList<NoxPlugin>();
+	private PermissionHandler														permHandler;
+	private Prism																	prism				= null;
+	private Towny																	towny				= null;
+	private transient WeakHashMap<NoxPlugin, WeakHashMap<String, NoxPermission>>	permission_cache	= new WeakHashMap<NoxPlugin, WeakHashMap<String, NoxPermission>>();
+	private WorldGuardPlugin														worldGuard			= null;
+	private ChatPingListener														chatPingListener;
+	
+	private DeathListener															deathListener;
+	private LoginListener															loginListener;
+	private ServerPingListener														pingListener;
+	private VoteListener															voteListener		= null;
+	
 	public static NoxCore getInstance() {
 		return instance;
 	}
-
-	@SuppressWarnings("unchecked")
-	private static final Class<Command>[] commands = (Class<Command>[]) new Class[]{NoxCommand.class, ReloadCommand.class};
-	private static boolean useNanoTime = false;
-	private static boolean useUserFile = true;
-
-	private Command noxCommand;
-	private CooldownHandler cdh;
-	private FileConfiguration config;
-	private FileConfiguration globalLocales;
-	private HoloAPICore holoAPI = null;
-	private List<NoxPermission> permissions = new ArrayList<NoxPermission>();
-//	public List<NoxPlugin> plugins = new ArrayList<NoxPlugin>();
-	private PermissionHandler permHandler;
-	private Prism prism = null;
-	private Towny towny = null;
-	private transient WeakHashMap<NoxPlugin, WeakHashMap<String, NoxPermission>> permission_cache = new WeakHashMap<NoxPlugin, WeakHashMap<String, NoxPermission>>();
-	private WorldGuardPlugin worldGuard = null;
-
-
-	private ChatPingListener chatPingListener;
-	private DeathListener deathListener;
-	private LoginListener loginListener;
-	private ServerPingListener pingListener;
-	private VoteListener voteListener = null;
-
+	
 	/**
 	 * @return the useUserFile
 	 */
 	public static boolean isUseUserFile() {
 		return useUserFile;
 	}
-
-	/**
-	 * @param useUserFile the useUserFile to set
-	 */
-	public static void setUseUserFile(boolean useUserFile) {
-		NoxCore.useUserFile = useUserFile;
-	}
-
+	
 	/**
 	 * @return the useNanoTime
 	 */
 	public static synchronized boolean isUsingNanoTime() {
 		return useNanoTime;
 	}
-
+	
 	/**
-	 * @param useNanoTime the useNanoTime to set
+	 * @param useNanoTime
+	 *            the useNanoTime to set
 	 */
 	public static synchronized void setUseNanoTime(boolean useNanoTime) {
 		NoxCore.useNanoTime = useNanoTime;
 	}
-
-	public org.bukkit.configuration.file.FileConfiguration getConfig() {
-		return getCoreConfig().getSource();
+	
+	/**
+	 * @param useUserFile
+	 *            the useUserFile to set
+	 */
+	public static void setUseUserFile(boolean useUserFile) {
+		NoxCore.useUserFile = useUserFile;
 	}
-
+	
+	private static void setInstance(NoxCore instance) {
+		NoxCore.instance = instance;
+	}
+	
+	@Override
+	public void addPermission(NoxPermission permission) {
+		Validate.notNull(permission);
+		Validate.notNull(permission.getPlugin(),
+				"Plugin is invalid! It must never be null!");
+		Validate.notNull(permission.getChildren(),
+				"Children should never be null in NoxPermission. Return an empty array instead!");
+		
+		final NoxPlugin plugin = permission.getPlugin();
+		if (!permission_cache.containsKey(plugin)) {
+			permission_cache.put(plugin, new WeakHashMap<String, NoxPermission>());
+		}
+		
+		final Map<String, NoxPermission> cache = permission_cache.get(plugin);
+		
+		if (cache == null) {
+			log(Level.WARNING,
+					new StringBuilder()
+							.append("Failed to initialize plugin reference for permission for plugin ")
+							.append(plugin.getName())
+							.append("! Could not cache permissions for that plugin!")
+							.toString());
+			return;
+		}
+		
+		if (cache.containsKey(permission.getName()))
+			return;
+		cache.put(permission.getName(), permission);
+		permissions.add(permission);
+		if (permission.getChildren().length > 0 && permission.getChildren() != null) {
+			addPermissions(permission.getChildren());
+		}
+		
+		// if (permission_cache.containsKey(permission.getName()))
+		// return;
+		// permission_cache.put(permission.getName(), permission);
+		// permissions.add(permission);
+		//
+		// if (permission.getChildren().length > 0)
+		// addPermissions(permission.getChildren());
+		//
+		// if (permission.getParentNodes().length > 0) //Should not be
+		// needed since we know we are creating parents before we create
+		// nodes. Unless someone develops plugin ontop of this plugin that
+		// is not our developers.
+		// for (String node : permission.getParentNodes())
+		// {
+		// NoxPermission perm = new NoxPermission(node, "Parent node of " +
+		// permission.getName() + ".", PermissionDefault.OP);
+		// addPermission(plugin, perm);
+		// }
+		
+		plugin.loadPermission(permission);
+	}
+	
+	@Override
+	public void addPermissions(NoxPermission... perms) {
+		boolean hasNulls = false;
+		for (final NoxPermission perm : perms) {
+			if (!hasNulls && perm == null) {
+				hasNulls = true;
+			} else if (perm != null) {
+				addPermission(perm);
+			}
+		}
+		
+		if (hasNulls) {
+			log(Level.SEVERE, "Core was fed null permissions!");
+		}
+	}
+	
+	/**
+	 * @param r
+	 *            reloader to add.
+	 * @return true if successful and false otherwise.
+	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
+	 */
+	public boolean addReloader(Reloader r) {
+		return getMasterReloader().addModule(r);
+	}
+	
 	@Override
 	public void disable() {
 		saveConfig();
-		CorePlayerManager.getInstance().save();
-
+		
+		CorePlayerManager.getInstance().unloadAndSaveAll();
+		
 		cdh.stop();
 		cleanup();
 	}
-
-	@Override
-	public void saveConfig() {
-		config.set("custom.events.chestblocked.isRemovingOnInteract", ChestBlockListener.isRemovingOnInteract);
-		config.set("custom.events.chestblocked.usePlaceEvent", ChestBlockListener.usePlaceEvent);
-		config.set("custom.events.chestblocked.useFormEvent", ChestBlockListener.useFormEvent);
-		config.save();
-	}
-
-	private void cleanup() {
-
-		HandlerList.unregisterAll(this);
-		setInstance(null);
-
-		if (voteListener != null)
-			voteListener.destroy();
-
-		Class<?>[] classes = {
-				VaultAdapter.class,
-				VaultAdapter.GroupUtils.class,
-				CoreLocale.class, GlobalLocale.class,
-				CorePlayerManager.class, MasterReloader.class,
-				com.noxpvp.core.manager.old.CorePlayerManager.class
-		};
-
-		String[] internalClasses = {};
-
-		new StaticCleaner(this, getClassLoader(), internalClasses, classes).resetAll();
-
-
-	}
-
+	
 	@Override
 	public void enable() {
 		if (instance != null && instance != this) {
-			log(Level.SEVERE, "This plugin already has an instance running!! Disabling second run.");
+			log(Level.SEVERE,
+					"This plugin already has an instance running!! Disabling second run.");
 			setEnabled(false);
 			return;
-		} else if (instance == null)
+		} else if (instance == null) {
 			setInstance(this);
-
+		}
+		
 		registerSerials(this);
-		for (Plugin p : CommonUtil.getPlugins())
-			if (p instanceof NoxPlugin && CommonUtil.isDepending(p, this))
+		for (final Plugin p : CommonUtil.getPlugins())
+			if (p instanceof NoxPlugin && CommonUtil.isDepending(p, this)) {
 				registerSerials((NoxPlugin) p);
-
+			}
+		
 		permHandler = new PermissionHandler(this);
-
+		
 		getMasterReloader();
 		UUIDUtil.getInstance();
-
+		
 		Conversion.register(new BasicConverter<OldNoxPlayer>(OldNoxPlayer.class) {
+			
 			@Override
-			protected OldNoxPlayer convertSpecial(Object object, Class<?> obType, OldNoxPlayer def) {
+			protected OldNoxPlayer convertSpecial(Object object, Class<?> obType,
+					OldNoxPlayer def) {
 				if (object instanceof OldNoxPlayerAdapter)
 					return ((OldNoxPlayerAdapter) object).getNoxPlayer();
 				return def;
 			}
 		});
-
+		
 		Conversion.register(new BasicConverter<SafeLocation>(SafeLocation.class) {
-			protected SafeLocation convertSpecial(Object o, Class<?> aClass, SafeLocation def) {
-				if (o instanceof Location) return new SafeLocation((Location) o);
-				else if (o instanceof LocationAbstract) return new SafeLocation(((LocationAbstract)o).toLocation());
-				else if (o instanceof SafeLocation) return (SafeLocation) o;
-				else return def;
+			
+			@Override
+			protected SafeLocation convertSpecial(Object o, Class<?> aClass,
+					SafeLocation def) {
+				if (o instanceof Location)
+					return new SafeLocation((Location) o);
+				else if (o instanceof LocationAbstract)
+					return new SafeLocation(((LocationAbstract) o).toLocation());
+				else if (o instanceof SafeLocation)
+					return (SafeLocation) o;
+				else
+					return def;
 			}
 		});
-
+		
 		chatPingListener = new ChatPingListener();
 		voteListener = new VoteListener();
 		deathListener = new DeathListener();
 		loginListener = new LoginListener();
 		pingListener = new ServerPingListener(this);
-
+		
 		chatPingListener.register();
-
-		if (CommonUtil.isPluginEnabled("Votifier")) //Fixes console error message.
+		
+		if (CommonUtil.isPluginEnabled("Votifier")) {
 			voteListener.register();
-
+		}
+		
 		deathListener.register();
 		loginListener.register();
 		pingListener.register();
-
+		
 		CommonUtil.queueListenerLast(loginListener, PlayerLoginEvent.class);
 		VaultAdapter.load();
-
-		PluginManager pm = Bukkit.getPluginManager();
-
+		
+		final PluginManager pm = Bukkit.getPluginManager();
+		
 		{
-			Plugin plugin = pm.getPlugin("WorldGuard");
-			if (plugin != null && plugin instanceof WorldGuardPlugin)
+			final Plugin plugin = pm.getPlugin("WorldGuard");
+			if (plugin != null && plugin instanceof WorldGuardPlugin) {
 				worldGuard = (WorldGuardPlugin) plugin;
+			}
 		}
-
+		
 		{
-			Plugin plugin = pm.getPlugin("Towny");
-			if (plugin != null && plugin instanceof Towny)
+			final Plugin plugin = pm.getPlugin("Towny");
+			if (plugin != null && plugin instanceof Towny) {
 				towny = (Towny) plugin;
+			}
 		}
-
+		
 		{
-			Plugin plugin = pm.getPlugin("HoloAPI");
-			if (plugin != null && plugin instanceof HoloAPICore)
+			final Plugin plugin = pm.getPlugin("HoloAPI");
+			if (plugin != null && plugin instanceof HoloAPICore) {
 				holoAPI = (HoloAPICore) plugin;
+			}
 		}
-
+		
 		{
-			Plugin plugin = pm.getPlugin("Prism");
-			if (plugin != null && plugin instanceof Prism)
+			final Plugin plugin = pm.getPlugin("Prism");
+			if (plugin != null && plugin instanceof Prism) {
 				prism = (Prism) plugin;
+			}
 		}
-
+		
 		Reloader r = new BaseReloader(getMasterReloader(), "NoxCore") {
+			
 			public boolean reload() {
 				return false;
 			}
 		};
-
+		
 		registerAllCommands();
-
+		
 		r.addModule(new BaseReloader(r, "config.yml") {
+			
 			public boolean reload() {
 				NoxCore.this.reloadConfig();
 				return true;
 			}
 		});
-
+		
 		r.addModule(new BaseReloader(r, "locale") {
+			
 			public boolean reload() {
 				localization();
 				return true;
 			}
 		});
-
+		
 		r.addModule(new BaseReloader(r, "players") {
+			
 			public boolean reload() {
 				CorePlayerManager.getInstance().load();
 				return true;
 			}
 		});
-
+		
 		r.addModule(new BaseReloader(r, "group-name") {
-
+			
 			public boolean reload() {
 				VaultAdapter.GroupUtils.reloadAllGroupTags();
 				return true;
 			}
 		});
-
+		
 		register(r);
 		if (getTowny() != null) {
 			r = new BaseReloader(getMasterReloader(), "Towny") {
+				
 				public boolean reload() {
 					return false;
 				}
 			};
-
+			
 			r.addModule(new BaseReloader(r, "reload") {
-
+				
 				public boolean reload() {
-					PluginCommand cmd = getTowny().getCommand("townyadmin");
+					final PluginCommand cmd = getTowny().getCommand("townyadmin");
 					if (cmd == null)
 						return false;
 					if (!(cmd.getExecutor() instanceof TownyAdminCommand))
@@ -324,161 +413,74 @@ public class NoxCore extends NoxPlugin {
 					return true;
 				}
 			});
-
+			
 			register(r);
 		}
-
+		
 		// ==== Localization ====
-		if (!this.globalLocales.isEmpty()) {
-			this.saveGlobalLocalization();
+		if (!globalLocales.isEmpty()) {
+			saveGlobalLocalization();
 		}
-
+		
 		cdh = new CooldownHandler();
-
+		
 		cdh.start();
-
+		
 		reloadConfig();
 	}
-
-	private void registerSerials(NoxPlugin p) {
-		if (p.getSerialiables() != null) {
-			log(Level.INFO, new StringBuilder().append("Attempting to load ").append(p.getSerialiables().length).append(" '").append(p.getName()).append("' serializables.").toString());
-
-			for (Class<? extends ConfigurationSerializable> c : p.getSerialiables())
-				ConfigurationSerialization.registerClass(c);
-		}
+	
+	/**
+	 * Acquires all permission nodes.
+	 * <p/>
+	 * See addPermission and removePermission for manipulating this list.
+	 * 
+	 * @return an unmodifiable list of permissions
+	 */
+	public final List<NoxPermission> getAllNoxPerms() {
+		return Collections.unmodifiableList(permissions);
 	}
-
-	private void registerAllCommands() {
-		for (Class<Command> cls : commands) {
-			SafeConstructor<Command> cons = new SafeConstructor<Command>(cls, new Class[0]);
-			Command rn = cons.newInstance();
-
-			if (rn != null) {
-				if (rn.getName().equals(NoxCommand.COMMAND_NAME))
-					setNoxCommand(rn);
-				registerCommand(rn);
-			}
-		}
-	}
-
+	
 	@Override
-	public void localization() {
-		if (instance == null)
-			setInstance(this);
-
-		VaultAdapter.load();
-		Common.loadClasses("com.noxpvp.core.localization.CoreLocale", "com.noxpvp.core.VaultAdapter");
-
-		globalLocales = new FileConfiguration(this, "Global-Localization.yml");
-
-		// load
-		if (this.globalLocales.exists()) {
-			this.loadGlobalLocalization();
-		}
-
-		// header
-		this.globalLocales.setHeader("Below are the global localization nodes set for Nox Plugins '" + this.getName() + "'.");
-		this.globalLocales.addHeader("For colors, use the & character followed up by 0 - F");
-		this.globalLocales.addHeader("Need help with this file? Please visit:");
-		this.globalLocales.addHeader("http://dev.bukkit.org/server-mods/bkcommonlib/pages/general/localization/");
-
-		loadGlobalLocales(GlobalLocale.class);
-		loadLocales(CoreLocale.class);
-
-		for (String group : VaultAdapter.GroupUtils.getGroupList()) {
-			loadLocale(CoreLocale.GROUP_TAG_PREFIX.getName() + "." + group, "");
-			loadLocale(CoreLocale.GROUP_TAG_SUFFIX.getName() + "." + group, "");
-		}
+	public org.bukkit.configuration.file.FileConfiguration getConfig() {
+		return getCoreConfig().getSource();
 	}
-
-	public final void saveGlobalLocalization() {
-		this.globalLocales.save();
-	}
-
-	@Override
-	public void reloadConfig() {
-		getCoreConfig().load();
-
-		loginListener.unregister();
-		loginListener = new LoginListener(this);
-		loginListener.register();
-
-		pingListener.unregister();
-		pingListener = new ServerPingListener(this);
-		pingListener.register();
-
-		ChestBlockListener.isRemovingOnInteract = config.get("custom.events.chestblocked.isRemovingOnInteract", ChestBlockListener.isRemovingOnInteract);
-		ChestBlockListener.usePlaceEvent = config.get("custom.events.chestblocked.usePlaceEvent", ChestBlockListener.usePlaceEvent);
-		ChestBlockListener.useFormEvent = config.get("custom.events.chestblocked.useFormEvent", ChestBlockListener.useFormEvent);
-
-		VaultAdapter.reloadTeams();
-	}
-
-	private void setNoxCommand(Command rn) {
-		this.noxCommand = rn;
-	}
-
-	private static void setInstance(NoxCore instance) {
-		NoxCore.instance = instance;
-	}
-
-	public final void loadGlobalLocalization() {
-		this.globalLocales.load();
-	}
-
-	public void loadGlobalLocales(Class<? extends ILocalizationDefault> localizationDefaults) {
-		for (ILocalizationDefault def : CommonUtil.getClassConstants(localizationDefaults))
-			this.loadGlobalLocale(def);
-	}
-
-	public void loadGlobalLocale(ILocalizationDefault localizationDefault) {
-		this.loadGlobalLocale(localizationDefault.getName(), localizationDefault.getDefault());
-	}
-
-	public void loadGlobalLocale(String path, String defaultValue) {
-		path = path.toLowerCase(Locale.ENGLISH);
-		if (!this.globalLocales.contains(path)) {
-			this.globalLocales.set(path, defaultValue);
-		}
-	}
-
+	
 	@Override
 	public NoxCore getCore() {
-		return (NoxCore) this;
+		return this;
 	}
-
-	public PermissionHandler getPermissionHandler() {
-		return permHandler;
+	
+	public FileConfiguration getCoreConfig() {
+		if (config == null) {
+			config = new FileConfiguration(getDataFile("config.yml"));
+		}
+		
+		config.load();
+		
+		return config;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Class<? extends ConfigurationSerializable>[] getSerialiables() {
-		return serializables;
-	}
-
+	
 	@Override
 	public String getGlobalLocale(String path, String... arguments) {
 		path = path.toLowerCase(Locale.ENGLISH);
 		// First check if the path leads to a node
-		if (this.globalLocales.isNode(path)) {
+		if (globalLocales.isNode(path)) {
 			// Redirect to the proper sub-node
 			// Check recursively if the arguments are contained
 			String newPath = path + ".default";
 			if (arguments.length > 0) {
-				StringBuilder tmpPathBuilder = new StringBuilder(path);
+				final StringBuilder tmpPathBuilder = new StringBuilder(path);
 				String tmpPath = path;
-				for (int i = 0; i < arguments.length; i++) {
+				for (final String argument : arguments) {
 					tmpPathBuilder.append('.');
-					if (arguments[i] == null) {
+					if (argument == null) {
 						tmpPathBuilder.append("null");
 					} else {
-						tmpPathBuilder.append(arguments[i].toLowerCase(Locale.ENGLISH));
+						tmpPathBuilder.append(argument.toLowerCase(Locale.ENGLISH));
 					}
 					tmpPath = tmpPathBuilder.toString();
 					// New argument appended path exists, update the path
-					if (this.globalLocales.contains(tmpPath)) {
+					if (globalLocales.contains(tmpPath)) {
 						newPath = tmpPath;
 					} else {
 						break;
@@ -490,117 +492,94 @@ public class NoxCore extends NoxPlugin {
 		}
 		// Regular loading going on
 		if (arguments.length > 0) {
-			StringBuilder locale = new StringBuilder(this.globalLocales.get(path, ""));
+			final StringBuilder locale = new StringBuilder(globalLocales.get(path,
+					""));
 			for (int i = 0; i < arguments.length; i++) {
-				StringUtil.replaceAll(locale, "%" + i + "%", LogicUtil.fixNull(arguments[i], "null"));
+				StringUtil.replaceAll(locale, "%" + i + "%", LogicUtil.fixNull(
+						arguments[i], "null"));
 			}
 			return locale.toString();
-		} else {
-			return this.globalLocales.get(path, String.class, "");
-		}
+		} else
+			return globalLocales.get(path, String.class, "");
 	}
-
+	
 	@Override
 	public ConfigurationNode getGlobalLocalizationNode(String path) {
-		return this.globalLocales.getNode(path);
+		return globalLocales.getNode(path);
 	}
-
+	
+	public final HoloAPICore getHoloAPI() {
+		return holoAPI;
+	}
+	
 	@Override
 	public int getMinimumLibVersion() {
 		return Common.VERSION;
 	}
-
+	
+	/**
+	 * Used to create command tree's unique to nox.
+	 * <p>
+	 * Mainly for if people prefer to type /nox before commands. Mehh Not
+	 * really big deal.
+	 * 
+	 * @return the master command.
+	 */
+	public Command getNoxCommand() {
+		return noxCommand;
+	}
+	
 	@Override
-	public void permissions() {
-		addPermission( //Currently does nothing.
-				new NoxPermission(this, "core.*", "All noxcore permissions (Including admin nodes).", PermissionDefault.OP,
-						new NoxPermission(this, "core.reload", "Reload command for Nox Core", PermissionDefault.OP),
-						new NoxPermission(this, "core.save", "Save permission for saving everything in core.", PermissionDefault.OP),
-						new NoxPermission(this, "core.load", "Load permission for loading everything in core.", PermissionDefault.OP),
-						new NoxPermission(this, "nox.upgrade", "Upgrade permission for the upgrade command in the core.", PermissionDefault.OP)
-				)
-		);
+	public PermissionHandler getPermissionHandler() {
+		return permHandler;
 	}
-
-	@Override
-	public void addPermission(NoxPermission permission) {
-		Validate.notNull(permission);
-		Validate.notNull(permission.getPlugin(), "Plugin is invalid! It must never be null!");
-		Validate.notNull(permission.getChildren(), "Children should never be null in NoxPermission. Return an empty array instead!");
-
-		NoxPlugin plugin = permission.getPlugin();
-		if (!permission_cache.containsKey(plugin))
-			permission_cache.put(plugin, new WeakHashMap<String, NoxPermission>());
-
-		Map<String, NoxPermission> cache = permission_cache.get(plugin);
-
-		if (cache == null) {
-			log(Level.WARNING, new StringBuilder().append("Failed to initialize plugin reference for permission for plugin ").append(plugin.getName()).append("! Could not cache permissions for that plugin!").toString());
-			return;
-		}
-
-		if (cache.containsKey(permission.getName()))
-			return;
-		cache.put(permission.getName(), permission);
-		permissions.add(permission);
-		if (permission.getChildren().length > 0 && permission.getChildren() != null)
-			addPermissions(permission.getChildren());
-
-
-//		if (permission_cache.containsKey(permission.getName()))
-//			return;
-//		permission_cache.put(permission.getName(), permission);
-//		permissions.add(permission);
-//
-//		if (permission.getChildren().length > 0)
-//			addPermissions(permission.getChildren());
-//
-//		if (permission.getParentNodes().length > 0) //Should not be needed since we know we are creating parents before we create nodes. Unless someone develops plugin ontop of this plugin that is not our developers.
-//			for (String node : permission.getParentNodes())
-//			{
-//				NoxPermission perm = new NoxPermission(node, "Parent node of " + permission.getName() + ".", PermissionDefault.OP);
-//				addPermission(plugin, perm);
-//			}
-
-		plugin.loadPermission(permission);
-	}
-
-	@Override
-	public void addPermissions(NoxPermission... perms) {
-		boolean hasNulls = false;
-		for (NoxPermission perm : perms) {
-			if (!hasNulls && perm == null) hasNulls = true;
-			else if (perm != null) addPermission(perm);
-		}
-
-		if (hasNulls) log(Level.SEVERE, "Core was fed null permissions!");
-	}
-
-
-	public final Towny getTowny() {
-		return towny;
-	}
-
-	public final WorldGuardPlugin getWorldGuard() {
-		return worldGuard;
-	}
-
-	public final HoloAPICore getHoloAPI() {
-		return holoAPI;
+	
+	/**
+	 * @deprecated Use {@link CorePlayerManager#getInstance()} instead.
+	 */
+	public CorePlayerManager getPlayerManager() {
+		return CorePlayerManager.getInstance();
 	}
 	
 	public final Prism getPrism() {
 		return prism;
 	}
-
-	public final boolean isTownyActive() {
-		return towny != null && Bukkit.getPluginManager().isPluginEnabled(towny);
+	
+	/**
+	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
+	 */
+	public Reloader getReloader(String path) {
+		return getMasterReloader().getModule(path);
 	}
-
-	public final boolean isWorldGuardActive() {
-		return worldGuard != null && Bukkit.getPluginManager().isPluginEnabled(worldGuard);
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<? extends ConfigurationSerializable>[] getSerialiables() {
+		return serializables;
 	}
-
+	
+	public final Towny getTowny() {
+		return towny;
+	}
+	
+	public final WorldGuardPlugin getWorldGuard() {
+		return worldGuard;
+	}
+	
+	/**
+	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
+	 */
+	public boolean hasReloader(String path) {
+		return getMasterReloader().hasModule(path);
+	}
+	
+	/**
+	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
+	 */
+	public boolean hasReloaders() {
+		return getMasterReloader().hasModules();
+	}
+	
 	public final boolean isHoloAPIActive() {
 		return holoAPI != null && Bukkit.getPluginManager().isPluginEnabled(holoAPI);
 	}
@@ -608,104 +587,222 @@ public class NoxCore extends NoxPlugin {
 	public final boolean isPrismActive() {
 		return prism != null && Bukkit.getPluginManager().isPluginEnabled(prism);
 	}
-
-	/**
-	 * @param r reloader to add.
-	 * @return true if successful and false otherwise.
-	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
-	 */
-	public boolean addReloader(Reloader r) {
-		return getMasterReloader().addModule(r);
+	
+	public final boolean isTownyActive() {
+		return towny != null && Bukkit.getPluginManager().isPluginEnabled(towny);
 	}
-
-	/**
-	 * Acquires all permission nodes.
-	 * <p/>
-	 * See addPermission and removePermission for manipulating this list.
-	 *
-	 * @return an unmodifiable list of permissions
-	 */
-	public final List<NoxPermission> getAllNoxPerms() {
-		return Collections.unmodifiableList(permissions);
+	
+	public final boolean isWorldGuardActive() {
+		return worldGuard != null
+				&& Bukkit.getPluginManager().isPluginEnabled(worldGuard);
 	}
-
-	public FileConfiguration getCoreConfig() {
-		if (config == null)
-			config = new FileConfiguration(getDataFile("config.yml"));
-
-		config.load();
-
-		return config;
+	
+	public void loadGlobalLocale(ILocalizationDefault localizationDefault) {
+		this.loadGlobalLocale(localizationDefault.getName(), localizationDefault
+				.getDefault());
 	}
-
-	/**
-	 * @deprecated Use {@link CorePlayerManager#getInstance()} instead.
-	 */
-	public CorePlayerManager getPlayerManager() {
-		return CorePlayerManager.getInstance();
+	
+	public void loadGlobalLocale(String path, String defaultValue) {
+		path = path.toLowerCase(Locale.ENGLISH);
+		if (!globalLocales.contains(path)) {
+			globalLocales.set(path, defaultValue);
+		}
 	}
-
-	/**
-	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
-	 */
-	public Reloader getReloader(String path) {
-		return getMasterReloader().getModule(path);
+	
+	public void loadGlobalLocales(
+			Class<? extends ILocalizationDefault> localizationDefaults) {
+		for (final ILocalizationDefault def : CommonUtil
+				.getClassConstants(localizationDefaults)) {
+			this.loadGlobalLocale(def);
+		}
 	}
-
-	/**
-	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
-	 */
-	public boolean hasReloader(String path) {
-		return getMasterReloader().hasModule(path);
+	
+	public final void loadGlobalLocalization() {
+		globalLocales.load();
 	}
-
-	/**
-	 * @deprecated Use {@link MasterReloader#getInstance()} instead.
-	 */
-	public boolean hasReloaders() {
-		return getMasterReloader().hasModules();
+	
+	@Override
+	public void localization() {
+		if (instance == null) {
+			setInstance(this);
+		}
+		
+		VaultAdapter.load();
+		Common.loadClasses("com.noxpvp.core.localization.CoreLocale",
+				"com.noxpvp.core.VaultAdapter");
+		
+		globalLocales = new FileConfiguration(this, "Global-Localization.yml");
+		
+		// load
+		if (globalLocales.exists()) {
+			loadGlobalLocalization();
+		}
+		
+		// header
+		globalLocales
+				.setHeader("Below are the global localization nodes set for Nox Plugins '"
+						+ getName() + "'.");
+		globalLocales
+				.addHeader("For colors, use the & character followed up by 0 - F");
+		globalLocales.addHeader("Need help with this file? Please visit:");
+		globalLocales
+				.addHeader("http://dev.bukkit.org/server-mods/bkcommonlib/pages/general/localization/");
+		
+		loadGlobalLocales(GlobalLocale.class);
+		loadLocales(CoreLocale.class);
+		
+		for (final String group : VaultAdapter.GroupUtils.getGroupList()) {
+			loadLocale(CoreLocale.GROUP_TAG_PREFIX.getName() + "." + group, "");
+			loadLocale(CoreLocale.GROUP_TAG_SUFFIX.getName() + "." + group, "");
+		}
 	}
-
-	/**
-	 * Used to create command tree's unique to nox.
-	 * <p>Mainly for if people prefer to type /nox before commands. Mehh Not really big deal.
-	 *
-	 * @return the master command.
-	 */
-	public Command getNoxCommand() {
-		return this.noxCommand;
+	
+	@Override
+	public void permissions() {
+		addPermission( // Currently does nothing.
+		new NoxPermission(this, "core.*",
+				"All noxcore permissions (Including admin nodes).",
+				PermissionDefault.OP,
+				new NoxPermission(this, "core.reload",
+						"Reload command for Nox Core", PermissionDefault.OP),
+				new NoxPermission(this, "core.save",
+						"Save permission for saving everything in core.",
+						PermissionDefault.OP),
+				new NoxPermission(this, "core.load",
+						"Load permission for loading everything in core.",
+						PermissionDefault.OP),
+				new NoxPermission(this, "nox.upgrade",
+						"Upgrade permission for the upgrade command in the core.",
+						PermissionDefault.OP)));
 	}
-
+	
+	@Override
+	public void reloadConfig() {
+		getCoreConfig().load();
+		
+		loginListener.unregister();
+		loginListener = new LoginListener(this);
+		loginListener.register();
+		
+		pingListener.unregister();
+		pingListener = new ServerPingListener(this);
+		pingListener.register();
+		
+		ChestBlockListener.isRemovingOnInteract = config.get(
+				"custom.events.chestblocked.isRemovingOnInteract",
+				ChestBlockListener.isRemovingOnInteract);
+		ChestBlockListener.usePlaceEvent = config.get(
+				"custom.events.chestblocked.usePlaceEvent",
+				ChestBlockListener.usePlaceEvent);
+		ChestBlockListener.useFormEvent = config.get(
+				"custom.events.chestblocked.useFormEvent",
+				ChestBlockListener.useFormEvent);
+		
+		VaultAdapter.reloadTeams();
+	}
+	
 	public void removePermission(NoxPlugin plugin, String name) {
 		removePermission(plugin, name, false);
 	}
-
+	
 	public void removePermission(NoxPlugin plugin, String name, boolean force) {
 		if (!permission_cache.containsKey(plugin))
 			return;
-
-		Map<String, NoxPermission> cache = permission_cache.get(plugin);
-
+		
+		final Map<String, NoxPermission> cache = permission_cache.get(plugin);
+		
 		if (cache.containsKey(name)) {
 			Bukkit.getPluginManager().removePermission(name);
-
-			NoxPermission perm = cache.get(name);
-
+			
+			final NoxPermission perm = cache.get(name);
+			
 			cache.remove(name);
 			permissions.remove(perm);
-
+			
 		} else if (force) {
 			NoxPermission permFound = null;
-			for (NoxPermission perm : permissions)
+			for (final NoxPermission perm : permissions)
 				if (perm.getName().equals(name)) {
 					Bukkit.getPluginManager().removePermission(name);
 					permFound = perm;
 					break;
 				}
-
-			if (permFound != null)
+			
+			if (permFound != null) {
 				permissions.remove(permFound);
-
+			}
+			
 		}
+	}
+	
+	@Override
+	public void saveConfig() {
+		config.set("custom.events.chestblocked.isRemovingOnInteract",
+				ChestBlockListener.isRemovingOnInteract);
+		config.set("custom.events.chestblocked.usePlaceEvent",
+				ChestBlockListener.usePlaceEvent);
+		config.set("custom.events.chestblocked.useFormEvent",
+				ChestBlockListener.useFormEvent);
+		config.save();
+	}
+	
+	public final void saveGlobalLocalization() {
+		globalLocales.save();
+	}
+	
+	private void cleanup() {
+		
+		HandlerList.unregisterAll(this);
+		setInstance(null);
+		
+		if (voteListener != null) {
+			voteListener.destroy();
+		}
+		
+		final Class<?>[] classes = {
+				VaultAdapter.class,
+				VaultAdapter.GroupUtils.class,
+				CoreLocale.class, GlobalLocale.class,
+				CorePlayerManager.class, MasterReloader.class,
+				com.noxpvp.core.manager.old.CorePlayerManager.class
+		};
+		
+		final String[] internalClasses = {};
+		
+		new StaticCleaner(this, getClassLoader(), internalClasses, classes)
+				.resetAll();
+		
+	}
+	
+	private void registerAllCommands() {
+		for (final Class<Command> cls : commands) {
+			final SafeConstructor<Command> cons = new SafeConstructor<Command>(cls,
+					new Class[0]);
+			final Command rn = cons.newInstance();
+			
+			if (rn != null) {
+				if (rn.getName().equals(NoxCommand.COMMAND_NAME)) {
+					setNoxCommand(rn);
+				}
+				registerCommand(rn);
+			}
+		}
+	}
+	
+	private void registerSerials(NoxPlugin p) {
+		if (p.getSerialiables() != null) {
+			log(Level.INFO, new StringBuilder().append("Attempting to load ")
+					.append(p.getSerialiables().length).append(" '").append(
+							p.getName()).append("' serializables.").toString());
+			
+			for (final Class<? extends ConfigurationSerializable> c : p
+					.getSerialiables()) {
+				ConfigurationSerialization.registerClass(c);
+			}
+		}
+	}
+	
+	private void setNoxCommand(Command rn) {
+		noxCommand = rn;
 	}
 }

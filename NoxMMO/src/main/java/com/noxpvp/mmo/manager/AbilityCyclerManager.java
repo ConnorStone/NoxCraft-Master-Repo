@@ -27,7 +27,7 @@ public class AbilityCyclerManager extends BaseManager<AbilityCycler> {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	public AbilityCyclerManager() {
-		super(saveType, saveFolder);
+		super(saveType, saveFolder, false);
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

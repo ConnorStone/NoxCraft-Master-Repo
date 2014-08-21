@@ -24,6 +24,7 @@
 package com.noxpvp.mmo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
@@ -45,11 +48,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.comphenix.attribute.AttributeStorage;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.data.Cycler;
+import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.core.utils.InventoryUtil;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
@@ -59,7 +64,7 @@ import com.noxpvp.mmo.renderers.BaseAbilityCyclerRenderer;
 import com.noxpvp.mmo.renderers.ItemDisplayACRenderer;
 
 public class AbilityCycler extends Cycler<String> implements
-		Persistent, ConfigurationSerializable {
+		Persistent, ConfigurationSerializable, MenuItemRepresentable {
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Static Fields
@@ -79,6 +84,7 @@ public class AbilityCycler extends Cycler<String> implements
 	// Instance Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	private ItemStack						lastSeenItem;
 	private final UUID						id;
 	private final UUID						player;
 	private Set<String>						abilities;
@@ -92,6 +98,8 @@ public class AbilityCycler extends Cycler<String> implements
 			ItemStack item) {
 		super();
 		
+		abilities = new HashSet<String>();
+		lastSeenItem = item;
 		player = playerID;
 		id = UUID.randomUUID();
 		AttributeStorage.newTarget(item, id).setData(id.toString());
@@ -160,7 +168,11 @@ public class AbilityCycler extends Cycler<String> implements
 			@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 			public void onItemHeldEvent(PlayerItemHeldEvent event) {
 				
-				// Return if not sneaking
+				// Return if not sneaking or no item
+				final ItemStack item = event.getPlayer().getItemInHand();
+				if (item == null || item.getType().equals(Material.AIR))
+					return;
+				
 				if (!event.getPlayer().isSneaking())
 					return;
 				
@@ -219,13 +231,50 @@ public class AbilityCycler extends Cycler<String> implements
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	public List<PlayerAbility> getAbilityList() {
+		pruneAbilitiesFromPlayer();
+		final List<PlayerAbility> ret = new ArrayList<PlayerAbility>();
+		
+		final MMOPlayer p = getMMOPlayer();
+		for (final String ab : getList()) {
+			ret.add(p.getAbility(ab));
+		}
+		
+		return ret;
+	}
+	
 	public PlayerAbility getCurrentAB() {
 		return getMMOPlayer().getAbility(current());
+	};
+	
+	public ItemStack getIdentifiableItem() {
+		final ItemStack ret = getLastItemKnown() != null ? getLastItemKnown()
+				: new ItemStack(Material.STICK);
+		
+		ret.setAmount(Math.max(1, getList().size()));
+		final ItemMeta meta = ret.getItemMeta();
+		
+		meta.setDisplayName(ChatColor.GOLD + "Ability Cycler");
+		
+		final List<String> lore = new ArrayList<String>(Arrays.asList(ChatColor.GOLD
+				+ "Abilities:"));
+		
+		for (final String ab : getList()) {
+			lore.add(ChatColor.GREEN + ab);
+		}
+		
+		ret.setItemMeta(meta);
+		
+		return ret;
 	}
+	
+	public ItemStack getLastItemKnown() {
+		return lastSeenItem.clone();
+	};
 	
 	public MMOPlayer getMMOPlayer() {
 		return MMOPlayerManager.getInstance().getPlayer(getPlayer());
-	};
+	}
 	
 	public String getPersistenceNode() {
 		return getPersistentID().toString();
@@ -233,11 +282,9 @@ public class AbilityCycler extends Cycler<String> implements
 	
 	public UUID getPersistentID() {
 		return id;
-	};
+	}
 	
 	public Player getPlayer() {
-		if (!isValid())
-			return null;
 		
 		OfflinePlayer p;
 		if ((p = Bukkit.getOfflinePlayer(player)) != null)
@@ -257,8 +304,10 @@ public class AbilityCycler extends Cycler<String> implements
 	public boolean isCycleItem(ItemStack stack) {
 		final AttributeStorage as = AttributeStorage.newTarget(stack, id);
 		
-		if (as.getData(null) == id.toString())
+		if (as.getData(null) == id.toString()) {
+			lastSeenItem = stack.clone();
 			return true;
+		}
 		
 		return false;
 	}
