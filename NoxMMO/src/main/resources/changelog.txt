@@ -1,6 +1,0 @@
-Initial Release:
-	- Class System
-		- Gui based selection system
-		- Class Tiers for custom names
-	- Abilities
-		- Matching classes to go.
