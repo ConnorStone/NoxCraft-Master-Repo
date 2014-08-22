@@ -1,8 +1,9 @@
 package com.noxpvp.mmo.gui;
 
+import com.bergerkiller.bukkit.common.utils.ItemUtil;
+
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
@@ -11,12 +12,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.bergerkiller.bukkit.common.utils.ItemUtil;
+import com.noxpvp.core.gui.BoolToggleCoreBoxItem;
 import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
-import com.noxpvp.core.gui.ToggleCoreBoxItem;
 import com.noxpvp.core.utils.BukkitUtil;
+
 import com.noxpvp.mmo.AbilityCycler;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.abilities.internal.TieredAbility;
@@ -68,10 +69,10 @@ public class AbilityBindMenu extends CoreBox {
 					.getIdentifiableItem(), ab, curBindedAbs.contains(ab)) {
 				
 				@Override
-				public void onToggle(InventoryClickEvent click) {
+				public void handleToggle(InventoryClickEvent click) {
 					
 					// Add / remove ability from cycler
-					if (getToggleState()) {
+					if (getState()) {
 						abilityCycler.add(getAbility().getName());
 					} else {
 						abilityCycler.remove(getAbility().getName());
@@ -80,7 +81,7 @@ public class AbilityBindMenu extends CoreBox {
 					// Update item
 					final ItemStack newItem = ab.getIdentifiableItem();
 					ItemUtil.setDisplayName(newItem,
-							(getToggleState() ? ChatColor.GREEN + "Binded: "
+							(getState() ? ChatColor.GREEN + "Binded: "
 									: ChatColor.RED + "Unbound: ")
 									+ ab.getName());
 					
@@ -114,27 +115,20 @@ public class AbilityBindMenu extends CoreBox {
 	// Ability Bind item
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private abstract class AbilityBindToggle extends ToggleCoreBoxItem {
+	private abstract class AbilityBindToggle extends BoolToggleCoreBoxItem {
 		
-		private final boolean		onOff;
 		private final TieredAbility	ability;
 		
 		public AbilityBindToggle(CoreBox parent, ItemStack item,
 				TieredAbility ability, boolean startingPosition) {
-			super(parent, item);
+			super(parent, item, startingPosition);
 			
 			this.ability = ability;
-			onOff = startingPosition;
 		}
 		
 		public TieredAbility getAbility() {
 			return ability;
 		}
-		
-		public boolean getToggleState() {
-			return onOff;
-		}
-		
 	}
 	
 }
