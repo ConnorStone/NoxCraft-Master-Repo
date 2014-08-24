@@ -3,7 +3,6 @@ package com.noxpvp.mmo.classes.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 public abstract class ExperienceHolder implements IExperienceHolder,
@@ -19,7 +18,6 @@ public abstract class ExperienceHolder implements IExperienceHolder,
 																			2000);
 	
 	// Serializers start
-	public static final String				SERIALIZE_CURRENT_LEVEL	= "current-level";
 	public static final String				SERIALIZE_CURRENT_EXP	= "current-exp";
 	// Serializers end
 	
@@ -29,35 +27,34 @@ public abstract class ExperienceHolder implements IExperienceHolder,
 	
 	private int								currentLevel;
 	private double							exp;
-	private ExperienceFormula				formula;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public ExperienceHolder(ExperienceFormula formula) {
-		Validate.notNull(formula, "The class exp formula can not be null");
+	public ExperienceHolder() {
 		
-		this.formula = formula;
-		currentLevel = 0;
 		exp = 0;
+		currentLevel = 0;
+		
 	}
 	
 	public ExperienceHolder(Map<String, Object> data) {
 		Object getter;
-		
-		if ((getter = data.get(SERIALIZE_CURRENT_LEVEL)) != null
-				&& getter instanceof Number) {
-			currentLevel = (Integer) getter;
-		} else {
-			currentLevel = 0;
-		}
 		
 		if ((getter = data.get(SERIALIZE_CURRENT_EXP)) != null
 				&& getter instanceof Number) {
 			exp = (Double) getter;
 		} else {
 			exp = 0;
+		}
+		
+		currentLevel = 0;
+		
+		double tempXP = exp;
+		while (tempXP >= getExpToLevel() && currentLevel < getMaxLevel()) {
+			tempXP -= getExpToLevel();
+			currentLevel++;
 		}
 		
 	}
@@ -102,10 +99,8 @@ public abstract class ExperienceHolder implements IExperienceHolder,
 	}
 	
 	public double getMaxExp() {
-		return formula.getExperienceNeeded(getLevel());
+		return getFormula().getExperienceNeeded(getLevel());
 	}
-	
-	public abstract int getMaxLevel();
 	
 	public void incrementLevel() {
 		
@@ -124,10 +119,6 @@ public abstract class ExperienceHolder implements IExperienceHolder,
 	public Map<String, Object> serialize() {
 		final Map<String, Object> data = new HashMap<String, Object>();
 		
-		if (currentLevel > 0) {
-			data.put(SERIALIZE_CURRENT_LEVEL, currentLevel);
-		}
-		
 		if (exp > 0) {
 			data.put(SERIALIZE_CURRENT_EXP, exp);
 		}
@@ -140,7 +131,6 @@ public abstract class ExperienceHolder implements IExperienceHolder,
 	}
 	
 	public void setLevel(int amount) {
-		
 		// Set only if within max level
 		if (getLevel() + amount <= getMaxLevel()) {
 			currentLevel = getLevel() + amount;

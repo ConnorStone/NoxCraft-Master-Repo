@@ -99,6 +99,7 @@ import com.noxpvp.mmo.listeners.HealListener;
 import com.noxpvp.mmo.listeners.PlayerInteractListener;
 import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.AbilityCyclerManager;
+import com.noxpvp.mmo.manager.ClassConfigManager;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.prism.MMOPrismUtil;
 import com.noxpvp.mmo.util.PlayerClassUtil;
@@ -154,6 +155,7 @@ public class NoxMMO extends NoxPlugin {
 		
 		MMOPlayerManager.getInstance().unloadAndSaveAll();
 		AbilityCyclerManager.getInstance().unloadAndSaveAll();
+		ClassConfigManager.getInstance().unloadAndSaveAll();
 		
 		setInstance(null);
 	}
@@ -168,10 +170,12 @@ public class NoxMMO extends NoxPlugin {
 		}
 		
 		setInstance(this);
+		core = NoxCore.getInstance();
+		
 		MasterListener.init();
 		masterListener = new MasterListener();
 		
-		core = NoxCore.getInstance();
+		ClassConfigManager.setup();
 		
 		PlayerClassUtil.init();
 		AbilityCycler.init();
@@ -187,9 +191,10 @@ public class NoxMMO extends NoxPlugin {
 		damageListener.register();
 		healListener.register();
 		playerTargetListener.register();
-		blockListener.register();
-		permHandler = new PermissionHandler(this);
+		// blockListener.register();
 		// experieneceListener.register();
+		
+		permHandler = new PermissionHandler(this);
 		
 		final Reloader base = new BaseReloader(getMasterReloader(), "NoxMMO") {
 			

@@ -46,9 +46,12 @@ import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.mmo.abilities.AbilityContainer;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.classes.PlayerClassContainer;
+import com.noxpvp.mmo.classes.internal.ClassConfig;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
+import com.noxpvp.mmo.classes.internal.MMOClassData;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.manager.AbilityCyclerManager;
+import com.noxpvp.mmo.manager.ClassConfigManager;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
@@ -69,10 +72,10 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	// Static Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public static final String			SERIALIZE_ALL_CLASSES				= "classes";
+	public static final String			SERIALIZE_ALL_CLASSES				= "class-data";
 	public static final String			SERIALIZE_ABLILTY_CYCLERS			= "ability-cyclers";
-	public static final String			SERIALIZE_CURRENT_PRIMARY_CLASS		= "current-primary-class";
-	public static final String			SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class";
+	public static final String			SERIALIZE_CURRENT_PRIMARY_CLASS		= "current-primary-class-name";
+	public static final String			SERIALIZE_CURRENT_SECONDARY_CLASS	= "current-secondary-class-name";
 	private static ModuleLogger			logger;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,6 +134,10 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		
 		allClasses = new HashSet<IPlayerClass>();
 		cyclers = new HashSet<AbilityCycler>();
+		
+		addUnusedClasses();
+		
+		MMOPlayerManager.getInstance().loadObject(this);
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,9 +225,9 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		return "MMOPlayer";
 	}
 	
-	public IPlayerClass getPlayerClass(String name) {
+	public IPlayerClass getPlayerClass(String persistenceNode) {
 		for (final IPlayerClass c : allClasses)
-			if (c.getName().equalsIgnoreCase(name))
+			if (c.getPersistenceNode().equalsIgnoreCase(persistenceNode))
 				return c;
 		
 		return null;
@@ -326,6 +333,18 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		targetRef = new WeakReference<LivingEntity>(target);
 	}
 	
+	private void addUnusedClasses() {
+		for (final ClassConfig cfg : ClassConfigManager.getInstance().getLoadeds()
+				.values()) {
+			
+			if (!hasPlayerClass(cfg.getPersistenceNode())) {
+				addPlayerClass(new PlayerClass(cfg, new MMOClassData(
+						getPlayerUUID(), cfg)));
+			}
+			
+		}
+	}
+	
 	private void setupClasses(Map<String, Object> data) {
 		Object getter;
 		
@@ -335,6 +354,8 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		} else {
 			allClasses = new HashSet<IPlayerClass>();
 		}
+		
+		addUnusedClasses();
 		
 		if (data.containsKey(SERIALIZE_CURRENT_PRIMARY_CLASS)
 				&& data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {

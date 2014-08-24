@@ -28,15 +28,15 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import com.noxpvp.core.Persistent;
 import com.noxpvp.core.gui.MenuItemRepresentable;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.AbilityContainer;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 
 public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
-		MenuItemRepresentable, ConfigurationSerializable, IExperienceHolder {
+		MenuItemRepresentable, Persistent, IExperienceHolder {
 	
 	/**
 	 * Checks if player can use this class.
@@ -50,7 +50,14 @@ public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
 	 * 
 	 * @return Color armour color object.
 	 */
-	public Color getBaseArmourColor();
+	public Color getArmourColor();
+	
+	/**
+	 * Gets the underlying data for this class
+	 * 
+	 * @return
+	 */
+	public MMOClassData getClassData();
 	
 	/**
 	 * Retrieves the color associated with chat and other chat related
@@ -66,6 +73,13 @@ public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
 	 * @return
 	 */
 	public String getDescription();
+	
+	/**
+	 * Gets the persistent file name of this class
+	 * 
+	 * @return
+	 */
+	public String getFileName();
 	
 	/**
 	 * Returns a list of the {@link #getDescription()}
@@ -95,14 +109,12 @@ public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
 	 */
 	public String getName();
 	
-	public OfflinePlayer getPlayer();
-	
 	/**
-	 * Retrieves the color used for coloring armour.
+	 * Gets the offline player owner of this class
 	 * 
-	 * @return Color armour color object.
+	 * @return
 	 */
-	public Color getRBGColor();
+	public OfflinePlayer getPlayer();
 	
 	/**
 	 * Tells whether or not this is a primary class. Meaning the player
@@ -113,8 +125,6 @@ public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
 	 * @return true if primary and false other wise.
 	 */
 	public boolean isPrimaryClass();
-	
-	public void setPlayer(OfflinePlayer player);
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Special Color Blending techniques

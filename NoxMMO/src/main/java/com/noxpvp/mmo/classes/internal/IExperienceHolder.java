@@ -10,6 +10,8 @@ public interface IExperienceHolder {
 	
 	public double getExpToLevel();
 	
+	public ExperienceFormula getFormula();
+	
 	public int getLevel();
 	
 	public double getMaxExp();

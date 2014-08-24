@@ -71,7 +71,7 @@ public class WarlordPlayerClass extends PlayerClass {
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public Color getBaseArmourColor() {
+	public Color getArmourColor() {
 		return armourColor;
 	}
 	

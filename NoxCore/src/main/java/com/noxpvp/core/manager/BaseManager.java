@@ -41,15 +41,15 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	// Instance Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private ModuleLogger	logger;
+	private ModuleLogger		logger;
 	
-	private Class<T>		typeClass;
+	private Class<T>			typeClass;
 	
-	protected final String	saveFolder;
-	private final boolean	useNoxFolder;
-	protected File			folder;
+	protected final String		saveFolder;
+	private final boolean		useNoxFolder;
+	protected File				folder;
 	
-	protected Map<UUID, T>	loadedCache	= new HashMap<UUID, T>();
+	protected Map<String, T>	loadedCache	= new HashMap<String, T>();
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
@@ -68,7 +68,7 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Logging Methods
+	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	public FileConfiguration getConfig(String name) {
@@ -95,7 +95,7 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		return folder;
 	}
 	
-	public Map<UUID, T> getLoadeds() {
+	public Map<String, T> getLoadeds() {
 		return Collections.unmodifiableMap(loadedCache);
 	}
 	
@@ -111,13 +111,9 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		return loadedCache.containsKey(id);
 	}
 	
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Instance Methods
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
 	public void loadObject(T object) {
 		if (!loadedCache.containsKey(object.getPersistentID())) {
-			loadedCache.put(object.getPersistentID(), object);
+			loadedCache.put(object.getPersistentID().toString(), object);
 		}
 	}
 	
@@ -274,7 +270,7 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		final T created = getConfig(path.toString() + ".yml").get(node, typeClass);
 		
 		if (created != null) {
-			loadedCache.put(created.getPersistentID(), created);
+			loadedCache.put(created.getPersistentID().toString(), created);
 		}
 		
 		return created;

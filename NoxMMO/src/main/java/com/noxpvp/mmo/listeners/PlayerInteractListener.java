@@ -23,17 +23,29 @@
 
 package com.noxpvp.mmo.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityStatus;
+import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntity;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.noxpvp.core.listeners.NoxListener;
 import com.noxpvp.mmo.NoxMMO;
+import com.noxpvp.mmo.abilities.entity.WisdomEntityAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
-@SuppressWarnings("unused")
 public class PlayerInteractListener extends NoxListener<NoxMMO> {
 	
 	MMOPlayerManager	pm;
@@ -53,11 +65,62 @@ public class PlayerInteractListener extends NoxListener<NoxMMO> {
 	public void onInteract(PlayerInteractEvent e) {
 		
 		final Player p = e.getPlayer();
+		final Location pLoc = p.getEyeLocation().add(
+				p.getLocation().getDirection().normalize());
 		
+		// Bukkit.broadcastMessage("Commy is a noob");
 		// debug===========================================
 		if (p.getItemInHand().getType() != Material.STICK)
 			return;
 		
+		// Spawn
+		final WrapperPlayServerSpawnEntity packet = new WrapperPlayServerSpawnEntity();
+		packet.setEntityID(Integer.MAX_VALUE - 100);
+		packet.setType(76);
+		packet.setObjectData(0);
+		packet.setX(pLoc.getX());
+		packet.setY(pLoc.getY());
+		packet.setZ(pLoc.getZ());
+		
+		// Meta
+		final WrapperPlayServerEntityMetadata metaPacket = new WrapperPlayServerEntityMetadata();
+		
+		final WrappedDataWatcher dw = new WrappedDataWatcher();
+		
+		final ItemStack stack = new ItemStack(Material.FIREWORK, 64);
+		final FireworkMeta firework = (FireworkMeta) stack.getItemMeta();
+		firework.addEffect(FireworkEffect.builder().
+				with(Type.BALL).
+				withColor(Color.ORANGE).
+				build()
+				);
+		firework.setPower(1);
+		stack.setItemMeta(firework);
+		
+		dw.setObject(0, (byte) 0);
+		dw.setObject(1, (short) 300);
+		dw.setObject(8, stack);
+		
+		metaPacket.setEntityId(Integer.MAX_VALUE - 100);
+		metaPacket.setEntityMetadata(dw.getWatchableObjects());
+		
+		// Kill
+		final WrapperPlayServerEntityDestroy destroyPacket = new WrapperPlayServerEntityDestroy();
+		destroyPacket.setEntities(new int[] { Integer.MAX_VALUE - 100 });
+		
+		// Detonate
+		final WrapperPlayServerEntityStatus explode = new WrapperPlayServerEntityStatus();
+		explode.setEntityId(Integer.MAX_VALUE - 100);
+		explode.setEntityStatus(17);
+		
+		new WisdomEntityAbility(p).execute();
+		
+		for (final Player bp : Bukkit.getOnlinePlayers()) {
+			packet.sendPacket(bp);
+			metaPacket.sendPacket(bp);
+			explode.sendPacket(bp);
+			destroyPacket.sendPacket(bp);
+		}
+		
 	}
-	
 }

@@ -132,7 +132,7 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends BaseMana
 		checkConstruct(ret);
 
 		if (ret != null)
-			loadedCache.put(ret.getPersistentID(), ret);
+			loadedCache.put(ret.getPersistenceNode(), ret);
 
 		return ret;
 	}
@@ -147,7 +147,7 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends BaseMana
 		checkConstruct(ret);
 
 		if (ret != null)
-			loadedCache.put(ret.getPersistentID(), ret);
+			loadedCache.put(ret.getPersistenceNode(), ret);
 
 		return ret;
 	}
