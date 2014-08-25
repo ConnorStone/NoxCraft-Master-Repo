@@ -10,8 +10,12 @@ public class InventoryUtil {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	public static int getSlotOfItem(Inventory i, ItemStack item) {
+		if (i == null)
+			return 0;
+		
 		for (int slot = 0; slot < i.getSize(); slot++) {
-			if (i.getItem(slot).equals(item))
+			ItemStack s;
+			if ((s = i.getItem(slot)) != null && s.equals(item))
 				return slot;
 		}
 		

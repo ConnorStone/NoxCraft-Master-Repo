@@ -27,11 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -87,22 +85,17 @@ public class AbilityCycler extends Cycler<String> implements
 	private ItemStack							lastSeenItem;
 	private final UUID							id;
 	private final UUID							player;
-	private Set<String>							abilities;
 	private BaseAbilityCyclerRenderer			renderer;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public AbilityCycler(Collection<PlayerAbility> data, UUID playerID,
-			ItemStack item) {
+	public AbilityCycler(Collection<PlayerAbility> data, UUID playerID) {
 		super();
 		
-		abilities = new HashSet<String>();
-		lastSeenItem = item;
 		player = playerID;
 		id = UUID.randomUUID();
-		AttributeStorage.newTarget(item, id).setData(id.toString());
 		renderer = new ItemDisplayACRenderer(this);
 		
 		final List<String> abs = new ArrayList<String>();
@@ -121,7 +114,7 @@ public class AbilityCycler extends Cycler<String> implements
 		
 		Validate.isTrue(data.containsKey(SERIALIZE_ID)
 				&& data.containsKey(SERIALIZE_PLAYER_ID)
-				&& data.containsKey(abilities),
+				&& data.containsKey(SERIALIZE_ABILITIES),
 				"Data is missing required data from save!");
 		
 		Object getter;
@@ -139,14 +132,13 @@ public class AbilityCycler extends Cycler<String> implements
 			throw new IllegalStateException(
 					"Data contained key for player-id, but could not be make into a UUID!");
 		
+		List<String> abilities;
 		if ((getter = data.get(SERIALIZE_ABILITIES)) != null
 				&& getter instanceof Collection) {
-			abilities = new HashSet<String>((Collection<String>) getter);
-		} else {
-			abilities = new HashSet<String>();
+			abilities = new ArrayList<String>((Collection<String>) getter);
+			addAll(abilities);
 		}
 		
-		addAll(abilities);
 		renderer = new ItemDisplayACRenderer(this);
 	}
 	
@@ -190,13 +182,17 @@ public class AbilityCycler extends Cycler<String> implements
 			@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 			public void onInteract(PlayerInteractEvent event) {
 				
+				final ItemStack item = event.getPlayer().getItemInHand();
+				if (item == null || item.getType().equals(Material.AIR))
+					return;
+				
 				// Return if not right clicking
 				if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) &&
 						!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 					return;
 				
 				for (final AbilityCycler ac : cyclers.values())
-					if (ac.isValid()) {
+					if (ac.isValid() && ac.isCycleItem(item)) {
 						ac.onUse(event);
 					}
 			}
@@ -214,7 +210,7 @@ public class AbilityCycler extends Cycler<String> implements
 		Validate.notNull(cycler);
 		
 		if (!cyclers.containsKey(cycler.getPersistentID())) {
-			cyclers.put(cycler.getPersistentID().toString(), cycler);
+			cyclers.put(cycler.getPersistentID(), cycler);
 		}
 	}
 	
@@ -256,12 +252,14 @@ public class AbilityCycler extends Cycler<String> implements
 		
 		meta.setDisplayName(ChatColor.GOLD + "Ability Cycler");
 		
-		final List<String> lore = new ArrayList<String>(Arrays.asList(ChatColor.GOLD
-				+ "Abilities:"));
+		final List<String> lore = new ArrayList<String>(Arrays.asList("",
+				ChatColor.GOLD + "Abilities:"));
 		
 		for (final String ab : getList()) {
 			lore.add(ChatColor.GREEN + ab);
 		}
+		
+		meta.setLore(lore);
 		
 		ret.setItemMeta(meta);
 		
@@ -269,7 +267,7 @@ public class AbilityCycler extends Cycler<String> implements
 	}
 	
 	public ItemStack getLastItemKnown() {
-		return lastSeenItem.clone();
+		return lastSeenItem;
 	};
 	
 	public MMOPlayer getMMOPlayer() {
@@ -304,7 +302,7 @@ public class AbilityCycler extends Cycler<String> implements
 	public boolean isCycleItem(ItemStack stack) {
 		final AttributeStorage as = AttributeStorage.newTarget(stack, id);
 		
-		if (as.getData(null) == id.toString()) {
+		if (as.getData(null) != null && as.getData(null).equals(id.toString())) {
 			lastSeenItem = stack.clone();
 			return true;
 		}
@@ -360,9 +358,16 @@ public class AbilityCycler extends Cycler<String> implements
 		
 		ret.put(SERIALIZE_ID, id.toString());
 		ret.put(SERIALIZE_PLAYER_ID, player.toString());
-		ret.put(SERIALIZE_ABILITIES, abilities);
+		ret.put(SERIALIZE_ABILITIES, getList());
 		
 		return ret;
+	}
+	
+	public ItemStack setCycleItem(ItemStack stack) {
+		final AttributeStorage as = AttributeStorage.newTarget(stack, id);
+		as.setData(id.toString());
+		
+		return lastSeenItem = as.getTarget();
 	}
 	
 	public void setRenderer(BaseAbilityCyclerRenderer renderer) {
@@ -372,10 +377,12 @@ public class AbilityCycler extends Cycler<String> implements
 	private void onCycle(PlayerItemHeldEvent event) {
 		switch (getChange(event.getPreviousSlot(), event.getNewSlot())) {
 			case 1:
+				event.setCancelled(true);
 				nextAB();
 				renderDisplay();
 				break;
 			case -1:
+				event.setCancelled(true);
 				previousAB();
 				renderDisplay();
 				break;
@@ -389,7 +396,7 @@ public class AbilityCycler extends Cycler<String> implements
 	}
 	
 	private void pruneAbilitiesFromPlayer() {
-		final Iterator<String> abIter = abilities.iterator();
+		final Iterator<String> abIter = getList().iterator();
 		
 		while (abIter.hasNext()) {
 			final String ab = abIter.next();
@@ -405,7 +412,7 @@ public class AbilityCycler extends Cycler<String> implements
 	boolean isValid() {
 		pruneAbilitiesFromPlayer();
 		
-		return getPlayer() != null && abilities.size() > 0
+		return getPlayer() != null && getList().size() > 0
 				&& AbilityCycler.isRegistered(getPersistentID().toString());
 	}
 }

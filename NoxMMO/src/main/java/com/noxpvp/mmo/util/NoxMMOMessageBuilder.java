@@ -27,6 +27,7 @@ import org.bukkit.ChatColor;
 
 import com.noxpvp.core.NoxPlugin;
 import com.noxpvp.core.utils.NoxMessageBuilder;
+import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
 
 public class NoxMMOMessageBuilder extends NoxMessageBuilder {
@@ -45,7 +46,7 @@ public class NoxMMOMessageBuilder extends NoxMessageBuilder {
 				clazz.getName()).newLine();
 		gold(ChatColor.BOLD + "About: ");
 		
-		for (final String lore : clazz.getLore()) {
+		for (final String lore : MessageUtil.splitToList(clazz.getDescription(), 30)) {
 			append(lore).newLine();
 		}
 		

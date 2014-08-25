@@ -23,8 +23,12 @@
 
 package com.noxpvp.mmo.classes.internal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -45,6 +49,7 @@ import com.noxpvp.core.utils.gui.MessageUtil;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.abilities.AbilityContainer;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
+import com.noxpvp.mmo.abilities.player.WallopPlayerAbility;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 
 @SerializableAs("PlayerClass")
@@ -56,8 +61,8 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	// Debug and errors
-	protected static final String	LOG_MODULE_NAME	= "PlayerClass";
-	protected static ModuleLogger	pcLog;
+	protected static final String				LOG_MODULE_NAME	= "PlayerClass";
+	protected static ModuleLogger				pcLog;
 	
 	// Serializers start
 	// Serializers end
@@ -66,8 +71,9 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 	// Instanced Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private final ClassConfig		config;
-	private final MMOClassData		data;
+	private final ClassConfig					config;
+	private final MMOClassData					data;
+	private final Map<String, PlayerAbility>	abilities;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
@@ -76,6 +82,11 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 	public PlayerClass(ClassConfig config, MMOClassData data) {
 		this.config = config;
 		this.data = data;
+		
+		abilities = new HashMap<String, PlayerAbility>();
+		
+		final WallopPlayerAbility wpa = new WallopPlayerAbility(getOfflinePlayer());
+		abilities.put(wpa.getName(), wpa);
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,6 +102,19 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 			return getPlayer().hasPermission(getPermission());
 		
 		return false;
+	}
+	
+	public Set<PlayerAbility> getAbilities() {
+		return Collections.unmodifiableSet(new HashSet<PlayerAbility>(abilities
+				.values()));
+	}
+	
+	public PlayerAbility getAbility(String identity) {
+		return abilities.get(identity);
+	}
+	
+	public Map<String, PlayerAbility> getAbilityMap() {
+		return Collections.unmodifiableMap(abilities);
 	}
 	
 	public Color getArmourColor() {
@@ -110,7 +134,7 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 	}
 	
 	public String getFileName() {
-		return config.getPersistenceNode();
+		return config.getPersistentID();
 	}
 	
 	public ExperienceFormula getFormula() {
@@ -172,7 +196,7 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 		return config.getPersistenceNode();
 	}
 	
-	public UUID getPersistentID() {
+	public String getPersistentID() {
 		return config.getPersistentID();
 	}
 	
@@ -192,6 +216,10 @@ public class PlayerClass extends ExperienceHolder implements IPlayerClass,
 	
 	public final UUID getPlayerUUID() {
 		return data.getPlayerUUID();
+	}
+	
+	public boolean hasAbility(String identity) {
+		return abilities.containsKey(identity);
 	}
 	
 	public boolean isOnline() {

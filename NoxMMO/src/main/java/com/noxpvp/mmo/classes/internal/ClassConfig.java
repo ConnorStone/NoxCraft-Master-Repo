@@ -46,6 +46,7 @@ public class ClassConfig implements Persistent {
 	// Instance Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	private final String			fileName;
 	private final FileConfiguration	config;
 	
 	private final String			className;
@@ -62,7 +63,9 @@ public class ClassConfig implements Persistent {
 	// Constructors
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public ClassConfig(FileConfiguration config) {
+	public ClassConfig(FileConfiguration config, String fileName) {
+		config.load();
+		this.fileName = fileName;
 		this.config = config;
 		
 		config.addHeader(PATH_CLASS_NAME, "The name used in-game for this class");
@@ -159,11 +162,11 @@ public class ClassConfig implements Persistent {
 	}
 	
 	public String getPersistenceNode() {
-		return config.getName().replace(".yml", "");
+		return fileName;
 	}
 	
 	public String getPersistentID() {
-		return null;
+		return fileName;
 	}
 	
 	public boolean isPrimaryClass() {

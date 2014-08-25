@@ -1,15 +1,15 @@
 package com.noxpvp.mmo.gui;
 
-import com.bergerkiller.bukkit.common.utils.ItemUtil;
-
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import com.noxpvp.core.gui.BoolToggleCoreBoxItem;
@@ -17,7 +17,6 @@ import com.noxpvp.core.gui.CoreBox;
 import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
 import com.noxpvp.core.utils.BukkitUtil;
-
 import com.noxpvp.mmo.AbilityCycler;
 import com.noxpvp.mmo.abilities.internal.PlayerAbility;
 import com.noxpvp.mmo.abilities.internal.TieredAbility;
@@ -65,7 +64,7 @@ public class AbilityBindMenu extends CoreBox {
 		updateCyclerItem();
 		
 		for (final PlayerAbility ab : playerAbs) {
-			final AbilityBindToggle abt = new AbilityBindToggle(this, ab
+			abilityRegion.add(new AbilityBindToggle(this, ab
 					.getIdentifiableItem(), ab, curBindedAbs.contains(ab)) {
 				
 				@Override
@@ -80,16 +79,18 @@ public class AbilityBindMenu extends CoreBox {
 					
 					// Update item
 					final ItemStack newItem = ab.getIdentifiableItem();
-					ItemUtil.setDisplayName(newItem,
-							(getState() ? ChatColor.GREEN + "Binded: "
-									: ChatColor.RED + "Unbound: ")
-									+ ab.getName());
+					final ItemMeta meta = newItem.getItemMeta();
+					meta.setDisplayName((getState() ? ChatColor.GREEN + "Binded: "
+							: ChatColor.RED + "Unbound: ")
+							+ ab.getName());
+					newItem.setItemMeta(meta);
 					
-					setItem(newItem);
+					setItem(new ItemStack(newItem));
 					
 					// Update Main menu item
+					updateCyclerItem();
 				}
-			};
+			});
 		}
 		
 	}

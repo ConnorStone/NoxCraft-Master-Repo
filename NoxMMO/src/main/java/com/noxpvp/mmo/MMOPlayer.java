@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -332,6 +333,7 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	
 	public void setPrimaryClass(IPlayerClass newPrimary) {
 		if (newPrimary != null) {
+			Bukkit.broadcastMessage(newPrimary.getFileName());
 			currentPrimaryClass = newPrimary.getFileName();
 		}
 	}
@@ -347,8 +349,8 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	}
 	
 	private void addUnusedClasses() {
-		for (final ClassConfig cfg : ClassConfigManager.getInstance().getLoadedMap()
-				.values()) {
+		for (final ClassConfig cfg : ClassConfigManager.getInstance()
+				.getLoadedValues()) {
 			
 			if (!hasPlayerClass(cfg.getFileConfig().getName())) {
 				addPlayerClass(new PlayerClass(cfg, new MMOClassData(

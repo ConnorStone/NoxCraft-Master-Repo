@@ -88,6 +88,7 @@ import com.noxpvp.mmo.abilities.player.TrackingPlayerAbility;
 import com.noxpvp.mmo.abilities.player.VanishPlayerAbility;
 import com.noxpvp.mmo.abilities.player.WhistlePlayerAbility;
 import com.noxpvp.mmo.classes.WarlordPlayerClass;
+import com.noxpvp.mmo.classes.internal.MMOClassData;
 import com.noxpvp.mmo.classes.internal.PlayerClass;
 import com.noxpvp.mmo.command.AbilityCommand;
 import com.noxpvp.mmo.command.ClassCommand;
@@ -128,8 +129,8 @@ public class NoxMMO extends NoxPlugin {
 			ClassCommand.class, AbilityCommand.class, MMOCommand.class			};
 	
 	private final Class<? extends ConfigurationSerializable>[]	serializables	= new Class[] {
-			AbilityCycler.class, PlayerClass.class, WarlordPlayerClass.class,
-			MMOPlayer.class													};
+			AbilityCycler.class, PlayerClass.class, MMOPlayer.class,
+			MMOClassData.class,												};
 	
 	public static NoxMMO getInstance() {
 		return instance;

@@ -23,8 +23,6 @@
 
 package com.noxpvp.mmo.classes.internal;
 
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
@@ -80,13 +78,6 @@ public interface IPlayerClass extends AbilityContainer<PlayerAbility>,
 	 * @return
 	 */
 	public String getFileName();
-	
-	/**
-	 * Returns a list of the {@link #getDescription()}
-	 * 
-	 * @return list<String> lore
-	 */
-	public List<String> getLore();
 	
 	/**
 	 * Gets the custom max health for the user of this class

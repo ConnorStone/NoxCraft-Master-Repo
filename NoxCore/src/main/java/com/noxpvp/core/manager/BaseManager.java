@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -243,9 +244,12 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	}
 	
 	public void unloadAndSaveAll() {
-		for (final T loaded : loadedCache.values()) {
-			unloadAndSave(loaded);
+		final Iterator<T> iterator = getLoadedValues().iterator();
+		while (iterator.hasNext()) {
+			final T cur = iterator.next();
+			unloadAndSave(cur);
 		}
+		
 	}
 	
 	protected T getIfLoaded(String persistenceId) {

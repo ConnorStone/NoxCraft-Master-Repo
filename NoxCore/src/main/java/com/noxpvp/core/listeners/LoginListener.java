@@ -66,14 +66,14 @@ public class LoginListener extends NoxListener<NoxCore> {
 				
 				public void run() {
 					final CorePlayerManager pm = CorePlayerManager.getInstance();
-					if (pm.isLoaded(event.getUUID().toString())) {
+					if (!pm.isLoaded(event.getUUID().toString())) {
 						pm.loadPlayer(event.getUUID());
 					}
 				}
 			});
 		} else {
 			final CorePlayerManager pm = CorePlayerManager.getInstance();
-			if (pm.isLoaded(event.getUUID().toString())) {
+			if (!pm.isLoaded(event.getUUID().toString())) {
 				pm.loadPlayer(event.getUUID());
 			}
 		}

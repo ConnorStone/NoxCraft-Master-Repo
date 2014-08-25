@@ -23,12 +23,10 @@
 
 package com.noxpvp.core.manager;
 
-import com.bergerkiller.bukkit.common.utils.CommonUtil;
-import org.apache.commons.lang.Validate;
-
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -36,6 +34,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.bergerkiller.bukkit.common.utils.CommonUtil;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.data.PluginPlayer;
 import com.noxpvp.core.events.uuid.NoxUUIDFoundEvent;
@@ -112,8 +111,11 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 	 * @return true if online false otherwise.
 	 */
 	public static boolean isOnline(Persistent object) {
-		try { return isOnline(UUID.fromString(object.getPersistentID())); }
-		catch (IllegalArgumentException ignored) { return false; }
+		try {
+			return isOnline(UUID.fromString(object.getPersistentID()));
+		} catch (final IllegalArgumentException ignored) {
+			return false;
+		}
 	}
 	
 	/**
@@ -133,10 +135,12 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 	// ~~~~~~~~~~~~~~~~~~~~~~~
 	// Instanced Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~
-
+	
 	public T get(String id) {
 		return get(id, getPersistenceNode());
 	}
+	
+	public abstract String getPersistenceNode();
 	
 	public T getPlayer(OfflinePlayer player) {
 		return getPlayer(player.getUniqueId());
@@ -145,16 +149,14 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 	public PluginPlayer<?> getPlayer(PluginPlayer<?> p) {
 		return getPlayer(p.getPlayerUUID());
 	}
-
-	public T getPlayer(UUID playerUID) {
-		return getPlayer(playerUID.toString());
-	}
 	
 	public T getPlayer(String playerUID) {
 		return get(playerUID, getPersistenceNode());
 	}
-
-	public abstract String getPersistenceNode();
+	
+	public T getPlayer(UUID playerUID) {
+		return getPlayer(playerUID.toString());
+	}
 	
 	public void load() {
 		for (final Player p : BukkitUtil.getOnlinePlayers()) {
@@ -164,7 +166,9 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 	
 	public T load(OfflinePlayer player) {
 		T ret = super.load(player.getUniqueId().toString(), getPersistenceNode());
-		if (ret == null) ret = construct(player);
+		if (ret == null) {
+			ret = construct(player);
+		}
 		checkConstruct(ret);
 		
 		if (ret != null) {
@@ -173,7 +177,7 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 		
 		return ret;
 	}
-
+	
 	public T load(UUID playerID) {
 		T ret;
 		if (Bukkit.getOfflinePlayer(playerID).isOnline()) {
@@ -184,19 +188,19 @@ public abstract class BasePlayerManager<T extends PluginPlayer> extends
 		} else {
 			ret = super.load(playerID.toString(), getPersistenceNode());
 		}
-
+		
 		if (ret == null) {
 			ret = construct(playerID);
 		}
 		checkConstruct(ret);
-
+		
 		if (ret != null) {
-			loadedCache.put(ret.getPersistenceNode(), ret);
+			loadedCache.put(ret.getPersistentID(), ret);
 		}
-
+		
 		return ret;
 	}
-
+	
 	public T loadPlayer(OfflinePlayer player) {
 		return load(player);
 	}

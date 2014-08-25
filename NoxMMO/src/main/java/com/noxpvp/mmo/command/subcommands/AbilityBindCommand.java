@@ -61,9 +61,12 @@ public class AbilityBindCommand extends BaseCommand {
 		AbilityCycler cycler = null;
 		if ((cycler = mmoPlayer.getCycler(currentItem)) == null) {
 			cycler = new AbilityCycler(Collections.EMPTY_LIST, mmoPlayer
-					.getPlayerUUID(), currentItem);
+					.getPlayerUUID());
+			
+			player.setItemInHand(cycler.setCycleItem(currentItem));
 			
 			mmoPlayer.addAbilityCycler(cycler);
+			AbilityCycler.register(cycler);
 		}
 		
 		new AbilityBindMenu(player, cycler).show();

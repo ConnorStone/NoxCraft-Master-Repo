@@ -55,7 +55,7 @@ public class ClassConfigManager extends BaseManager<ClassConfig> {
 		if (isLoaded(persistentId))
 			return loadedCache.get(persistentId);
 		else {
-			load(new ClassConfig(getConfig(persistentId)));
+			load(new ClassConfig(getConfig(persistentId), persistentId));
 			return getClassConfig(persistentId);
 		}
 	}
@@ -66,15 +66,17 @@ public class ClassConfigManager extends BaseManager<ClassConfig> {
 	
 	public void load() {
 		for (final File f : getFile().listFiles()) {
-			if (!f.getName().endsWith(".yml")) {
+			String name;
+			if ((name = f.getName()) == null || !name.endsWith(".yml")) {
 				continue;
 			}
 			
 			final FileConfiguration fc = new FileConfiguration(f);
 			fc.load();
+			name = name.substring(0, name.length() - 4);
 			
 			if (ClassConfig.isClassConfig(fc)) {
-				load(new ClassConfig(fc));
+				load(new ClassConfig(fc, name));
 			}
 			
 		}

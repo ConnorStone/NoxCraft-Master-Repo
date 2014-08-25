@@ -55,7 +55,7 @@ public class ItemDisplayACRenderer extends BaseAbilityCyclerRenderer {
 	 */
 	@Override
 	public void renderCurrent() {
-		renderCurrent(null);
+		renderCurrent(getCycler().getLastItemKnown());
 	}
 	
 	public void renderCurrent(ItemStack stack) {
@@ -87,13 +87,12 @@ public class ItemDisplayACRenderer extends BaseAbilityCyclerRenderer {
 		}
 		
 		// Set fake NBT data on item, and send update packet for that item
-		final ItemStack item = stack != null ? NbtFactory.getCraftItemStack(stack)
-				: NbtFactory.getCraftItemStack(getCycler().getPlayer()
-						.getItemInHand().clone());
+		final ItemStack item = NbtFactory.getCraftItemStack(stack);
 		
 		final NbtCompound tag = NbtFactory.fromItemTag(item);
 		tag.putPath("display.Name", ChatColor.GREEN + curAB.getName());
-		tag.putPath("display.Lore", NbtFactory.createList((Object[]) others));
+		// tag.putPath("display.Lore", others.length > 0 ? NbtFactory
+		// .createList((Object[]) others) : "");
 		
 		// Send update packet
 		getNewUpdate(item, (short) cycler.getSlotOfItem(item)).sendPacket(

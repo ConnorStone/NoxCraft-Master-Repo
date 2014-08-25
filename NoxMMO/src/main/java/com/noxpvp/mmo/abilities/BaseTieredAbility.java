@@ -150,7 +150,7 @@ public abstract class BaseTieredAbility<T extends BaseAbilityTier<?>> implements
 				obfuscated.append(' ');
 			}
 			
-			meta.setLore(MessageUtil.convertStringForLore(obfuscated.toString(), 40));
+			meta.setLore(MessageUtil.splitToList(obfuscated.toString(), 30));
 			item.setItemMeta(meta);
 		}
 		
@@ -160,7 +160,7 @@ public abstract class BaseTieredAbility<T extends BaseAbilityTier<?>> implements
 	public List<String> getLore(ChatColor color, int linesLength) {
 		final List<String> ret = new ArrayList<String>();
 		
-		for (final String cur : MessageUtil.convertStringForLore(getDescription(),
+		for (final String cur : MessageUtil.splitToList(getDescription(),
 				linesLength)) {
 			ret.add(color + cur);
 		}

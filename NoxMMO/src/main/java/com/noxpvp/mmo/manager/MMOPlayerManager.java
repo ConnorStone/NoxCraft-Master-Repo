@@ -40,8 +40,9 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	
 	private static MMOPlayerManager			instance;
 	
-	private static final String				saveFolder	= "playerdata";
-	private static final Class<MMOPlayer>	saveType	= MMOPlayer.class;
+	public static final String				persistenceNode	= "MMOPlayer";
+	private static final String				saveFolder		= "playerdata";
+	private static final Class<MMOPlayer>	saveType		= MMOPlayer.class;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instance Fields
@@ -73,6 +74,11 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	@Override
 	public ModuleLogger getModuleLogger(String... moduleName) {
 		return super.getModuleLogger(moduleName);
+	};
+	
+	@Override
+	public String getPersistenceNode() {
+		return persistenceNode;
 	}
 	
 	public NoxMMO getPlugin() {

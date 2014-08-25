@@ -80,8 +80,8 @@ public class ClassChooseMenu extends CoreBox {
 		box.setItem(0, primarySign);
 		box.setItem(9, secondarySign);
 		
-		final CoreBoxRegion primarys = new CoreBoxRegion(this, new Vector(0, 0, 2),
-				0, 7), secondarys = new CoreBoxRegion(this, new Vector(1, 0, 2), 0,
+		final CoreBoxRegion primarys = new CoreBoxRegion(this, new Vector(0, 0, 1),
+				0, 7), secondarys = new CoreBoxRegion(this, new Vector(1, 0, 1), 0,
 				7);
 		
 		for (final IPlayerClass clazz : availableClasses) {
@@ -95,12 +95,12 @@ public class ClassChooseMenu extends CoreBox {
 					
 					if (getPlayerClass().isPrimaryClass()) {
 						mmop.setPrimaryClass(getPlayerClass());
-						hide();
+						ClassChooseMenu.this.hide();
 						
 						return true;
 					} else {
 						mmop.setSecondaryClass(getPlayerClass());
-						hide();
+						ClassChooseMenu.this.hide();
 						
 						return true;
 					}

@@ -1,5 +1,6 @@
 package com.noxpvp.mmo.abilities.player;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import com.noxpvp.mmo.abilities.AbilityResult;
@@ -38,7 +39,8 @@ public class WallopPlayerAbility extends BasePlayerAbility<WallopAbilityTier>
 			
 			@Override
 			public AbilityResult<WallopPlayerAbility> execute() {
-				// execution code
+				
+				Bukkit.broadcastMessage("Bam, you hit them");
 				
 				return new AbilityResult<WallopPlayerAbility>(
 						WallopPlayerAbility.this, true);
