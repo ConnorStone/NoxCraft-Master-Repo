@@ -1,7 +1,6 @@
 package com.noxpvp.mmo.abilities;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
@@ -77,8 +76,8 @@ public class AbilityConfig implements Persistent {
 		return config.getName();
 	}
 	
-	public UUID getPersistentID() {
-		return null;
+	public String getPersistentID() {
+		return config.getName();
 	}
 	
 	public void log(Level level, String msg) {

@@ -93,8 +93,8 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements
 		return PlayerUtils.getOfflinePlayer(getPlayerUUID());
 	}
 	
-	public final UUID getPersistentID() {
-		return getPlayerUUID();
+	public final String getPersistentID() {
+		return getPlayerUUID().toString();
 	}
 	
 	public final Player getPlayer() {

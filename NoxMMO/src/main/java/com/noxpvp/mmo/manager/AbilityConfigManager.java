@@ -55,7 +55,7 @@ public class AbilityConfigManager extends BaseManager<AbilityConfig> {
 	
 	@Override
 	public void unloadAndSaveAll() {
-		for (final AbilityConfig ac : getLoadeds().values()) {
+		for (final AbilityConfig ac : getLoadedMap().values()) {
 			ac.getFileConfig().save();
 			unload(ac);
 		}

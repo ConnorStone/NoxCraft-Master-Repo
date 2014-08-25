@@ -15,12 +15,14 @@ public class MMOClassData implements ConfigurationSerializable {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	private static final String	SERIALIZE_PLAYER_UUID	= "player-uuid";
+	private static final String	SERIALIZE_CONFIG_PATH	= "class-config-name";
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instance Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	private UUID				playerUUID;
+	private String				configFilePath;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
@@ -37,13 +39,20 @@ public class MMOClassData implements ConfigurationSerializable {
 			throw new SafeNullPointerException(
 					"Could not get player uuid while loading");
 		
+		if ((getter = data.get(SERIALIZE_CONFIG_PATH)) != null
+				&& getter instanceof String) {
+			configFilePath = (String) getter;
+		} else
+			throw new SafeNullPointerException(
+					"Could not get class config path while loading");
+		
 	}
 	
 	public MMOClassData(UUID player, ClassConfig config) {
 		super();
 		
 		playerUUID = player;
-		
+		configFilePath = config.getFileConfig().getName();
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -54,6 +63,10 @@ public class MMOClassData implements ConfigurationSerializable {
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	public String getClassConfigPath() {
+		return configFilePath;
+	}
+	
 	public UUID getPlayerUUID() {
 		return playerUUID;
 	}
@@ -62,6 +75,7 @@ public class MMOClassData implements ConfigurationSerializable {
 		final Map<String, Object> data = new HashMap<String, Object>();
 		
 		data.put(SERIALIZE_PLAYER_UUID, playerUUID.toString());
+		data.put(SERIALIZE_CONFIG_PATH, configFilePath);
 		
 		return data;
 	}

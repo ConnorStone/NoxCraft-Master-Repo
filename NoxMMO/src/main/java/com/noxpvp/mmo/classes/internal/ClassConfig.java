@@ -3,7 +3,6 @@ package com.noxpvp.mmo.classes.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Color;
@@ -163,7 +162,7 @@ public class ClassConfig implements Persistent {
 		return config.getName().replace(".yml", "");
 	}
 	
-	public UUID getPersistentID() {
+	public String getPersistentID() {
 		return null;
 	}
 	

@@ -23,6 +23,7 @@
 
 package com.noxpvp.core.manager;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -32,9 +33,15 @@ import com.noxpvp.core.Persistent;
 
 public interface IManager<T extends Persistent> {
 	
-	public FileConfiguration getConfig(String name);
+	public T get(String persistentID, String persistenceNode);
 	
-	public Map<String, T> getLoadeds();
+	public FileConfiguration getConfig(String path);
+	
+	public FileConfiguration getConfig(T object);
+	
+	public Map<String, T> getLoadedMap();
+	
+	public List<T> getLoadedValues();
 	
 	public NoxPlugin getPlugin();
 	
@@ -44,10 +51,12 @@ public interface IManager<T extends Persistent> {
 	
 	public void log(Level lv, String msg);
 	
-	public void save();
-	
 	public void save(T object);
 	
+	public void saveAll();
+	
 	public void unload(T object);
+	
+	public void unloadAndSaveAll();
 	
 }

@@ -138,7 +138,7 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 		// Temp Data
 		temp_data = new ConfigurationNode();
 		
-		stats = new CorePlayerStats(getPersistentID());
+		stats = new CorePlayerStats(getPlayerUUID());
 		// Player stats
 		// this.stats = new PlayerStats(getPersistentID());
 	}
@@ -318,8 +318,8 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 		return "NoxPlayer";
 	}
 	
-	public UUID getPersistentID() {
-		return playerUUID;
+	public String getPersistentID() {
+		return playerUUID.toString();
 	}
 	
 	public Player getPlayer() {
@@ -357,7 +357,7 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 	}
 	
 	public UUID getPlayerUUID() {
-		return getPersistentID();
+		return playerUUID;
 	}
 	
 	public NoxCore getPlugin() {

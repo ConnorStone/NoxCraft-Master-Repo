@@ -23,7 +23,6 @@
 
 package com.noxpvp.mmo.manager;
 
-import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.OfflinePlayer;
@@ -87,15 +86,11 @@ public class MMOPlayerManager extends BasePlayerManager<MMOPlayer> {
 	
 	@Override
 	public void save(OfflinePlayer player) {
-		final MMOPlayer np = getIfLoaded(player.getUniqueId());
+		final MMOPlayer np = getIfLoaded(player.getUniqueId().toString());
 		if (np == null)
 			return;
 		
 		super.save(player);
 	}
 	
-	@Override
-	public void unloadAndSave(UUID id) {
-		super.unloadAndSave(id);
-	} // protected -> public
 }

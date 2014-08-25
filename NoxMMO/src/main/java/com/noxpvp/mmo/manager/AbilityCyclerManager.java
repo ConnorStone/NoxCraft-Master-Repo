@@ -47,7 +47,7 @@ public class AbilityCyclerManager extends BaseManager<AbilityCycler> {
 	}
 	
 	public AbilityCycler getCycler(UUID persistentID) {
-		return get(persistentID);
+		return get(persistentID.toString(), persistentID.toString());
 	}
 	
 	public NoxPlugin getPlugin() {

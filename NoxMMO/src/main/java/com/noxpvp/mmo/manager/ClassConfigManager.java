@@ -51,6 +51,15 @@ public class ClassConfigManager extends BaseManager<ClassConfig> {
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
+	public ClassConfig getClassConfig(String persistentId) {
+		if (isLoaded(persistentId))
+			return loadedCache.get(persistentId);
+		else {
+			load(new ClassConfig(getConfig(persistentId)));
+			return getClassConfig(persistentId);
+		}
+	}
+	
 	public NoxPlugin getPlugin() {
 		return NoxMMO.getInstance();
 	}
@@ -73,17 +82,13 @@ public class ClassConfigManager extends BaseManager<ClassConfig> {
 	}
 	
 	@Override
-	public void unloadAndSaveAll() {
-		for (final ClassConfig cc : getLoadeds().values()) {
-			cc.getFileConfig().save();
-			unload(cc);
-		}
-		
+	public void load(ClassConfig object) {
+		loadObject(object);
 	}
 	
 	@Override
-	protected ClassConfig load(ClassConfig object) {
-		return loadedCache.put(object.getPersistenceNode(), object);
+	public void save(ClassConfig object) {
+		object.getFileConfig().save();
 	}
 	
 }

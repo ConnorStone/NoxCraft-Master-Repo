@@ -70,25 +70,25 @@ public class AbilityCycler extends Cycler<String> implements
 	// Static Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private static ModuleLogger				logger;
-	private static NoxListener<NoxMMO>		onCycle, onUse;
-	private static Map<UUID, AbilityCycler>	cyclers;
+	private static ModuleLogger					logger;
+	private static NoxListener<NoxMMO>			onCycle, onUse;
+	private static Map<String, AbilityCycler>	cyclers;
 	
 	// Serializers start
-	private static final String				SERIALIZE_ID		= "id";
-	private static final String				SERIALIZE_PLAYER_ID	= "player-id";
-	private static final String				SERIALIZE_ABILITIES	= "abilities";
+	private static final String					SERIALIZE_ID		= "id";
+	private static final String					SERIALIZE_PLAYER_ID	= "player-id";
+	private static final String					SERIALIZE_ABILITIES	= "abilities";
 	// Serializers end
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instance Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	private ItemStack						lastSeenItem;
-	private final UUID						id;
-	private final UUID						player;
-	private Set<String>						abilities;
-	private BaseAbilityCyclerRenderer		renderer;
+	private ItemStack							lastSeenItem;
+	private final UUID							id;
+	private final UUID							player;
+	private Set<String>							abilities;
+	private BaseAbilityCyclerRenderer			renderer;
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
@@ -161,7 +161,7 @@ public class AbilityCycler extends Cycler<String> implements
 	// INITIALIZE
 	public static void init() {
 		
-		cyclers = new HashMap<UUID, AbilityCycler>();
+		cyclers = new HashMap<String, AbilityCycler>();
 		
 		onCycle = new NoxListener<NoxMMO>(NoxMMO.getInstance()) {
 			
@@ -206,7 +206,7 @@ public class AbilityCycler extends Cycler<String> implements
 		onUse.register();
 	}
 	
-	public static boolean isRegistered(UUID cyclerID) {
+	public static boolean isRegistered(String cyclerID) {
 		return cyclers != null && cyclers.containsKey(cyclerID);
 	}
 	
@@ -214,7 +214,7 @@ public class AbilityCycler extends Cycler<String> implements
 		Validate.notNull(cycler);
 		
 		if (!cyclers.containsKey(cycler.getPersistentID())) {
-			cyclers.put(cycler.getPersistentID(), cycler);
+			cyclers.put(cycler.getPersistentID().toString(), cycler);
 		}
 	}
 	
@@ -280,8 +280,8 @@ public class AbilityCycler extends Cycler<String> implements
 		return getPersistentID().toString();
 	}
 	
-	public UUID getPersistentID() {
-		return id;
+	public String getPersistentID() {
+		return id.toString();
 	}
 	
 	public Player getPlayer() {
@@ -406,6 +406,6 @@ public class AbilityCycler extends Cycler<String> implements
 		pruneAbilitiesFromPlayer();
 		
 		return getPlayer() != null && abilities.size() > 0
-				&& AbilityCycler.isRegistered(getPersistentID());
+				&& AbilityCycler.isRegistered(getPersistentID().toString());
 	}
 }

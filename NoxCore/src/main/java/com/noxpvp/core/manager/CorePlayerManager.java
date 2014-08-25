@@ -23,77 +23,83 @@
 
 package com.noxpvp.core.manager;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.noxpvp.core.NoxCore;
-import com.noxpvp.core.data.NoxPlayer;
-import org.bukkit.OfflinePlayer;
-
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class CorePlayerManager extends BasePlayerManager<NoxPlayer>{
+import org.bukkit.OfflinePlayer;
 
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Instance
-	//~~~~~~~~~~~~~~~~~~~~~~
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.noxpvp.core.NoxCore;
+import com.noxpvp.core.data.NoxPlayer;
 
-	public static CorePlayerManager getInstance() {
-		if (instance == null) instance = new CorePlayerManager();
-		return instance;
-	}
-
-	private static CorePlayerManager instance; //Instance of manager.
-
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Logging
-	//~~~~~~~~~~~~~~~~~~~~~~
-	@Override
-	public ModuleLogger getModuleLogger(String... moduleName) { return super.getModuleLogger(moduleName);} //protected -> public
-
-	public void log(Level level, String msg) {
-		getLogger().log(level, msg);
-	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Constructors
-	//~~~~~~~~~~~~~~~~~~~~~~
-
+public class CorePlayerManager extends BasePlayerManager<NoxPlayer> {
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	// Instance
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	
+	private static CorePlayerManager	instance;	// Instance of manager.
+													
 	private CorePlayerManager() {
 		super(NoxPlayer.class, "playerdata");
-
+		
 	}
-
-	//~~~~~~~~~~~~~~~~~~~~~~
-	//Instanced methods
-	//~~~~~~~~~~~~~~~~~~~~~~
-
-
+	
+	public static CorePlayerManager getInstance() {
+		if (instance == null) {
+			instance = new CorePlayerManager();
+		}
+		return instance;
+	}
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	// Logging
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	@Override
+	public ModuleLogger getModuleLogger(String... moduleName) {
+		return super.getModuleLogger(moduleName);
+	} // protected -> public
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	// Constructors
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	
 	public NoxCore getPlugin() {
 		return NoxCore.getInstance();
 	}
-
-	@Override
-	public void unloadAndSave(UUID id) { //protected -> public
-		super.unloadAndSave(id);
-	}
-
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	// Instanced methods
+	// ~~~~~~~~~~~~~~~~~~~~~~
+	
 	@Override
 	public NoxPlayer load(OfflinePlayer player) {
-		NoxPlayer ret = super.load(player);
-
+		final NoxPlayer ret = super.load(player);
+		
 		ret.getStats().updateLastPlayerInfo(player);
-
+		
 		return ret;
 	}
-
+	
+	@Override
+	public void log(Level level, String msg) {
+		getLogger().log(level, msg);
+	}
+	
 	@Override
 	public void save(OfflinePlayer player) {
-		NoxPlayer np = getIfLoaded(player.getUniqueId());
-		if (np == null) return;
-
+		final NoxPlayer np = getIfLoaded(player.getUniqueId().toString());
+		if (np == null)
+			return;
+		
 		np.getStats().updateLastPlayerInfo(player);
-
+		
 		super.save(player);
 	}
-
+	
+	@Override
+	public void unloadAndSave(UUID id) { // protected -> public
+		super.unloadAndSave(id);
+	}
+	
 }

@@ -42,20 +42,16 @@ import com.noxpvp.core.gui.CoreBoxItem;
 import com.noxpvp.core.gui.CoreBoxRegion;
 import com.noxpvp.mmo.MMOPlayer;
 import com.noxpvp.mmo.classes.internal.IPlayerClass;
-import com.noxpvp.mmo.locale.MMOLocale;
 import com.noxpvp.mmo.manager.MMOPlayerManager;
 import com.noxpvp.mmo.util.PlayerClassUtil;
 
 public class ClassChooseMenu extends CoreBox {
 	
-	public static final String	MENU_NAME		= "Class Selection";
-	
-	private static final String	MENU_MAIN_COLOR	= MMOLocale.GUI_MENU_NAME_COLOR
-														.get();
-	private static final int	size			= 18;
+	public static final String	MENU_NAME	= "Class Selection";
+	private static final int	size		= 18;
 	
 	public ClassChooseMenu(final Player p, @Nullable CoreBox backButton) {
-		super(p, MMOLocale.GUI_MENU_NAME_COLOR.get() + MENU_NAME, size, backButton);
+		super(p, MENU_NAME, size, backButton);
 		
 		final Inventory box = getBox();
 		
@@ -70,8 +66,8 @@ public class ClassChooseMenu extends CoreBox {
 		
 		final String lorePrefix = ChatColor.GREEN.toString() + ChatColor.ITALIC;
 		
-		pMeta.setDisplayName(MENU_MAIN_COLOR + "Pick a primary class");
-		sMeta.setDisplayName(MENU_MAIN_COLOR + "Pick a Secondary class");
+		pMeta.setDisplayName(ChatColor.GOLD + "Pick a primary class");
+		sMeta.setDisplayName(ChatColor.GOLD + "Pick a Secondary class");
 		
 		pMeta.setLore(Arrays.asList(lorePrefix + "Click an item on this row",
 				lorePrefix + "to select a primary class"));

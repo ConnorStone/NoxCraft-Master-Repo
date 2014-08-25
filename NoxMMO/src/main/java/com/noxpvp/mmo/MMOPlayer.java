@@ -24,6 +24,7 @@
 package com.noxpvp.mmo;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -225,9 +226,9 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		return "MMOPlayer";
 	}
 	
-	public IPlayerClass getPlayerClass(String persistenceNode) {
+	public IPlayerClass getPlayerClass(String fileName) {
 		for (final IPlayerClass c : allClasses)
-			if (c.getPersistenceNode().equalsIgnoreCase(persistenceNode))
+			if (c.getFileName().equalsIgnoreCase(fileName))
 				return c;
 		
 		return null;
@@ -292,18 +293,30 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 		}
 		
 		if (allClasses.size() > 0) {
-			data.put(SERIALIZE_ALL_CLASSES, PlayerClassUtil.getModifiedClasses(this));
-		} else
-			// return early if no classes are set or changed
-			return data;
+			final Collection<IPlayerClass> modified = PlayerClassUtil
+					.getModifiedClasses(this);
+			
+			if (!modified.isEmpty()) {
+				
+				final List<MMOClassData> saveData = new ArrayList<MMOClassData>();
+				
+				for (final IPlayerClass pc : modified) {
+					saveData.add(pc.getClassData());
+				}
+				
+				data.put(SERIALIZE_ALL_CLASSES, saveData);
+				
+			}
+		}
 		
 		if (getPrimaryClass() != null) {
-			data.put(SERIALIZE_CURRENT_PRIMARY_CLASS, getPrimaryClass().getName());
+			data.put(SERIALIZE_CURRENT_PRIMARY_CLASS, getPrimaryClass()
+					.getFileName());
 		}
 		
 		if (getSecondaryClass() != null) {
 			data.put(SERIALIZE_CURRENT_SECONDARY_CLASS, getSecondaryClass()
-					.getName());
+					.getFileName());
 		}
 		
 		return data;
@@ -319,13 +332,13 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	
 	public void setPrimaryClass(IPlayerClass newPrimary) {
 		if (newPrimary != null) {
-			currentPrimaryClass = newPrimary.getName();
+			currentPrimaryClass = newPrimary.getFileName();
 		}
 	}
 	
 	public void setSecondaryClass(IPlayerClass newSecondary) {
 		if (newSecondary != null) {
-			currentSecondaryClass = newSecondary.getName();
+			currentSecondaryClass = newSecondary.getFileName();
 		}
 	}
 	
@@ -334,10 +347,10 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	}
 	
 	private void addUnusedClasses() {
-		for (final ClassConfig cfg : ClassConfigManager.getInstance().getLoadeds()
+		for (final ClassConfig cfg : ClassConfigManager.getInstance().getLoadedMap()
 				.values()) {
 			
-			if (!hasPlayerClass(cfg.getPersistenceNode())) {
+			if (!hasPlayerClass(cfg.getFileConfig().getName())) {
 				addPlayerClass(new PlayerClass(cfg, new MMOClassData(
 						getPlayerUUID(), cfg)));
 			}
@@ -348,25 +361,50 @@ public class MMOPlayer extends BasePluginPlayer<NoxMMO> implements
 	private void setupClasses(Map<String, Object> data) {
 		Object getter;
 		
+		List<MMOClassData> classDataList;
 		if ((getter = data.get(SERIALIZE_ALL_CLASSES)) != null
 				&& getter instanceof Collection) {
-			allClasses = new HashSet<IPlayerClass>((Collection<IPlayerClass>) data);
+			classDataList = new ArrayList<MMOClassData>(
+					(Collection<MMOClassData>) getter);
+			
+			final ClassConfigManager ccm = ClassConfigManager.getInstance();
+			allClasses = new HashSet<IPlayerClass>();
+			
+			for (final MMOClassData cd : classDataList) {
+				
+				final ClassConfig cc = ccm.getClassConfig(cd.getClassConfigPath());
+				if (cc == null) {
+					continue;
+				}
+				
+				addPlayerClass(new PlayerClass(cc, cd));
+			}
+			
 		} else {
 			allClasses = new HashSet<IPlayerClass>();
 		}
 		
 		addUnusedClasses();
 		
-		if (data.containsKey(SERIALIZE_CURRENT_PRIMARY_CLASS)
-				&& data.get(SERIALIZE_CURRENT_PRIMARY_CLASS) != null) {
-			setPrimaryClass(getPlayerClass(data.get(SERIALIZE_CURRENT_PRIMARY_CLASS)
-					.toString()));
+		if ((getter = data.get(SERIALIZE_CURRENT_PRIMARY_CLASS)) != null
+				&& getter instanceof String) {
+			final IPlayerClass clazz = getPlayerClass((String) getter);
+			
+			if (clazz == null)
+				return;
+			
+			setPrimaryClass(clazz);
 		}
-		if (data.containsKey(SERIALIZE_CURRENT_SECONDARY_CLASS)
-				&& data.get(SERIALIZE_CURRENT_SECONDARY_CLASS) != null) {
-			setSecondaryClass(getPlayerClass(data.get(
-					SERIALIZE_CURRENT_SECONDARY_CLASS)
-					.toString()));
+		
+		if ((getter = data.get(SERIALIZE_CURRENT_SECONDARY_CLASS)) != null
+				&& getter instanceof String) {
+			final IPlayerClass clazz = getPlayerClass((String) getter);
+			
+			if (clazz == null)
+				return;
+			
+			setSecondaryClass(clazz);
 		}
+		
 	}
 }

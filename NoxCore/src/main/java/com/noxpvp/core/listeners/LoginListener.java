@@ -38,51 +38,55 @@ import com.noxpvp.core.manager.CorePlayerManager;
 import com.noxpvp.core.utils.gui.MessageUtil;
 
 public class LoginListener extends NoxListener<NoxCore> {
-
-	private String loginMessage;
-
+	
+	private String	loginMessage;
+	
 	public LoginListener() {
 		this(NoxCore.getInstance());
 	}
-
+	
 	public LoginListener(NoxCore core) {
 		super(core);
 		updateLoginMessage();
 	}
-
-	public void updateLoginMessage() {
-		loginMessage = MessageUtil.parseColor(getPlugin().getCoreConfig().get("motd.login", String.class, "&6Welcome to &cNoxImperialis!"));
-	}
-
+	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onLogin(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
-
+		
 		VaultAdapter.GroupUtils.reloadGroupTag(p);
 		new FlashingNotification(p, ChatColor.stripColor(loginMessage), 300);
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onUUIDFound(final NoxUUIDFoundEvent event) {
-		if (event.isAsynchronous()) //safety check.
+		if (event.isAsynchronous()) // safety check.
 		{
 			CommonUtil.nextTick(new Runnable() {
+				
 				public void run() {
-					CorePlayerManager pm = CorePlayerManager.getInstance();
-					if (pm.isLoaded(event.getUUID()))
+					final CorePlayerManager pm = CorePlayerManager.getInstance();
+					if (pm.isLoaded(event.getUUID().toString())) {
 						pm.loadPlayer(event.getUUID());
+					}
 				}
 			});
 		} else {
-			CorePlayerManager pm = CorePlayerManager.getInstance();
-			if (pm.isLoaded(event.getUUID()))
+			final CorePlayerManager pm = CorePlayerManager.getInstance();
+			if (pm.isLoaded(event.getUUID().toString())) {
 				pm.loadPlayer(event.getUUID());
+			}
 		}
 	}
-
+	
 	@Override
 	public void register() {
 		super.register();
 		CommonUtil.queueListenerLast(this, PlayerJoinEvent.class);
+	}
+	
+	public void updateLoginMessage() {
+		loginMessage = MessageUtil.parseColor(getPlugin().getCoreConfig().get(
+				"motd.login", String.class, "&6Welcome to &cNoxImperialis!"));
 	}
 }

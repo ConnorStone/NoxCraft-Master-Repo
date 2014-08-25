@@ -25,10 +25,11 @@ package com.noxpvp.core.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import com.bergerkiller.bukkit.common.ModuleLogger;
@@ -71,8 +72,16 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 	// Instance Methods
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
-	public FileConfiguration getConfig(String name) {
-		final File config = new File(getFile(), name);
+	public T get(String persistentId, String persistenceNode) {
+		T it;
+		if ((it = loadedCache.get(persistentId)) != null)
+			return it;
+		else
+			return load(persistentId, persistenceNode);
+	}
+	
+	public FileConfiguration getConfig(String path) {
+		final File config = new File(getFile(), path);
 		if (!config.exists()) {
 			try {
 				config.createNewFile();
@@ -81,6 +90,14 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		}
 		
 		final FileConfiguration ret = new FileConfiguration(config);
+		ret.load();
+		
+		return ret;
+	}
+	
+	public FileConfiguration getConfig(T object) {
+		final FileConfiguration ret = new FileConfiguration(new File(getFile(),
+				object.getPersistentID()));
 		ret.load();
 		
 		return ret;
@@ -95,25 +112,29 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		return folder;
 	}
 	
-	public Map<String, T> getLoadeds() {
+	public Map<String, T> getLoadedMap() {
 		return Collections.unmodifiableMap(loadedCache);
+	}
+	
+	public List<T> getLoadedValues() {
+		return Collections.unmodifiableList(new ArrayList<T>(loadedCache.values()));
 	}
 	
 	public Class<T> getTypeClass() {
 		return typeClass;
 	}
 	
+	public boolean isLoaded(String persistentId) {
+		return loadedCache.containsKey(persistentId);
+	}
+	
 	public boolean isLoaded(T object) {
 		return loadedCache.containsValue(object);
 	}
 	
-	public boolean isLoaded(UUID id) {
-		return loadedCache.containsKey(id);
-	}
-	
 	public void loadObject(T object) {
 		if (!loadedCache.containsKey(object.getPersistentID())) {
-			loadedCache.put(object.getPersistentID().toString(), object);
+			loadedCache.put(object.getPersistentID(), object);
 		}
 	}
 	
@@ -196,20 +217,17 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		logger.log(level, msg, thrown);
 	}
 	
-	public void save() {
+	public void save(T object) {
+		final FileConfiguration datafile = getConfig(object.getPersistentID()
+				+ ".yml");
+		datafile.set(object.getPersistenceNode(), object);
+		
+		datafile.save();
+	}
+	
+	public void saveAll() {
 		for (final T loaded : loadedCache.values()) {
 			save(loaded);
-		}
-	}
-	
-	public void save(T object) {
-		save(object, object.getPersistentID());
-	}
-	
-	public void save(UUID id) {
-		final T object = getIfLoaded(id);
-		if (object != null) {
-			save(object);
 		}
 	}
 	
@@ -230,20 +248,13 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		}
 	}
 	
-	protected T get(UUID arg) {
-		T it;
-		if ((it = loadedCache.get(arg)) != null)
-			return it;
-		else
-			return load(arg);
-	}
-	
-	protected T getIfLoaded(UUID id) {
+	protected T getIfLoaded(String persistenceId) {
 		T object;
-		if ((object = loadedCache.get(id)) != null)
+		if ((object = loadedCache.get(persistenceId)) != null)
 			return object;
 		
 		return null;
+		
 	}
 	
 	protected ModuleLogger getLogger() {
@@ -254,47 +265,19 @@ public abstract class BaseManager<T extends Persistent> implements IManager<T> {
 		return logger.getModule(modulePath);
 	}
 	
-	protected boolean isLoaded(String key) {
-		return loadedCache.containsKey(key);
-	}
-	
-	protected T load(T object) {
-		return load(object.getPersistentID());
-	}
-	
-	protected T load(UUID path) {
-		return load(path, path.toString());
-	}
-	
-	protected T load(UUID path, String node) {
-		final T created = getConfig(path.toString() + ".yml").get(node, typeClass);
+	protected T load(String persistentId, String persistenceNode) {
+		final T created = getConfig(persistentId + ".yml").get(persistenceNode,
+				typeClass);
 		
 		if (created != null) {
-			loadedCache.put(created.getPersistentID().toString(), created);
+			loadedCache.put(persistentId, created);
 		}
 		
 		return created;
 	}
 	
-	protected void save(T object, UUID id) {
-		final FileConfiguration datafile = getConfig(id.toString() + ".yml");
-		datafile.set(object.getPersistenceNode(), object);
-		
-		datafile.save();
-	}
-	
-	protected void unload(UUID arg) {
-		T object;
-		if ((object = getIfLoaded(arg)) != null) {
-			unload(object);
-		}
-	}
-	
-	protected void unloadAndSave(UUID id) {
-		T object = null;
-		if ((object = getIfLoaded(id)) != null) {
-			unloadAndSave(object);
-		}
+	protected void load(T object) {
+		loadedCache.put(object.getPersistentID(), object);
 	}
 	
 }
