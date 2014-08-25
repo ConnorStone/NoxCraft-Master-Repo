@@ -23,12 +23,13 @@
 
 package com.noxpvp.core.manager;
 
+import com.bergerkiller.bukkit.common.ModuleLogger;
+
 import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.OfflinePlayer;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.data.NoxPlayer;
 
@@ -71,7 +72,11 @@ public class CorePlayerManager extends BasePlayerManager<NoxPlayer> {
 	// ~~~~~~~~~~~~~~~~~~~~~~
 	// Instanced methods
 	// ~~~~~~~~~~~~~~~~~~~~~~
-	
+
+	public String getPersistenceNode() {
+		return NoxPlayer.persistanceNode;
+	}
+
 	@Override
 	public NoxPlayer load(OfflinePlayer player) {
 		final NoxPlayer ret = super.load(player);

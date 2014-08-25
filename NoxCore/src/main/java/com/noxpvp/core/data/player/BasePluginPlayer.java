@@ -109,6 +109,10 @@ public abstract class BasePluginPlayer<T extends NoxPlugin> implements
 	public final UUID getPlayerUUID() {
 		return uuid;
 	}
+
+	public final String getPlayerUUIDString() {
+		return getPlayerUUID().toString();
+	}
 	
 	public final boolean isOnline() {
 		return PlayerUtils.isOnline(getPlayerUUID());

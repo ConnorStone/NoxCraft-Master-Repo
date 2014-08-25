@@ -23,11 +23,12 @@
 
 package com.noxpvp.core.data;
 
-import com.noxpvp.core.NoxPlugin;
-import com.noxpvp.core.Persistent;
+import java.util.UUID;
+
 import org.bukkit.OfflinePlayer;
 
-import java.util.UUID;
+import com.noxpvp.core.NoxPlugin;
+import com.noxpvp.core.Persistent;
 
 /**
  * When Implementing it is required to have the following constructors available.

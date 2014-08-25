@@ -23,6 +23,10 @@
 
 package com.noxpvp.core.data;
 
+import com.bergerkiller.bukkit.common.ModuleLogger;
+import com.bergerkiller.bukkit.common.config.ConfigurationNode;
+import org.apache.commons.lang.Validate;
+
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -36,14 +40,11 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
-import com.bergerkiller.bukkit.common.ModuleLogger;
-import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.noxpvp.core.NoxCore;
 import com.noxpvp.core.Persistent;
 import com.noxpvp.core.VaultAdapter;
@@ -68,27 +69,29 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 	static {
 		log = CorePlayerManager.getInstance().getModuleLogger("NoxPlayer");
 	}
-	
+
+	public static final String persistanceNode = "NoxPlayer";
+
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Instanced Fields
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	private final UUID							playerUUID;
-	
-	private final WeakHashMap<String, CoolDown>	cd_cache	= new WeakHashMap<String, CoolDown>();
-	private List<CoolDown>						cds;
-	private final ConfigurationNode				temp_data;
-	private CoreBar								coreBar;
-	private CoreBoard							coreBoard;
-	private CorePlayerStats						stats;
-	private Reference<CoreBox>					coreBox;
-	private String								lastFormattedName;
-	
+	private final UUID playerUUID;
+
+	private final WeakHashMap<String, CoolDown> cd_cache = new WeakHashMap<String, CoolDown>();
+	private       List<CoolDown>     cds;
+	private final ConfigurationNode  temp_data;
+	private       CoreBar            coreBar;
+	private       CoreBoard          coreBoard;
+	private       CorePlayerStats    stats;
+	private       Reference<CoreBox> coreBox;
+	private       String             lastFormattedName;
+
 	public NoxPlayer(Map<String, Object> data) {
 		Validate.isTrue(data.containsKey("uuid"),
 				"Not a valid data structure. Missing uuid entry!");
-		
+
 		playerUUID = UUID.fromString(data.get("uuid").toString());
-		
+
 		// Setup CoolDowns
 		try {
 			cds = (List<CoolDown>) data.get("cool-downs");
@@ -103,57 +106,59 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 						+ getPlayerUUID()
 						+ "\". Not entirely sure if data corruption is the cause.");
 			}
-			
+
 			cds = new ArrayList<CoolDown>();
 		}
-		
-		stats = data.containsKey("stats") ? data.get("stats") instanceof CorePlayerStats ? (CorePlayerStats) data
-				.get("stats")
-				: new CorePlayerStats(playerUUID)
-				: new CorePlayerStats(playerUUID);
+
+		stats = data.containsKey("stats") ?
+				data.get("stats") instanceof CorePlayerStats ? (CorePlayerStats) data
+						.get("stats")
+						: new CorePlayerStats(playerUUID)
+				:
+				new CorePlayerStats(playerUUID);
 		if (data.containsKey("stats") && stats != data.get("stats")) {
 			log(Level.SEVERE,
 					"Data for player stats may have been wiped. Not the same instance as the data map.");
 		}
-		
+
 		temp_data = new ConfigurationNode();
-		
+
 		updateCoolDownCache();
 	}
-	
+
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Constructors
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
+
 	public NoxPlayer(Player player) {
 		this(player.getUniqueId());
 	}
-	
+
 	public NoxPlayer(UUID playerUUID) {
 		this.playerUUID = playerUUID;
-		
+
 		// Cool-Downs
 		cds = new ArrayList<CoolDown>();
-		
+
 		// Temp Data
 		temp_data = new ConfigurationNode();
-		
+
 		stats = new CorePlayerStats(getPlayerUUID());
 		// Player stats
 		// this.stats = new PlayerStats(getPersistentID());
 	}
-	
+
 	public static ModuleLogger getModuleLogger(String... module) {
 		return log.getModule(module);
 	}
-	
+
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Internal Methods.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
+
 	/**
 	 * Adds a new cooldown with the specified name and length.
-	 * 
+	 *
 	 * <p>
 	 * To display a render of the CoolDown. Use
 	 * {@link #addCoolDown(String, com.noxpvp.core.gui.CoolDown.Time, boolean)}
@@ -315,7 +320,7 @@ public class NoxPlayer implements PluginPlayer<NoxCore>, Persistent {
 	}
 	
 	public String getPersistenceNode() {
-		return "NoxPlayer";
+		return persistanceNode;
 	}
 	
 	public String getPersistentID() {
